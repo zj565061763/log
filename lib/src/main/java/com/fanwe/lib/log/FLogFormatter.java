@@ -10,7 +10,7 @@ import java.util.logging.LogRecord;
 public class FLogFormatter extends Formatter
 {
     private final Date mDate = new Date();
-    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
+    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private StringBuilder mStringBuilder = new StringBuilder();
 
     private void clearStringBuilder()
