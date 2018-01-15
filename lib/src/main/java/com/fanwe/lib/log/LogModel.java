@@ -32,7 +32,9 @@ public class LogModel implements Serializable
      * 日志等级
      */
     private String level;
-
+    /**
+     * 异常
+     */
     private Throwable throwable;
 
     public long getTime()
@@ -91,7 +93,17 @@ public class LogModel implements Serializable
         this.throwable = throwable;
         if (throwable != null)
         {
-            setErrorMessage(throwable.getMessage());
+            StringBuilder sb = new StringBuilder(throwable.toString());
+            sb.append(getNextLine());
+
+            StackTraceElement[] trace = throwable.getStackTrace();
+            for (StackTraceElement item : trace)
+            {
+                sb.append("\tat " + item);
+                sb.append(getNextLine());
+            }
+
+            setErrorMessage(sb.toString());
         }
     }
 
