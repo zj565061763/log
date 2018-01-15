@@ -3,17 +3,18 @@ package com.fanwe.log;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fanwe.lib.log.FLogFormatter;
+import com.fanwe.lib.log.FFileHandler;
 import com.fanwe.lib.log.FLogger;
+import com.fanwe.lib.looper.FLooper;
+import com.fanwe.lib.looper.impl.FSimpleLooper;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
 public class MainActivity extends AppCompatActivity
 {
+    private FLooper mLooper = new FSimpleLooper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,14 +22,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        File file = getExternalFilesDir("flog");
-        String path = file.getAbsolutePath();
-        int limit = 1024 * 1024;
-        int count = 2;
+        String path = FFileHandler.getLogFilePath("testlog", this);
         try
         {
-            Handler handler = new FileHandler(path, limit, count, true);
-            handler.setFormatter(new FLogFormatter());
+            Handler handler = new FFileHandler(path, 1 * FFileHandler.MB, 1, true);
             FLogger.getDefault().addHandler(handler);
         } catch (IOException e)
         {
@@ -36,18 +33,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         FLogger.getDefault().log(Level.INFO, "onCreate");
-
-        String test = null;
-        if (true)
-        {
-            try
-            {
-                test.equals("");
-            } catch (Exception e)
-            {
-                FLogger.getDefault().log(Level.SEVERE, e.toString(), e);
-            }
-        }
     }
 
     @Override
@@ -76,5 +61,6 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         FLogger.getDefault().log(Level.INFO, "onDestroy");
+        mLooper.stop();
     }
 }
