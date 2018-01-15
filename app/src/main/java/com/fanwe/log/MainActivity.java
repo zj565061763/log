@@ -3,6 +3,7 @@ package com.fanwe.log;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.fanwe.lib.log.FLogFormatter;
 import com.fanwe.lib.log.FLogger;
 
 import java.io.File;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.SimpleFormatter;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
         try
         {
             Handler handler = new FileHandler(path, limit, count, true);
-            handler.setFormatter(new SimpleFormatter());
+            handler.setFormatter(new FLogFormatter());
             FLogger.get().addHandler(handler);
         } catch (IOException e)
         {
@@ -36,6 +36,18 @@ public class MainActivity extends AppCompatActivity
         }
 
         FLogger.get().log(Level.INFO, "onCreate");
+
+        String test = null;
+        if (true)
+        {
+            try
+            {
+                test.equals("");
+            } catch (Exception e)
+            {
+                FLogger.get().log(Level.SEVERE, e.toString(), e);
+            }
+        }
     }
 
     @Override
