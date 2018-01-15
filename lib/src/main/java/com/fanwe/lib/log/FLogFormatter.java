@@ -7,9 +7,6 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-/**
- * Created by Administrator on 2018/1/15.
- */
 public class FLogFormatter extends Formatter
 {
     private final Date mDate = new Date();
