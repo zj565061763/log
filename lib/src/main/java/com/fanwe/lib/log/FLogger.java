@@ -8,16 +8,19 @@ import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final String DEFAULT_NAME = FLogger.class.getSimpleName();
-
+    private static final String DEFAULT_NAME = "FLogger";
     public static final Map<String, Logger> MAP_LOGGER = new HashMap<>();
 
-    public static Logger getDefault()
+    protected FLogger()
+    {
+    }
+
+    public final static Logger getDefault()
     {
         return get(DEFAULT_NAME);
     }
 
-    public synchronized static Logger get(String name)
+    public final synchronized static Logger get(String name)
     {
         if (TextUtils.isEmpty(name))
         {
@@ -37,7 +40,7 @@ public class FLogger
      *
      * @param logger
      */
-    public synchronized static void remove(Logger logger)
+    public final synchronized static void remove(Logger logger)
     {
         final String name = logger.getName();
         if (TextUtils.isEmpty(name))
