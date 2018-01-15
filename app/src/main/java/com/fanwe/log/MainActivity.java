@@ -29,13 +29,13 @@ public class MainActivity extends AppCompatActivity
         {
             Handler handler = new FileHandler(path, limit, count, true);
             handler.setFormatter(new FLogFormatter());
-            FLogger.get().addHandler(handler);
+            FLogger.getDefault().addHandler(handler);
         } catch (IOException e)
         {
             e.printStackTrace();
         }
 
-        FLogger.get().log(Level.INFO, "onCreate");
+        FLogger.getDefault().log(Level.INFO, "onCreate");
 
         String test = null;
         if (true)
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
                 test.equals("");
             } catch (Exception e)
             {
-                FLogger.get().log(Level.SEVERE, e.toString(), e);
+                FLogger.getDefault().log(Level.SEVERE, e.toString(), e);
             }
         }
     }
@@ -54,27 +54,27 @@ public class MainActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        FLogger.get().log(Level.INFO, "onResume");
+        FLogger.getDefault().log(Level.INFO, "onResume");
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
-        FLogger.get().log(Level.INFO, "onPause");
+        FLogger.getDefault().log(Level.INFO, "onPause");
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
-        FLogger.get().log(Level.INFO, "onStop");
+        FLogger.getDefault().log(Level.INFO, "onStop");
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        FLogger.get().log(Level.INFO, "onDestroy");
+        FLogger.getDefault().log(Level.INFO, "onDestroy");
     }
 }

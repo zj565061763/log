@@ -8,13 +8,13 @@ import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final String TAG = FLogger.class.getSimpleName();
+    private static final String DEFAULT_NAME = FLogger.class.getSimpleName();
 
     public static final Map<String, Logger> MAP_LOGGER = new HashMap<>();
 
-    public static Logger get()
+    public static Logger getDefault()
     {
-        return get(TAG);
+        return get(DEFAULT_NAME);
     }
 
     public static Logger get(String name)
