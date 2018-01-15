@@ -17,7 +17,7 @@ public class FLogger
         return get(DEFAULT_NAME);
     }
 
-    public static Logger get(String name)
+    public synchronized static Logger get(String name)
     {
         if (TextUtils.isEmpty(name))
         {
@@ -37,7 +37,7 @@ public class FLogger
      *
      * @param logger
      */
-    public static void remove(Logger logger)
+    public synchronized static void remove(Logger logger)
     {
         final String name = logger.getName();
         if (TextUtils.isEmpty(name))
