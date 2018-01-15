@@ -3,7 +3,6 @@ package com.fanwe.log;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fanwe.lib.log.FFileHandler;
 import com.fanwe.lib.log.FLogger;
 import com.fanwe.lib.looper.FLooper;
 import com.fanwe.lib.looper.impl.FSimpleLooper;
@@ -22,10 +21,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String path = FFileHandler.getLogFilePath("testlog", this);
         try
         {
-            Handler handler = new FFileHandler(path, 1 * FFileHandler.MB, 1, true);
+            Handler handler = new DefaultFileHandler(this);
             FLogger.get().addHandler(handler);
         } catch (IOException e)
         {
