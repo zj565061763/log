@@ -1,6 +1,7 @@
 package com.fanwe.lib.log;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ public class FFileHandler extends FileHandler
 {
     public static final int KB = 1024;
     public static final int MB = 1024 * KB;
+    public static final String DEFAULT_DIR_NAME = "flog";
 
     public FFileHandler() throws IOException, SecurityException
     {
@@ -40,6 +42,35 @@ public class FFileHandler extends FileHandler
         init();
     }
 
+    // add
+
+    /**
+     * @param limit   log文件大小
+     * @param context
+     * @throws IOException
+     */
+    public FFileHandler(int limit, Context context) throws IOException
+    {
+        this(getLogFilePath(DEFAULT_DIR_NAME, context),
+                limit,
+                1,
+                true);
+    }
+
+    /**
+     * @param fileName log文件名
+     * @param limit    log文件大小
+     * @param context
+     * @throws IOException
+     */
+    public FFileHandler(String fileName, int limit, Context context) throws IOException
+    {
+        this(getLogFilePath(fileName, context),
+                limit,
+                1,
+                true);
+    }
+
     private void init()
     {
         setFormatter(new FLogFormatter());
@@ -47,11 +78,15 @@ public class FFileHandler extends FileHandler
 
     public static String getLogFilePath(String fileName, Context context)
     {
-        final String logDirName = "flog";
-        File dir = context.getExternalFilesDir(logDirName);
+        if (TextUtils.isEmpty(fileName))
+        {
+            return null;
+        }
+
+        File dir = context.getExternalFilesDir(DEFAULT_DIR_NAME);
         if (dir == null)
         {
-            dir = new File(context.getFilesDir(), logDirName);
+            dir = new File(context.getFilesDir(), DEFAULT_DIR_NAME);
         }
 
         if (dir.exists() || dir.mkdirs())
