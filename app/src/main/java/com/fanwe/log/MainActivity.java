@@ -26,41 +26,41 @@ public class MainActivity extends AppCompatActivity
         try
         {
             Handler handler = new FFileHandler(path, 1 * FFileHandler.MB, 1, true);
-            FLogger.getDefault().addHandler(handler);
+            FLogger.get().addHandler(handler);
         } catch (IOException e)
         {
             e.printStackTrace();
         }
 
-        FLogger.getDefault().log(Level.INFO, "onCreate");
+        FLogger.get().log(Level.INFO, "onCreate");
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        FLogger.getDefault().log(Level.INFO, "onResume");
+        FLogger.get().log(Level.INFO, "onResume");
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
-        FLogger.getDefault().log(Level.INFO, "onPause");
+        FLogger.get().log(Level.INFO, "onPause");
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
-        FLogger.getDefault().log(Level.INFO, "onStop");
+        FLogger.get().log(Level.INFO, "onStop");
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        FLogger.getDefault().log(Level.INFO, "onDestroy");
+        FLogger.get().log(Level.INFO, "onDestroy");
         mLooper.stop();
     }
 }

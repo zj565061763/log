@@ -15,7 +15,7 @@ public class FLogger
     {
     }
 
-    public final static Logger getDefault()
+    public static Logger get()
     {
         return get(DEFAULT_NAME);
     }
