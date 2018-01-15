@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final String DEFAULT_NAME = "FLogger";
+    private static final String DEFAULT_NAME = FLogger.class.getSimpleName();
     private static final Map<String, Logger> MAP_LOGGER = new HashMap<>();
 
     protected FLogger()
