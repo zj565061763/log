@@ -45,19 +45,6 @@ public class FFileHandler extends FileHandler
     // add
 
     /**
-     * @param limit   log文件大小
-     * @param context
-     * @throws IOException
-     */
-    public FFileHandler(int limit, Context context) throws IOException
-    {
-        this(getLogFilePath(DEFAULT_DIR_NAME, context),
-                limit,
-                1,
-                true);
-    }
-
-    /**
      * @param fileName log文件名
      * @param limit    log文件大小
      * @param context
