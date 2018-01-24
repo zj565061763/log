@@ -11,7 +11,7 @@ public class FLogFormatter extends Formatter
 {
     private final Date mDate = new Date();
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private StringBuilder mStringBuilder = new StringBuilder();
+    private final StringBuilder mStringBuilder = new StringBuilder();
 
     private void clearStringBuilder()
     {

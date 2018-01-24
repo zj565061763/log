@@ -12,18 +12,28 @@ import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final String DEFAULT_NAME = FLogger.class.getSimpleName();
     private static final Map<String, Logger> MAP_LOGGER = new HashMap<>();
 
     protected FLogger()
     {
     }
 
+    /**
+     * 返回默认的Logger对象(名字为FLogger)
+     *
+     * @return
+     */
     public static Logger get()
     {
-        return get(DEFAULT_NAME);
+        return get(FLogger.class.getSimpleName());
     }
 
+    /**
+     * 返回某个名字对应的Logger对象
+     *
+     * @param name
+     * @return
+     */
     public final synchronized static Logger get(String name)
     {
         if (TextUtils.isEmpty(name))
@@ -54,7 +64,9 @@ public class FLogger
         MAP_LOGGER.remove(name);
     }
 
-    public final static List<Handler> getHandlers(Logger logger)
+    //---------- utils start ----------
+
+    private final static List<Handler> getHandlers(Logger logger)
     {
         if (logger == null)
         {
@@ -89,4 +101,6 @@ public class FLogger
             }
         }
     }
+
+    //---------- utils end ----------
 }
