@@ -15,6 +15,7 @@ import java.util.logging.Level;
 public class MainActivity extends AppCompatActivity
 {
     private FLooper mLooper = new FSimpleLooper();
+    private long mCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,28 +32,15 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        FLogger.get().log(Level.INFO, "onCreate");
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        FLogger.get().log(Level.INFO, "onResume");
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        FLogger.get().log(Level.INFO, "onPause");
-    }
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        FLogger.get().log(Level.INFO, "onStop");
+        mLooper.start(1, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mCount++;
+                FLogger.get().log(Level.INFO, "loop count:" + mCount);
+            }
+        });
     }
 
     @Override
