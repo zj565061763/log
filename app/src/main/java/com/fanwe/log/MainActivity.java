@@ -32,7 +32,8 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        mLooper.start(10, new Runnable()
+        mLooper.setInterval(10);
+        mLooper.start(new Runnable()
         {
             @Override
             public void run()
