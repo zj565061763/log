@@ -66,15 +66,11 @@ public class FFileHandler extends FileHandler
     public static String getLogFilePath(String fileName, Context context)
     {
         if (TextUtils.isEmpty(fileName))
-        {
             return null;
-        }
 
         File dir = context.getExternalFilesDir(DEFAULT_DIR_NAME);
         if (dir == null)
-        {
             dir = new File(context.getFilesDir(), DEFAULT_DIR_NAME);
-        }
 
         if (dir.exists() || dir.mkdirs())
         {
