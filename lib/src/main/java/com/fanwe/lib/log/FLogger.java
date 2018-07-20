@@ -2,10 +2,7 @@ package com.fanwe.lib.log;
 
 import android.text.TextUtils;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
@@ -25,7 +22,7 @@ public class FLogger
      */
     public static Logger get()
     {
-        return get(FLogger.class.getSimpleName());
+        return get(FLogger.class.getName());
     }
 
     /**
@@ -37,9 +34,8 @@ public class FLogger
     public final synchronized static Logger get(String name)
     {
         if (TextUtils.isEmpty(name))
-        {
             return null;
-        }
+
         Logger logger = MAP_LOGGER.get(name);
         if (logger == null)
         {
@@ -56,49 +52,26 @@ public class FLogger
      */
     public final synchronized static void remove(Logger logger)
     {
-        final String name = logger.getName();
-        if (TextUtils.isEmpty(name))
-        {
+        if (logger == null)
             return;
-        }
-        MAP_LOGGER.remove(name);
+
+        MAP_LOGGER.remove(logger.getName());
     }
 
     //---------- utils start ----------
 
-    private final static List<Handler> getHandlers(Logger logger)
-    {
-        if (logger == null)
-        {
-            return null;
-        }
-        Handler[] handlers = logger.getHandlers();
-        if (handlers == null || handlers.length <= 0)
-        {
-            return null;
-        }
-        return Arrays.asList(handlers);
-    }
-
     public final static void removeHandler(Class<?> clazz, Logger logger)
     {
-        if (clazz == null)
-        {
+        if (clazz == null || logger == null)
             return;
-        }
-        List<Handler> listHandler = getHandlers(logger);
-        if (listHandler == null)
-        {
+
+        final Handler[] handlers = logger.getHandlers();
+        if (handlers == null || handlers.length <= 0)
             return;
-        }
-        Iterator<Handler> it = listHandler.iterator();
-        while (it.hasNext())
+
+        for (Handler item : handlers)
         {
-            Handler item = it.next();
-            if (item.getClass() == clazz)
-            {
-                logger.removeHandler(item);
-            }
+            logger.removeHandler(item);
         }
     }
 
