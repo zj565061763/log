@@ -12,6 +12,13 @@ public class FFileHandler extends FileHandler
     public static final int MB = 1024 * 1024;
     public static final String DEFAULT_DIR_NAME = "flog";
 
+    public FFileHandler(Context context) throws IOException, SecurityException
+    {
+        this(context.getPackageName(),
+                100 * MB,
+                context);
+    }
+
     public FFileHandler(int limit, Context context) throws IOException, SecurityException
     {
         this(context.getPackageName(),
