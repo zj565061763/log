@@ -13,29 +13,22 @@ public class FLogFormatter extends Formatter
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private final StringBuilder mStringBuilder = new StringBuilder();
 
-    private void clearStringBuilder()
-    {
-        if (mStringBuilder.length() > 0)
-        {
-            mStringBuilder.delete(0, mStringBuilder.length());
-        }
-    }
-
     @Override
     public String format(LogRecord record)
     {
-        clearStringBuilder();
+        if (mStringBuilder.length() > 0)
+            mStringBuilder.delete(0, mStringBuilder.length());
 
         mDate.setTime(record.getMillis());
-        String date = mDateFormat.format(mDate);
+        final String date = mDateFormat.format(mDate);
 
-        String message = formatMessage(record);
+        final String message = formatMessage(record);
 
         String throwable = "";
         if (record.getThrown() != null)
         {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
+            final StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
             pw.println();
             record.getThrown().printStackTrace(pw);
             pw.close();
