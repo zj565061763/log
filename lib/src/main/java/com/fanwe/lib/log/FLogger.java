@@ -1,7 +1,6 @@
 package com.fanwe.lib.log;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,51 +10,57 @@ import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final Map<String, FLogger> MAP_LOGGER = new HashMap<>();
+    private static final Map<Class<?>, FLogger> MAP_LOGGER = new HashMap<>();
     private final Logger mLogger;
     private Handler mDefaultHandler;
 
-    protected FLogger(Logger logger)
+    private FLogger(Logger logger)
     {
         if (logger == null)
             throw new NullPointerException("logger is null");
         mLogger = logger;
     }
 
-    /**
-     * 返回默认的对象(名字为FLogger)
-     *
-     * @return
-     */
-    public static FLogger get()
+    protected FLogger()
     {
-        return get(FLogger.class.getSimpleName());
+        this(null);
     }
 
     /**
-     * 返回某个名字对应的Logger对象
+     * 返回默认的对象
      *
-     * @param name
      * @return
      */
-    public final static FLogger get(String name)
+    public final static FLogger get()
     {
-        if (TextUtils.isEmpty(name))
-            return null;
+        return get(FLogger.class);
+    }
+
+    /**
+     * 返回指定的对象
+     *
+     * @param clazz
+     * @return
+     */
+    public final static <T extends FLogger> FLogger get(Class<T> clazz)
+    {
+        if (clazz == null)
+            throw new NullPointerException("clazz is null");
 
         synchronized (MAP_LOGGER)
         {
-            FLogger logger = MAP_LOGGER.get(name);
+            FLogger logger = MAP_LOGGER.get(clazz);
             if (logger == null)
             {
+                final String name = clazz.getName();
                 logger = new FLogger(Logger.getLogger(name));
-                MAP_LOGGER.put(name, logger);
+                MAP_LOGGER.put(clazz, logger);
             }
             return logger;
         }
     }
 
-    public final String getName()
+    private String getName()
     {
         return mLogger.getName();
     }
@@ -85,6 +90,8 @@ public class FLogger
         removeHandlers(mLogger);
         if (context != null)
             mLogger.addHandler(getDefaultHandler(context));
+        else
+            mDefaultHandler = null;
     }
 
     /**
