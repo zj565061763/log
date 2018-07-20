@@ -9,53 +9,31 @@ import java.util.logging.FileHandler;
 
 public class FFileHandler extends FileHandler
 {
-    public static final int KB = 1024;
-    public static final int MB = 1024 * KB;
+    public static final int MB = 1024 * 1024;
     public static final String DEFAULT_DIR_NAME = "flog";
 
-    public FFileHandler() throws IOException, SecurityException
+    public FFileHandler(int limit, Context context) throws IOException, SecurityException
     {
-        init();
+        this(context.getPackageName(),
+                limit,
+                context);
     }
-
-    public FFileHandler(String pattern) throws IOException, SecurityException
-    {
-        super(pattern);
-        init();
-    }
-
-    public FFileHandler(String pattern, boolean append) throws IOException, SecurityException
-    {
-        super(pattern, append);
-        init();
-    }
-
-    public FFileHandler(String pattern, int limit, int count) throws IOException, SecurityException
-    {
-        super(pattern, limit, count);
-        init();
-    }
-
-    public FFileHandler(String pattern, int limit, int count, boolean append) throws IOException, SecurityException
-    {
-        super(pattern, limit, count, append);
-        init();
-    }
-
-    // add
 
     /**
      * @param fileName log文件名
      * @param limit    log文件大小
      * @param context
      * @throws IOException
+     * @throws SecurityException
      */
-    public FFileHandler(String fileName, int limit, Context context) throws IOException
+    public FFileHandler(String fileName, int limit, Context context) throws IOException, SecurityException
     {
-        this(getLogFilePath(fileName, context),
+        super(getLogFilePath(fileName, context),
                 limit,
                 1,
                 true);
+
+        init();
     }
 
     private void init()
