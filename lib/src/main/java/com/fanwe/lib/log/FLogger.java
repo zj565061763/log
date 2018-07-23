@@ -3,15 +3,17 @@ package com.fanwe.lib.log;
 import android.content.Context;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
+    private static final Map<FLogger, Object> MAP_LOGGER = new WeakHashMap<>();
     private static Level sGlobalLevel;
+
+    private static final FLogger INSTANCE = new FLogger();
 
     private final Logger mLogger;
     private FFileHandler mFileHandler;
@@ -19,10 +21,10 @@ public class FLogger
 
     protected FLogger()
     {
-        final String name = getClass().getName();
-        mLogger = Logger.getLogger(name);
-
+        mLogger = Logger.getLogger(getClass().getName());
         setLevel(sGlobalLevel);
+
+        MAP_LOGGER.put(this, 0);
     }
 
     /**
@@ -32,33 +34,7 @@ public class FLogger
      */
     public static FLogger get()
     {
-        return get(FLogger.class);
-    }
-
-    /**
-     * 返回指定的对象
-     *
-     * @param clazz
-     * @return
-     */
-    protected static final <T extends FLogger> T get(Class<T> clazz)
-    {
-        if (clazz == null)
-            throw new NullPointerException("clazz is null");
-
-        FLogger logger = MAP_LOGGER.get(clazz);
-        if (logger == null)
-        {
-            try
-            {
-                logger = clazz.newInstance();
-                MAP_LOGGER.put(clazz, logger);
-            } catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        return (T) logger;
+        return INSTANCE;
     }
 
     /**
@@ -68,9 +44,9 @@ public class FLogger
      */
     public static final void setGlobalLevel(Level level)
     {
-        for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+        for (Map.Entry<FLogger, Object> item : MAP_LOGGER.entrySet())
         {
-            item.getValue().setLevel(level);
+            item.getKey().setLevel(level);
         }
         sGlobalLevel = level;
     }
@@ -80,9 +56,9 @@ public class FLogger
      */
     public static final void deleteAllLogFile()
     {
-        for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+        for (Map.Entry<FLogger, Object> item : MAP_LOGGER.entrySet())
         {
-            item.getValue().deleteLogFile();
+            item.getKey().deleteLogFile();
         }
     }
 
@@ -131,14 +107,6 @@ public class FLogger
     {
         if (mFileHandler != null)
             mFileHandler.deleteLogFile();
-    }
-
-    /**
-     * 移除当前对象
-     */
-    public final void remove()
-    {
-        MAP_LOGGER.remove(this);
     }
 
     //---------- log start ----------
