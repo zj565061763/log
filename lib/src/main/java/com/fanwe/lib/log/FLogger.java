@@ -31,7 +31,7 @@ public class FLogger
      *
      * @return
      */
-    public final static FLogger get()
+    public static final FLogger get()
     {
         return get(FLogger.class);
     }
@@ -42,7 +42,7 @@ public class FLogger
      * @param clazz
      * @return
      */
-    public final static <T extends FLogger> FLogger get(Class<T> clazz)
+    public static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)
             throw new NullPointerException("clazz is null");
@@ -57,6 +57,38 @@ public class FLogger
                 MAP_LOGGER.put(clazz, logger);
             }
             return logger;
+        }
+    }
+
+    /**
+     * 设置全局是否打开日志缓存到文件的功能，仅当次调用的时候有效，对象可以调用{@link #setLogFileEnable(Context)}覆盖此方法的设置
+     *
+     * @param context
+     */
+    public static final void setGlobalLogFileEnable(Context context)
+    {
+        synchronized (MAP_LOGGER)
+        {
+            for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+            {
+                item.getValue().setLogFileEnable(context);
+            }
+        }
+    }
+
+    /**
+     * 设置全局日志输出等级，仅当次调用的时候有效，对象可以调用{@link #setLevel(Level)}覆盖此方法的设置
+     *
+     * @param level
+     */
+    public static final void setGlobalLevel(Level level)
+    {
+        synchronized (MAP_LOGGER)
+        {
+            for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+            {
+                item.getValue().setLevel(level);
+            }
         }
     }
 
@@ -95,7 +127,7 @@ public class FLogger
     }
 
     /**
-     * 设置日志等级
+     * 设置日志输出等级，小于设置等级的将不会被输出
      *
      * @param level
      */
