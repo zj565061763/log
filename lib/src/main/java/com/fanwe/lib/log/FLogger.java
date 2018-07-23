@@ -2,15 +2,15 @@ package com.fanwe.lib.log;
 
 import android.content.Context;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FLogger
 {
-    private static final Map<Class<?>, FLogger> MAP_LOGGER = new HashMap<>();
+    private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static Level sGlobalLevel;
 
     private final Logger mLogger;
@@ -49,19 +49,16 @@ public class FLogger
         if (clazz == null)
             throw new NullPointerException("clazz is null");
 
-        synchronized (MAP_LOGGER)
+        FLogger logger = MAP_LOGGER.get(clazz);
+        if (logger == null)
         {
-            FLogger logger = MAP_LOGGER.get(clazz);
-            if (logger == null)
-            {
-                final String name = clazz.getName();
-                logger = new FLogger(Logger.getLogger(name));
-                logger.setLevel(sGlobalLevel);
+            final String name = clazz.getName();
+            logger = new FLogger(Logger.getLogger(name));
+            logger.setLevel(sGlobalLevel);
 
-                MAP_LOGGER.put(clazz, logger);
-            }
-            return logger;
+            MAP_LOGGER.put(clazz, logger);
         }
+        return logger;
     }
 
     /**
@@ -71,13 +68,21 @@ public class FLogger
      */
     public static final void setGlobalLevel(Level level)
     {
-        synchronized (MAP_LOGGER)
+        for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
         {
-            for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
-            {
-                item.getValue().setLevel(level);
-            }
-            sGlobalLevel = level;
+            item.getValue().setLevel(level);
+        }
+        sGlobalLevel = level;
+    }
+
+    /**
+     * 删除所有日志文件
+     */
+    public static final void deleteAllLogFile()
+    {
+        for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+        {
+            item.getValue().deleteLogFile();
         }
     }
 
@@ -114,23 +119,20 @@ public class FLogger
     }
 
     /**
+     * 删除日志文件
+     */
+    public final void deleteLogFile()
+    {
+        if (mFileHandler != null)
+            mFileHandler.deleteLogFile();
+    }
+
+    /**
      * 移除当前对象
      */
     public final void remove()
     {
-        synchronized (MAP_LOGGER)
-        {
-            MAP_LOGGER.remove(this);
-        }
-    }
-
-    /**
-     * 删除日志文件
-     */
-    public final void removeLogFile()
-    {
-        if (mFileHandler != null)
-            mFileHandler.deleteLogFile();
+        MAP_LOGGER.remove(this);
     }
 
     //---------- log start ----------
