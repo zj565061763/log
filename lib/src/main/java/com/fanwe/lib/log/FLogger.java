@@ -14,7 +14,7 @@ public class FLogger
     private static Level sGlobalLevel;
 
     private final Logger mLogger;
-    private Handler mDefaultHandler;
+    private FFileHandler mFileHandler;
 
     private FLogger(Logger logger)
     {
@@ -96,15 +96,15 @@ public class FLogger
         if (context == null)
         {
             removeHandlers(mLogger);
-            mDefaultHandler = null;
+            mFileHandler = null;
         } else
         {
-            if (mDefaultHandler == null)
+            if (mFileHandler == null)
             {
                 try
                 {
-                    mDefaultHandler = new FFileHandler(mLogger.getName() + ".log", 100 * FFileHandler.MB, context);
-                    mLogger.addHandler(mDefaultHandler);
+                    mFileHandler = new FFileHandler(mLogger.getName() + ".log", 100 * FFileHandler.MB, context);
+                    mLogger.addHandler(mFileHandler);
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -122,6 +122,15 @@ public class FLogger
         {
             MAP_LOGGER.remove(this);
         }
+    }
+
+    /**
+     * 删除日志文件
+     */
+    public final void removeLogFile()
+    {
+        if (mFileHandler != null)
+            mFileHandler.deleteLogFile();
     }
 
     //---------- log start ----------
