@@ -8,7 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FLogger
+public class FLogger<T extends FLogger>
 {
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static Level sGlobalLevel;
@@ -16,11 +16,15 @@ public class FLogger
     private final Logger mLogger;
     private FFileHandler mFileHandler;
 
-    private FLogger(Logger logger)
+    private FLogger(Class<T> clazz)
     {
-        if (logger == null)
+        if (clazz == null)
             throw new NullPointerException("logger is null");
-        mLogger = logger;
+
+        final String name = clazz.getName();
+        mLogger = Logger.getLogger(name);
+
+        setLevel(sGlobalLevel);
     }
 
     protected FLogger()
@@ -52,10 +56,7 @@ public class FLogger
         FLogger logger = MAP_LOGGER.get(clazz);
         if (logger == null)
         {
-            final String name = clazz.getName();
-            logger = new FLogger(Logger.getLogger(name));
-            logger.setLevel(sGlobalLevel);
-
+            logger = new FLogger(clazz);
             MAP_LOGGER.put(clazz, logger);
         }
         return logger;
