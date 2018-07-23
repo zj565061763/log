@@ -44,7 +44,7 @@ public class FLogger
      * @param clazz
      * @return
      */
-    public static final <T extends FLogger> FLogger get(Class<T> clazz)
+    protected static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)
             throw new NullPointerException("clazz is null");
