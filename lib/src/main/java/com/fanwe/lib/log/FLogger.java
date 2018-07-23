@@ -136,11 +136,6 @@ public class FLogger
 
     //---------- log start ----------
 
-    public final void log(Level level, String msg)
-    {
-        mLogger.log(level, msg);
-    }
-
     public final void info(String msg)
     {
         mLogger.info(msg);
