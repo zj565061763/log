@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 public class FLogger
 {
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new HashMap<>();
+    private static Level sGlobalLevel;
+
     private final Logger mLogger;
     private Handler mDefaultHandler;
 
@@ -54,6 +56,8 @@ public class FLogger
             {
                 final String name = clazz.getName();
                 logger = new FLogger(Logger.getLogger(name));
+                logger.setLevel(sGlobalLevel);
+
                 MAP_LOGGER.put(clazz, logger);
             }
             return logger;
@@ -61,23 +65,7 @@ public class FLogger
     }
 
     /**
-     * 设置全局是否打开日志缓存到文件的功能，仅当次调用的时候有效，对象可以调用{@link #setLogFileEnable(Context)}覆盖此方法的设置
-     *
-     * @param context
-     */
-    public static final void setGlobalLogFileEnable(Context context)
-    {
-        synchronized (MAP_LOGGER)
-        {
-            for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
-            {
-                item.getValue().setLogFileEnable(context);
-            }
-        }
-    }
-
-    /**
-     * 设置全局日志输出等级，仅当次调用的时候有效，对象可以调用{@link #setLevel(Level)}覆盖此方法的设置
+     * 设置全局日志输出等级，小于设置等级的将不会被输出
      *
      * @param level
      */
@@ -89,7 +77,13 @@ public class FLogger
             {
                 item.getValue().setLevel(level);
             }
+            sGlobalLevel = level;
         }
+    }
+
+    private void setLevel(Level level)
+    {
+        mLogger.setLevel(level);
     }
 
     /**
@@ -117,16 +111,6 @@ public class FLogger
                 }
             }
         }
-    }
-
-    /**
-     * 设置日志输出等级，小于设置等级的将不会被输出
-     *
-     * @param level
-     */
-    public final void setLevel(Level level)
-    {
-        mLogger.setLevel(level);
     }
 
     /**
