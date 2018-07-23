@@ -19,7 +19,7 @@ public class FLogger<T extends FLogger>
     private FLogger(Class<T> clazz)
     {
         if (clazz == null)
-            throw new NullPointerException("logger is null");
+            throw new NullPointerException("clazz is null");
 
         final String name = clazz.getName();
         mLogger = Logger.getLogger(name);
