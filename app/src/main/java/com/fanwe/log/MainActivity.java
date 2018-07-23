@@ -9,7 +9,7 @@ import com.fanwe.lib.looper.impl.FSimpleLooper;
 
 public class MainActivity extends AppCompatActivity
 {
-    private FLooper mLooper = new FSimpleLooper();
+    private final FLooper mLooper = new FSimpleLooper();
     private long mCount;
 
     @Override
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FLogger.get().setLogFileEnable(this);
+        FLogger.get().setLogFile(50, this);
 
         mLooper.setInterval(1000);
         mLooper.start(new Runnable()

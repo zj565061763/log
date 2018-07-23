@@ -7,14 +7,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 
-public class FFileHandler extends FileHandler
+class SimpleFileHandler extends FileHandler
 {
-    public FFileHandler(Context context) throws IOException, SecurityException
+    public SimpleFileHandler(Context context) throws IOException, SecurityException
     {
         this(100 * MB, context);
     }
 
-    public FFileHandler(int limit, Context context) throws IOException, SecurityException
+    public SimpleFileHandler(int limit, Context context) throws IOException, SecurityException
     {
         this(context.getPackageName(), limit, context);
     }
@@ -26,7 +26,7 @@ public class FFileHandler extends FileHandler
      * @throws IOException
      * @throws SecurityException
      */
-    public FFileHandler(String filename, int limit, Context context) throws IOException, SecurityException
+    public SimpleFileHandler(String filename, int limit, Context context) throws IOException, SecurityException
     {
         super(getLogFilePath(filename, context), limit, 1, true);
 
@@ -46,7 +46,7 @@ public class FFileHandler extends FileHandler
 
     private void init()
     {
-        setFormatter(new FLogFormatter());
+        setFormatter(new SimpleLogFormatter());
     }
 
     /**
