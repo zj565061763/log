@@ -31,7 +31,7 @@ public class FLogger
      *
      * @return
      */
-    public static final FLogger get()
+    public static FLogger get()
     {
         return get(FLogger.class);
     }
