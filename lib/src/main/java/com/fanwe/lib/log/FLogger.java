@@ -15,6 +15,7 @@ public class FLogger
 
     private final Logger mLogger;
     private FFileHandler mFileHandler;
+    private int mLogFileLimit;
 
     protected FLogger()
     {
@@ -91,23 +92,29 @@ public class FLogger
     }
 
     /**
-     * 设置是否打开日志缓存到文件的功能
+     * 设置日志缓存文件大小
      *
-     * @param context null-关闭，不为null-打开
+     * @param limit   小于等于0-关闭文件缓存；大于0开启文件缓存(单位MB)
+     * @param context
      */
-    public final void setLogFileEnable(Context context)
+    public final void setLogFile(int limit, Context context)
     {
-        if (context == null)
+        if (limit <= 0)
         {
             removeHandlers(mLogger);
             mFileHandler = null;
         } else
         {
-            if (mFileHandler == null)
+            if (mFileHandler == null || limit != mLogFileLimit)
             {
+                if (limit > (Integer.MAX_VALUE / FFileHandler.MB))
+                    throw new IllegalArgumentException("too much limit");
                 try
                 {
-                    mFileHandler = new FFileHandler(mLogger.getName() + ".log", 100 * FFileHandler.MB, context);
+                    mLogFileLimit = limit;
+                    mFileHandler = new FFileHandler(mLogger.getName() + ".log", limit * FFileHandler.MB, context);
+
+                    removeHandlers(mLogger);
                     mLogger.addHandler(mFileHandler);
                 } catch (Exception e)
                 {
