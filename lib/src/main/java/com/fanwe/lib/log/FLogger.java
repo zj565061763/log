@@ -92,26 +92,6 @@ public class FLogger
         }
     }
 
-    private String getName()
-    {
-        return mLogger.getName();
-    }
-
-    private Handler getDefaultHandler(Context context)
-    {
-        if (mDefaultHandler == null)
-        {
-            try
-            {
-                mDefaultHandler = new FFileHandler(getName() + ".log", 100 * FFileHandler.MB, context);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        return mDefaultHandler;
-    }
-
     /**
      * 设置是否打开日志缓存到文件的功能
      *
@@ -119,11 +99,24 @@ public class FLogger
      */
     public final void setLogFileEnable(Context context)
     {
-        removeHandlers(mLogger);
-        if (context != null)
-            mLogger.addHandler(getDefaultHandler(context));
-        else
+        if (context == null)
+        {
+            removeHandlers(mLogger);
             mDefaultHandler = null;
+        } else
+        {
+            if (mDefaultHandler == null)
+            {
+                try
+                {
+                    mDefaultHandler = new FFileHandler(mLogger.getName() + ".log", 100 * FFileHandler.MB, context);
+                    mLogger.addHandler(mDefaultHandler);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
