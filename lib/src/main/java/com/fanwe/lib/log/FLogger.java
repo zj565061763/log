@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public abstract class FLogger
 {
     static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
-    static final Map<Class<?>, Object> MAP_TAG = new HashMap<>();
+    static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
     static Level sGlobalLevel;
 
     final Logger mLogger;
