@@ -2,6 +2,7 @@ package com.fanwe.lib.log;
 
 import android.content.Context;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
@@ -11,6 +12,7 @@ import java.util.logging.Logger;
 public abstract class FLogger
 {
     static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
+    static final Map<Class<?>, Object> MAP_TAG = new HashMap<>();
     static Level sGlobalLevel;
 
     final Logger mLogger;
@@ -19,6 +21,12 @@ public abstract class FLogger
 
     protected FLogger()
     {
+        synchronized (MAP_TAG)
+        {
+            if (MAP_TAG.remove(getClass()) == null)
+                throw new RuntimeException("you can not call this constructor");
+        }
+
         mLogger = Logger.getLogger(getClass().getName());
         mLogger.setLevel(sGlobalLevel);
     }
@@ -28,7 +36,7 @@ public abstract class FLogger
      */
     protected abstract void onCreate();
 
-    public static final <T extends FLogger> T get(Class<T> clazz)
+    public static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)
             return null;
@@ -38,7 +46,14 @@ public abstract class FLogger
         {
             try
             {
-                logger = clazz.newInstance();
+                synchronized (MAP_TAG)
+                {
+                    MAP_TAG.put(clazz, clazz);
+                    logger = clazz.newInstance();
+                    if (MAP_TAG.containsKey(clazz))
+                        throw new RuntimeException("you must remove tag from tag map after logger instance created");
+                }
+
                 logger.onCreate();
                 MAP_LOGGER.put(clazz, logger);
             } catch (Exception e)
@@ -46,7 +61,7 @@ public abstract class FLogger
                 throw new RuntimeException(e);
             }
         }
-        return (T) logger;
+        return logger;
     }
 
 
