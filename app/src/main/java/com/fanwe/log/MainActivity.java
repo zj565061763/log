@@ -3,7 +3,7 @@ package com.fanwe.log;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fanwe.lib.log.FLogger;
+import com.fanwe.lib.log.SimpleLogger;
 import com.fanwe.lib.looper.FLooper;
 import com.fanwe.lib.looper.impl.FSimpleLooper;
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FLogger.get(AppLogger.class).setLogFile(50, this);
+        SimpleLogger.get().setLogFile(50, this);
 
         mLooper.setInterval(1000);
         mLooper.start(new Runnable()
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity
             public void run()
             {
                 mCount++;
-                FLogger.get(AppLogger.class).info("loop count:" + mCount);
+                SimpleLogger.get().info("loop count:" + mCount);
             }
         });
     }
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        FLogger.get(AppLogger.class).info("onDestroy");
+        SimpleLogger.get().info("onDestroy");
         mLooper.stop();
     }
 }
