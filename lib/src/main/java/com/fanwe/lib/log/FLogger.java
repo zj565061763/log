@@ -2,6 +2,7 @@ package com.fanwe.lib.log;
 
 import android.content.Context;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -44,8 +45,9 @@ public abstract class FLogger
         if (clazz == null)
             return null;
 
-        FLogger logger = null;
+        releaseIfNeed();
 
+        FLogger logger = null;
         final WeakReference<FLogger> reference = MAP_LOGGER.get(clazz);
         if (reference != null)
         {
@@ -72,6 +74,28 @@ public abstract class FLogger
         }
 
         return logger;
+    }
+
+    private static void releaseIfNeed()
+    {
+        synchronized (FLogger.class)
+        {
+            while (true)
+            {
+                final Reference<? extends FLogger> reference = REFERENCE_QUEUE.poll();
+                if (reference == null)
+                    break;
+
+                for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
+                {
+                    if (item.getValue() == reference)
+                    {
+                        MAP_LOGGER.remove(item.getKey());
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -119,10 +143,9 @@ public abstract class FLogger
             {
                 if (limitMB > (Integer.MAX_VALUE / SimpleFileHandler.MB))
                     throw new IllegalArgumentException("too much limitMB");
+                mLogFileLimit = limitMB;
                 try
                 {
-                    mLogFileLimit = limitMB;
-
                     if (mFileHandler != null)
                         mFileHandler.close();
                     mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
