@@ -42,6 +42,8 @@ public abstract class FLogger
     {
         if (clazz == null)
             return null;
+        if (clazz == FLogger.class)
+            throw new IllegalArgumentException("clazz must not be " + FLogger.class);
 
         releaseIfNeed();
 
