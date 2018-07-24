@@ -2,7 +2,8 @@ package com.fanwe.lib.log;
 
 import android.content.Context;
 
-import java.util.HashMap;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
@@ -11,8 +12,10 @@ import java.util.logging.Logger;
 
 public abstract class FLogger
 {
-    static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
-    static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
+    static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
+    static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
+
+    static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
     static Level sGlobalLevel;
 
     final Logger mLogger;
@@ -41,29 +44,35 @@ public abstract class FLogger
         if (clazz == null)
             return null;
 
-        FLogger logger = MAP_LOGGER.get(clazz);
-        if (logger == null)
-        {
-            try
-            {
-                synchronized (MAP_TAG)
-                {
-                    MAP_TAG.put(clazz, clazz);
-                    logger = clazz.newInstance();
-                    if (MAP_TAG.containsKey(clazz))
-                        throw new RuntimeException("you must remove tag from tag map after logger instance created");
-                }
+        FLogger logger = null;
 
-                logger.onCreate();
-                MAP_LOGGER.put(clazz, logger);
-            } catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
+        final WeakReference<FLogger> reference = MAP_LOGGER.get(clazz);
+        if (reference != null)
+        {
+            logger = reference.get();
+            if (logger != null)
+                return logger;
         }
+
+        try
+        {
+            synchronized (MAP_TAG)
+            {
+                MAP_TAG.put(clazz, clazz);
+                logger = clazz.newInstance();
+                if (MAP_TAG.containsKey(clazz))
+                    throw new RuntimeException("you must remove tag from tag map after logger instance created");
+            }
+
+            logger.onCreate();
+            MAP_LOGGER.put(clazz, new WeakReference<>(logger, REFERENCE_QUEUE));
+        } catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
         return logger;
     }
-
 
     /**
      * 设置全局日志输出等级，小于设置等级的将不会被输出
@@ -85,9 +94,11 @@ public abstract class FLogger
      */
     public static final void deleteAllLogFile()
     {
-        for (Map.Entry<Class<?>, FLogger> item : MAP_LOGGER.entrySet())
+        for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
         {
-            item.getValue().deleteLogFile();
+            final FLogger logger = item.getValue().get();
+            if (logger != null)
+                logger.deleteLogFile();
         }
     }
 
