@@ -8,7 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FLogger
+public abstract class FLogger
 {
     static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     static Level sGlobalLevel;
@@ -23,10 +23,10 @@ public class FLogger
         setLevel(sGlobalLevel);
     }
 
-    public static FLogger get()
-    {
-        return get(FLogger.class);
-    }
+    /**
+     * 日志对象被创建回调
+     */
+    protected abstract void onCreate();
 
     public static final <T extends FLogger> T get(Class<T> clazz)
     {
@@ -39,6 +39,7 @@ public class FLogger
             try
             {
                 logger = clazz.newInstance();
+                logger.onCreate();
                 MAP_LOGGER.put(clazz, logger);
             } catch (Exception e)
             {
