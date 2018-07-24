@@ -11,6 +11,7 @@ public class AppLogger extends FLogger
     @Override
     protected void onCreate()
     {
+        setLogFile(50, App.getInstance());
         Log.i(TAG, "onCreate:" + this);
     }
 }

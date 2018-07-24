@@ -12,8 +12,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FLogger.get(AppLogger.class).setLogFile(50, this);
+        FLogger.get(AppLogger.class).info("onCreate");
     }
 
     @Override
