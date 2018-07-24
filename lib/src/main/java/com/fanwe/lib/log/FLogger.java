@@ -68,12 +68,11 @@ public abstract class FLogger
 
             logger.onCreate();
             MAP_LOGGER.put(clazz, new WeakReference<>(logger, REFERENCE_QUEUE));
+            return logger;
         } catch (Exception e)
         {
             throw new RuntimeException(e);
         }
-
-        return logger;
     }
 
     private static void releaseIfNeed()
