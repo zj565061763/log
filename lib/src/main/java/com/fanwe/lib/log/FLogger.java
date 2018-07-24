@@ -26,11 +26,8 @@ public abstract class FLogger
 
     protected FLogger()
     {
-        synchronized (MAP_TAG)
-        {
-            if (MAP_TAG.remove(getClass()) == null)
-                throw new RuntimeException("you can not call this constructor");
-        }
+        if (MAP_TAG.remove(getClass()) == null)
+            throw new RuntimeException("you can not call this constructor");
 
         mLogger = Logger.getLogger(getClass().getName());
         mLogger.setLevel(sGlobalLevel);
@@ -41,7 +38,7 @@ public abstract class FLogger
      */
     protected abstract void onCreate();
 
-    public static final <T extends FLogger> FLogger get(Class<T> clazz)
+    public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)
             return null;
@@ -59,13 +56,10 @@ public abstract class FLogger
 
         try
         {
-            synchronized (MAP_TAG)
-            {
-                MAP_TAG.put(clazz, clazz);
-                logger = clazz.newInstance();
-                if (MAP_TAG.containsKey(clazz))
-                    throw new RuntimeException("you must remove tag from tag map after logger instance created");
-            }
+            MAP_TAG.put(clazz, clazz);
+            logger = clazz.newInstance();
+            if (MAP_TAG.containsKey(clazz))
+                throw new RuntimeException("you must remove tag from tag map after logger instance created");
 
             logger.onCreate();
             MAP_LOGGER.put(clazz, new WeakReference<>(logger, REFERENCE_QUEUE));
