@@ -5,6 +5,7 @@ import android.content.Context;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
@@ -15,8 +16,8 @@ public abstract class FLogger
 {
     static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
     static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
+    static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
 
-    static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
     static Level sGlobalLevel;
 
     final Logger mLogger;
