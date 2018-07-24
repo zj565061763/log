@@ -122,6 +122,9 @@ public abstract class FLogger
                 try
                 {
                     mLogFileLimit = limitMB;
+
+                    if (mFileHandler != null)
+                        mFileHandler.close();
                     mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
 
                     removeHandlers(mLogger);
