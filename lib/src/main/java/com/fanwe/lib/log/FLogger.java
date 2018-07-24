@@ -113,7 +113,6 @@ public abstract class FLogger
         if (limitMB <= 0)
         {
             removeHandlers(mLogger);
-            mFileHandler = null;
         } else
         {
             if (mFileHandler == null || limitMB != mLogFileLimit)
@@ -150,6 +149,14 @@ public abstract class FLogger
     public final void remove()
     {
         MAP_LOGGER.remove(getClass());
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        if (mFileHandler != null)
+            mFileHandler.close();
     }
 
     //---------- log start ----------
