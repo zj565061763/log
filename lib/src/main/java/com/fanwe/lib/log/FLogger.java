@@ -20,7 +20,7 @@ public abstract class FLogger
     protected FLogger()
     {
         mLogger = Logger.getLogger(getClass().getName());
-        setLevel(sGlobalLevel);
+        mLogger.setLevel(sGlobalLevel);
     }
 
     /**
@@ -74,11 +74,6 @@ public abstract class FLogger
         {
             item.getValue().deleteLogFile();
         }
-    }
-
-    private void setLevel(Level level)
-    {
-        mLogger.setLevel(level);
     }
 
     /**
