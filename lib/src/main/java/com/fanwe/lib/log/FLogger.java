@@ -72,21 +72,18 @@ public abstract class FLogger
 
     private static void releaseIfNeed()
     {
-        synchronized (FLogger.class)
+        while (true)
         {
-            while (true)
-            {
-                final Reference<? extends FLogger> reference = REFERENCE_QUEUE.poll();
-                if (reference == null)
-                    break;
+            final Reference<? extends FLogger> reference = REFERENCE_QUEUE.poll();
+            if (reference == null)
+                break;
 
-                for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
+            for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
+            {
+                if (item.getValue() == reference)
                 {
-                    if (item.getValue() == reference)
-                    {
-                        MAP_LOGGER.remove(item.getKey());
-                        break;
-                    }
+                    MAP_LOGGER.remove(item.getKey());
+                    break;
                 }
             }
         }
