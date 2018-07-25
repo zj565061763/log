@@ -178,7 +178,7 @@ public abstract class FLogger
     /**
      * 关闭日志文件功能
      */
-    public final void closeLogFile()
+    public synchronized final void closeLogFile()
     {
         closeLogFileInternal(false);
     }
@@ -188,7 +188,7 @@ public abstract class FLogger
      *
      * @param open 成功删除关闭后是否重新打开
      */
-    public final void deleteLogFile(boolean open)
+    public synchronized final void deleteLogFile(boolean open)
     {
         if (closeLogFileInternal(true))
         {
@@ -197,7 +197,7 @@ public abstract class FLogger
         }
     }
 
-    private synchronized boolean closeLogFileInternal(boolean delete)
+    private boolean closeLogFileInternal(boolean delete)
     {
         removeHandlers(mLogger);
         if (mFileHandler != null)
