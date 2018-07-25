@@ -9,43 +9,37 @@ import java.util.logging.FileHandler;
 
 class SimpleFileHandler extends FileHandler
 {
-    public SimpleFileHandler(Context context) throws IOException, SecurityException
-    {
-        this(100 * MB, context);
-    }
-
-    public SimpleFileHandler(int limit, Context context) throws IOException, SecurityException
-    {
-        this(context.getPackageName(), limit, context);
-    }
-
-    /**
-     * @param filename log文件名
-     * @param limit    log文件大小
-     * @param context
-     * @throws IOException
-     * @throws SecurityException
-     */
-    public SimpleFileHandler(String filename, int limit, Context context) throws IOException, SecurityException
-    {
-        super(getLogFilePath(filename, context), limit, 1, true);
-
-        if (TextUtils.isEmpty(filename))
-            throw new NullPointerException("filename is null or empty");
-        mFilename = filename;
-        mContext = context.getApplicationContext();
-
-        init();
-    }
-
-    public static final int MB = 1024 * 1024;
-    public static final String DEFAULT_DIR_NAME = "flog";
+    private static final int MB = 1024 * 1024;
+    private static final String DEFAULT_DIR_NAME = "flog";
+    private static final String FILE_SUFFIX = ".log";
 
     private final Context mContext;
     private final String mFilename;
 
-    private void init()
+    /**
+     * @param filename log文件名
+     * @param limitMB  log文件大小限制(单位MB)
+     * @param context
+     * @throws IOException
+     * @throws SecurityException
+     */
+    public SimpleFileHandler(String filename, int limitMB, Context context) throws IOException, SecurityException
     {
+        super(getLogFilePath(filename + FILE_SUFFIX, context), limitMB * MB, 1, true);
+
+        if (TextUtils.isEmpty(filename))
+            throw new NullPointerException("filename is null or empty");
+
+        if (limitMB <= 0)
+            throw new IllegalArgumentException("limitMB must greater than 0");
+
+        final int max = Integer.MAX_VALUE / SimpleFileHandler.MB;
+        if (limitMB > max)
+            throw new IllegalArgumentException("limitMB must less than " + max);
+
+        mFilename = filename + FILE_SUFFIX;
+        mContext = context.getApplicationContext();
+
         setFormatter(new SimpleLogFormatter());
     }
 

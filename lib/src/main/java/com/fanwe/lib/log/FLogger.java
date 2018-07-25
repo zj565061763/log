@@ -153,18 +153,10 @@ public abstract class FLogger
      */
     public synchronized final void openLogFile(int limitMB, Level level, Context context)
     {
-        if (limitMB <= 0)
-            throw new IllegalArgumentException("limitMB must greater than 0");
-
-        final int max = Integer.MAX_VALUE / SimpleFileHandler.MB;
-        if (limitMB > max)
-            throw new IllegalArgumentException("limitMB must less than " + max);
-
         if (level == null)
-            level = Level.ALL;
+            level = Level.INFO;
 
-        if (mFileHandler == null
-                || mLogFileLimit != limitMB || mLogFileLevel != level)
+        if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
             mLogFileLimit = limitMB;
             mLogFileLevel = level;
@@ -173,7 +165,7 @@ public abstract class FLogger
 
             try
             {
-                mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, mContext);
+                mFileHandler = new SimpleFileHandler(mLogger.getName(), limitMB, mContext);
                 mFileHandler.setLevel(level);
 
                 mLogger.addHandler(mFileHandler);
