@@ -18,7 +18,7 @@ public class AppLogger extends FLogger
     protected void onCreate()
     {
         /**
-         * 打开日志文件功能，最大50MB，日志文件位于sdcard/Android/data/包名/files/flog/当前对象的全类名.log
+         * 打开日志文件功能，设置最大50MB，日志文件位于sdcard/Android/data/包名/files/flog/当前对象的全类名.log
          */
         openLogFile(50, App.getInstance());
     }
