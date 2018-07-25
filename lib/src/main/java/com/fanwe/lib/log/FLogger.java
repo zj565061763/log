@@ -25,6 +25,7 @@ public abstract class FLogger
     SimpleFileHandler mFileHandler;
     int mLogFileLimit;
     Level mLogFileLevel;
+    Context mContext;
 
     protected FLogger()
     {
@@ -109,15 +110,17 @@ public abstract class FLogger
     }
 
     /**
-     * 删除所有日志文件
+     * 删除并关闭文件功能
+     *
+     * @param open 成功删除关闭后是否重新打开
      */
-    public static final void deleteAllLogFile()
+    public static final void deleteAllLogFile(boolean open)
     {
         for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
         {
             final FLogger logger = item.getValue().get();
             if (logger != null)
-                logger.deleteLogFile();
+                logger.deleteLogFile(open);
         }
     }
 
@@ -133,7 +136,7 @@ public abstract class FLogger
     }
 
     /**
-     * 打开日志文件
+     * 打开日志文件功能
      *
      * @param limitMB 文件大小限制(单位MB)
      * @param level   记录到文件的最小日志等级，小于指定等级的日志不会记录到文件
@@ -156,11 +159,12 @@ public abstract class FLogger
         {
             mLogFileLimit = limitMB;
             mLogFileLevel = level;
+            mContext = context.getApplicationContext();
             closeLogFile();
 
             try
             {
-                mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
+                mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, mContext);
                 mFileHandler.setLevel(level);
 
                 mLogger.addHandler(mFileHandler);
@@ -172,25 +176,40 @@ public abstract class FLogger
     }
 
     /**
-     * 关闭日志文件
+     * 关闭日志文件功能
      */
-    public synchronized final void closeLogFile()
+    public final void closeLogFile()
+    {
+        closeLogFileInternal(false);
+    }
+
+    /**
+     * 删除并关闭文件功能
+     *
+     * @param open 成功删除关闭后是否重新打开
+     */
+    public final void deleteLogFile(boolean open)
+    {
+        if (closeLogFileInternal(true))
+        {
+            if (open)
+                openLogFile(mLogFileLimit, mLogFileLevel, mContext);
+        }
+    }
+
+    private synchronized boolean closeLogFileInternal(boolean delete)
     {
         removeHandlers(mLogger);
         if (mFileHandler != null)
         {
             mFileHandler.close();
-            mFileHandler = null;
-        }
-    }
+            if (delete)
+                mFileHandler.deleteLogFile();
 
-    /**
-     * 删除日志文件
-     */
-    public synchronized final void deleteLogFile()
-    {
-        if (mFileHandler != null)
-            mFileHandler.deleteLogFile();
+            mFileHandler = null;
+            return true;
+        }
+        return false;
     }
 
     @Override
