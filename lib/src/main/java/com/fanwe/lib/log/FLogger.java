@@ -137,13 +137,11 @@ public abstract class FLogger
         if (mFileHandler == null || limitMB != mLogFileLimit)
         {
             mLogFileLimit = limitMB;
+            closeLogFile();
+
             try
             {
-                if (mFileHandler != null)
-                    mFileHandler.close();
                 mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
-
-                removeHandlers(mLogger);
                 mLogger.addHandler(mFileHandler);
             } catch (Exception e)
             {
@@ -158,6 +156,11 @@ public abstract class FLogger
     public synchronized final void closeLogFile()
     {
         removeHandlers(mLogger);
+        if (mFileHandler != null)
+        {
+            mFileHandler.close();
+            mFileHandler = null;
+        }
     }
 
     /**
@@ -169,20 +172,11 @@ public abstract class FLogger
             mFileHandler.deleteLogFile();
     }
 
-    /**
-     * 移除当前对象
-     */
-    public final void remove()
-    {
-        MAP_LOGGER.remove(getClass());
-    }
-
     @Override
     protected void finalize() throws Throwable
     {
         super.finalize();
-        if (mFileHandler != null)
-            mFileHandler.close();
+        closeLogFile();
     }
 
     //---------- log start ----------
