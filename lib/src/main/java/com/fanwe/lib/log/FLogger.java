@@ -41,6 +41,15 @@ public abstract class FLogger
      */
     protected abstract void onCreate();
 
+    /**
+     * 获得指定的日志类对象
+     * <p>
+     * 内部采用弱引用指向对象，在对象未被回收之前返回的是同一个对象，如果对象已经被回收，则会创建新的对象返回
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)

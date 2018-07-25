@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         /**
-         * FLogger.get(AppLogger.class)得到指定类的日志对象，
-         * 内部采用弱引用指向该对象，在对象未被回收之前用的是同一个对象，如果对象已经被gc回收，则会创建新的对象
+         * FLogger.get(AppLogger.class)获得指定的日志类对象，
+         * 内部采用弱引用指向对象，在对象未被回收之前返回的是同一个对象，如果对象已经被回收，则会创建新的对象返回
          */
         FLogger.get(AppLogger.class).info("onCreate");
     }
