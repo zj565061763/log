@@ -195,6 +195,11 @@ public abstract class FLogger
         mLogger.severe(msg);
     }
 
+    public final void fine(String msg)
+    {
+        mLogger.fine(msg);
+    }
+
     //---------- log end ----------
 
     //---------- utils start ----------
