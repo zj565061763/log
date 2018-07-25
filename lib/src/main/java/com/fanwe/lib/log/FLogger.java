@@ -120,37 +120,44 @@ public abstract class FLogger
     }
 
     /**
-     * 设置日志缓存文件大小
+     * 打开日志文件缓存
      *
      * @param limitMB 小于等于0-关闭文件缓存；大于0开启文件缓存(单位MB)
      * @param context
      */
-    public synchronized final void setLogFile(int limitMB, Context context)
+    public synchronized final void openLogFile(int limitMB, Context context)
     {
         if (limitMB <= 0)
-        {
-            removeHandlers(mLogger);
-        } else
-        {
-            if (mFileHandler == null || limitMB != mLogFileLimit)
-            {
-                if (limitMB > (Integer.MAX_VALUE / SimpleFileHandler.MB))
-                    throw new IllegalArgumentException("too much limitMB");
-                mLogFileLimit = limitMB;
-                try
-                {
-                    if (mFileHandler != null)
-                        mFileHandler.close();
-                    mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
+            throw new IllegalArgumentException("limitMB must greater than 0");
 
-                    removeHandlers(mLogger);
-                    mLogger.addHandler(mFileHandler);
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+        final int max = Integer.MAX_VALUE / SimpleFileHandler.MB;
+        if (limitMB > max)
+            throw new IllegalArgumentException("limitMB must less than " + max);
+
+        if (mFileHandler == null || limitMB != mLogFileLimit)
+        {
+            mLogFileLimit = limitMB;
+            try
+            {
+                if (mFileHandler != null)
+                    mFileHandler.close();
+                mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
+
+                removeHandlers(mLogger);
+                mLogger.addHandler(mFileHandler);
+            } catch (Exception e)
+            {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * 关闭日志文件缓存
+     */
+    public synchronized final void closeLogFile()
+    {
+        removeHandlers(mLogger);
     }
 
     /**
