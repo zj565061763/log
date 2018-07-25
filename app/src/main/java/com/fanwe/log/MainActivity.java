@@ -16,6 +16,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart()
+    {
+        super.onStart();
+        FLogger.get(AppLogger.class).info("onStart");
+    }
+
+    @Override
     protected void onResume()
     {
         super.onResume();
