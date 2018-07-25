@@ -21,8 +21,10 @@ public abstract class FLogger
     static Level sGlobalLevel;
 
     final Logger mLogger;
+
     SimpleFileHandler mFileHandler;
     int mLogFileLimit;
+    Level mLogFileLevel;
 
     protected FLogger()
     {
@@ -120,12 +122,24 @@ public abstract class FLogger
     }
 
     /**
-     * 打开日志文件缓存
+     * {@link #openLogFile(int, Level, Context)}
      *
-     * @param limitMB 小于等于0-关闭文件缓存；大于0开启文件缓存(单位MB)
+     * @param limitMB
      * @param context
      */
-    public synchronized final void openLogFile(int limitMB, Context context)
+    public final void openLogFile(int limitMB, Context context)
+    {
+        openLogFile(limitMB, Level.INFO, context);
+    }
+
+    /**
+     * 打开日志文件
+     *
+     * @param limitMB 文件大小限制(单位MB)
+     * @param level   记录到文件的最小日志等级，小于指定等级的日志不会记录到文件
+     * @param context
+     */
+    public synchronized final void openLogFile(int limitMB, Level level, Context context)
     {
         if (limitMB <= 0)
             throw new IllegalArgumentException("limitMB must greater than 0");
@@ -134,14 +148,21 @@ public abstract class FLogger
         if (limitMB > max)
             throw new IllegalArgumentException("limitMB must less than " + max);
 
-        if (mFileHandler == null || limitMB != mLogFileLimit)
+        if (level == null)
+            level = Level.ALL;
+
+        if (mFileHandler == null
+                || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
             mLogFileLimit = limitMB;
+            mLogFileLevel = level;
             closeLogFile();
 
             try
             {
                 mFileHandler = new SimpleFileHandler(mLogger.getName() + ".log", limitMB * SimpleFileHandler.MB, context);
+                mFileHandler.setLevel(level);
+
                 mLogger.addHandler(mFileHandler);
             } catch (Exception e)
             {
@@ -151,7 +172,7 @@ public abstract class FLogger
     }
 
     /**
-     * 关闭日志文件缓存
+     * 关闭日志文件
      */
     public synchronized final void closeLogFile()
     {
