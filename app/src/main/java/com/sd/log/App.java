@@ -1,4 +1,4 @@
-package com.fanwe.log;
+package com.sd.log;
 
 import android.app.Application;
 

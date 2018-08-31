@@ -1,8 +1,8 @@
-package com.fanwe.log;
+package com.sd.log;
 
 import android.util.Log;
 
-import com.fanwe.lib.log.FLogger;
+import com.sd.lib.log.FLogger;
 
 public class AppLogger extends FLogger
 {

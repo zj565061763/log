@@ -1,9 +1,9 @@
-package com.fanwe.log;
+package com.sd.log;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fanwe.lib.log.FLogger;
+import com.sd.lib.log.FLogger;
 
 public class MainActivity extends AppCompatActivity
 {
