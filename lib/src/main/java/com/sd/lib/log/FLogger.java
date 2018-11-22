@@ -141,7 +141,7 @@ public abstract class FLogger
      */
     public final void openLogFile(int limitMB, Context context)
     {
-        openLogFile(limitMB, Level.INFO, context);
+        openLogFile(limitMB, Level.ALL, context);
     }
 
     /**
@@ -154,7 +154,7 @@ public abstract class FLogger
     public synchronized final void openLogFile(int limitMB, Level level, Context context)
     {
         if (level == null)
-            level = Level.INFO;
+            level = Level.ALL;
 
         if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
@@ -224,17 +224,22 @@ public abstract class FLogger
 
     public final void info(String msg)
     {
-        mLogger.info(msg);
+        mLogger.log(Level.INFO, msg);
     }
 
     public final void warning(String msg)
     {
-        mLogger.warning(msg);
+        mLogger.log(Level.WARNING, msg);
     }
 
     public final void severe(String msg)
     {
-        mLogger.severe(msg);
+        mLogger.log(Level.SEVERE, msg);
+    }
+
+    public final void severe(String msg, Throwable throwable)
+    {
+        mLogger.log(Level.SEVERE, msg, throwable);
     }
 
     //---------- log end ----------
