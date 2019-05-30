@@ -33,7 +33,7 @@ class SimpleFileHandler extends FileHandler
         if (limitMB <= 0)
             throw new IllegalArgumentException("limitMB must greater than 0");
 
-        final int max = Integer.MAX_VALUE / SimpleFileHandler.MB;
+        final int max = Integer.MAX_VALUE / MB;
         if (limitMB > max)
             throw new IllegalArgumentException("limitMB must less than " + max);
 
