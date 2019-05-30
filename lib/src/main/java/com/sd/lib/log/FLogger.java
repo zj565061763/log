@@ -162,9 +162,6 @@ public abstract class FLogger
 
         if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
-            mContext = context.getApplicationContext();
-            mLogFileLimit = limitMB;
-            mLogFileLevel = level;
             closeLogFile();
 
             try
@@ -174,10 +171,16 @@ public abstract class FLogger
                 mFileHandler.setFormatter(mLogFormatter);
 
                 mLogger.addHandler(mFileHandler);
+
+                mContext = context.getApplicationContext();
+                mLogFileLimit = limitMB;
+                mLogFileLevel = level;
             } catch (Exception e)
             {
                 if (e instanceof IllegalArgumentException)
                     throw new RuntimeException(e);
+                else
+                    e.printStackTrace();
             }
         }
     }
