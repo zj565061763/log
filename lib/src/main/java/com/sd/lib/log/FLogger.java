@@ -18,7 +18,7 @@ public abstract class FLogger
     private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
 
-    private static Level sGlobalLevel;
+    private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
 
