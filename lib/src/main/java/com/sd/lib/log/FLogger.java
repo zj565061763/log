@@ -176,7 +176,8 @@ public abstract class FLogger
                 mLogger.addHandler(mFileHandler);
             } catch (Exception e)
             {
-                throw new RuntimeException(e);
+                if (e instanceof IllegalArgumentException)
+                    throw new RuntimeException(e);
             }
         }
     }
