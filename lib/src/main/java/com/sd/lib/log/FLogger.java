@@ -125,21 +125,6 @@ public abstract class FLogger
     }
 
     /**
-     * 删除并关闭文件功能
-     *
-     * @param open 成功删除关闭后是否重新打开
-     */
-    public static final void deleteAllLogFile(boolean open)
-    {
-        for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
-        {
-            final FLogger logger = item.getValue().get();
-            if (logger != null)
-                logger.deleteLogFile(open);
-        }
-    }
-
-    /**
      * {@link #openLogFile(Context, int, Level)}
      *
      * @param context
