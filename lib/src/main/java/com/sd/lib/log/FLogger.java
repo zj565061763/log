@@ -14,18 +14,18 @@ import java.util.logging.Logger;
 
 public abstract class FLogger
 {
-    static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
-    static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
-    static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
+    private static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
+    private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
+    private static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
 
-    static Level sGlobalLevel;
+    private static Level sGlobalLevel;
 
-    final Logger mLogger;
+    private final Logger mLogger;
 
-    SimpleFileHandler mFileHandler;
-    int mLogFileLimit;
-    Level mLogFileLevel;
-    Context mContext;
+    private SimpleFileHandler mFileHandler;
+    private int mLogFileLimit;
+    private Level mLogFileLevel;
+    private Context mContext;
 
     protected FLogger()
     {
