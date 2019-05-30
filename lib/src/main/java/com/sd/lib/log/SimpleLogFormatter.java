@@ -35,10 +35,17 @@ class SimpleLogFormatter extends Formatter
             throwable = sw.toString();
         }
 
-        mStringBuilder.append(date).append("(").append(record.getLevel()).append(") ").append(message);
+        // 日期
+        mStringBuilder.append(date);
+        // 日志等级
+        mStringBuilder.append(" (").append(record.getLevel()).append(") ");
+        // 日志信息
+        mStringBuilder.append(message);
+        // 异常信息
         mStringBuilder.append(throwable);
-
+        // 换行
         mStringBuilder.append(getNextLine());
+
         return mStringBuilder.toString();
     }
 
