@@ -77,15 +77,18 @@ class SimpleFileHandler extends FileHandler
     private static File getLogFileDir(Context context)
     {
         File dir = context.getExternalFilesDir(DEFAULT_DIR_NAME);
-        if (dir == null)
-            dir = new File(context.getFilesDir(), DEFAULT_DIR_NAME);
-
-        if (dir.exists() || dir.mkdirs())
-        {
+        if (checkDir(dir))
             return dir;
-        } else
-        {
-            return null;
-        }
+
+        dir = new File(context.getFilesDir(), DEFAULT_DIR_NAME);
+        if (checkDir(dir))
+            return dir;
+
+        return null;
+    }
+
+    private static boolean checkDir(File dir)
+    {
+        return dir.exists() || dir.mkdirs();
     }
 }
