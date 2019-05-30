@@ -8,7 +8,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,12 +22,11 @@ public abstract class FLogger
     private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
-    private final Formatter mLogFormatter = new SimpleLogFormatter();
 
+    private Context mContext;
     private SimpleFileHandler mFileHandler;
     private int mLogFileLimit;
     private Level mLogFileLevel;
-    private Context mContext;
 
     protected FLogger()
     {
@@ -125,14 +123,39 @@ public abstract class FLogger
     }
 
     /**
-     * {@link #openLogFile(Context, int, Level)}
+     * 设置日志等级{@link Logger#setLevel(Level)}
      *
-     * @param context
-     * @param limitMB 文件大小限制(MB)
+     * @param level
      */
-    public final void openLogFile(Context context, int limitMB)
+    public synchronized final void setLevel(Level level)
     {
-        openLogFile(context, limitMB, null);
+        if (level == null)
+            level = Level.ALL;
+
+        mLogger.setLevel(level);
+    }
+
+    /**
+     * 设置写入文件的日志等级
+     *
+     * @param level
+     */
+    public synchronized final void setFileLevel(Level level)
+    {
+        if (level == null)
+            level = Level.ALL;
+
+        mLogFileLevel = level;
+
+        if (mFileHandler != null)
+            mFileHandler.setLevel(level);
+    }
+
+    private Level getLogFileLevel()
+    {
+        if (mLogFileLevel == null)
+            mLogFileLevel = mLogger.getLevel();
+        return mLogFileLevel;
     }
 
     /**
@@ -140,14 +163,10 @@ public abstract class FLogger
      *
      * @param context
      * @param limitMB 文件大小限制(MB)
-     * @param level   记录到文件的最小日志等级，小于指定等级的日志不会记录到文件
      */
-    public synchronized final void openLogFile(Context context, int limitMB, Level level)
+    public synchronized final void openLogFile(Context context, int limitMB)
     {
-        if (level == null)
-            level = mLogger.getLevel();
-
-        if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
+        if (mFileHandler == null || mLogFileLimit != limitMB)
         {
             mContext = context.getApplicationContext();
             closeLogFile();
@@ -155,13 +174,12 @@ public abstract class FLogger
             try
             {
                 mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
-                mFileHandler.setLevel(level);
-                mFileHandler.setFormatter(mLogFormatter);
+                mFileHandler.setFormatter(new SimpleLogFormatter());
+                mFileHandler.setLevel(getLogFileLevel());
 
                 mLogger.addHandler(mFileHandler);
 
                 mLogFileLimit = limitMB;
-                mLogFileLevel = level;
             } catch (Exception e)
             {
                 if (e instanceof IllegalArgumentException)
@@ -190,7 +208,7 @@ public abstract class FLogger
         if (closeLogFileInternal(true))
         {
             if (open)
-                openLogFile(mContext, mLogFileLimit, mLogFileLevel);
+                openLogFile(mContext, mLogFileLimit);
         }
     }
 
