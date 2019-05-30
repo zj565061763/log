@@ -24,15 +24,19 @@ class SimpleLogFormatter extends Formatter
 
         final String message = formatMessage(record);
 
-        String throwable = "";
-        if (record.getThrown() != null)
+        String error = "";
+
+        final Throwable throwable = record.getThrown();
+        if (throwable != null)
         {
-            final StringWriter sw = new StringWriter();
-            final PrintWriter pw = new PrintWriter(sw);
-            pw.println();
-            record.getThrown().printStackTrace(pw);
-            pw.close();
-            throwable = sw.toString();
+            final StringWriter stringWriter = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(stringWriter);
+
+            printWriter.println();
+            throwable.printStackTrace(printWriter);
+            printWriter.close();
+
+            error = stringWriter.toString();
         }
 
         // 日期
@@ -42,7 +46,7 @@ class SimpleLogFormatter extends Formatter
         // 日志信息
         mStringBuilder.append(message);
         // 异常信息
-        mStringBuilder.append(throwable);
+        mStringBuilder.append(error);
         // 换行
         mStringBuilder.append(getNextLine());
 
