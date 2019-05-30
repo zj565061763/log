@@ -136,24 +136,24 @@ public abstract class FLogger
     }
 
     /**
-     * {@link #openLogFile(int, Level, Context)}
+     * {@link #openLogFile(Context, int, Level)}
      *
-     * @param limitMB
      * @param context
+     * @param limitMB 文件大小限制(MB)
      */
-    public final void openLogFile(int limitMB, Context context)
+    public final void openLogFile(Context context, int limitMB)
     {
-        openLogFile(limitMB, null, context);
+        openLogFile(context, limitMB, null);
     }
 
     /**
      * 打开日志文件功能
      *
-     * @param limitMB 文件大小限制(单位MB)
-     * @param level   记录到文件的最小日志等级，小于指定等级的日志不会记录到文件
      * @param context
+     * @param limitMB 文件大小限制(MB)
+     * @param level   记录到文件的最小日志等级，小于指定等级的日志不会记录到文件
      */
-    public synchronized final void openLogFile(int limitMB, Level level, Context context)
+    public synchronized final void openLogFile(Context context, int limitMB, Level level)
     {
         if (level == null)
             level = mLogger.getLevel();
@@ -196,7 +196,7 @@ public abstract class FLogger
         if (closeLogFileInternal(true))
         {
             if (open)
-                openLogFile(mLogFileLimit, mLogFileLevel, mContext);
+                openLogFile(mContext, mLogFileLimit, mLogFileLevel);
         }
     }
 
