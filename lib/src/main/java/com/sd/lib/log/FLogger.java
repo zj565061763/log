@@ -8,6 +8,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +21,7 @@ public abstract class FLogger
     private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
+    private final Formatter mLogFormatter = new SimpleLogFormatter();
 
     private SimpleFileHandler mFileHandler;
     private int mLogFileLimit;
@@ -169,6 +171,7 @@ public abstract class FLogger
             {
                 mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
                 mFileHandler.setLevel(level);
+                mFileHandler.setFormatter(mLogFormatter);
 
                 mLogger.addHandler(mFileHandler);
             } catch (Exception e)

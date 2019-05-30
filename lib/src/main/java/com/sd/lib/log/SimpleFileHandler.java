@@ -39,8 +39,6 @@ class SimpleFileHandler extends FileHandler
 
         mFilename = filename + FILE_SUFFIX;
         mContext = context.getApplicationContext();
-
-        setFormatter(new SimpleLogFormatter());
     }
 
     /**
