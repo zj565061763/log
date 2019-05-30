@@ -114,6 +114,9 @@ public abstract class FLogger
         if (!MAP_LOGGER.isEmpty())
             throw new RuntimeException("you can not call this method after logger instance created");
 
+        if (level == null)
+            level = Level.ALL;
+
         sGlobalLevel = level;
     }
 
@@ -140,7 +143,7 @@ public abstract class FLogger
      */
     public final void openLogFile(int limitMB, Context context)
     {
-        openLogFile(limitMB, Level.ALL, context);
+        openLogFile(limitMB, null, context);
     }
 
     /**
@@ -153,7 +156,7 @@ public abstract class FLogger
     public synchronized final void openLogFile(int limitMB, Level level, Context context)
     {
         if (level == null)
-            level = Level.ALL;
+            level = mLogger.getLevel();
 
         if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
