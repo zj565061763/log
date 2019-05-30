@@ -17,13 +17,13 @@ class SimpleFileHandler extends FileHandler
     private final String mFilename;
 
     /**
+     * @param context
      * @param filename log文件名
      * @param limitMB  log文件大小限制(单位MB)
-     * @param context
      * @throws IOException
      * @throws SecurityException
      */
-    public SimpleFileHandler(String filename, int limitMB, Context context) throws IOException, SecurityException
+    public SimpleFileHandler(Context context, String filename, int limitMB) throws IOException, SecurityException
     {
         super(getLogFilePath(filename + FILE_SUFFIX, context), limitMB * MB, 1, true);
 

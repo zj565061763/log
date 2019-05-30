@@ -160,14 +160,14 @@ public abstract class FLogger
 
         if (mFileHandler == null || mLogFileLimit != limitMB || mLogFileLevel != level)
         {
+            mContext = context.getApplicationContext();
             mLogFileLimit = limitMB;
             mLogFileLevel = level;
-            mContext = context.getApplicationContext();
             closeLogFile();
 
             try
             {
-                mFileHandler = new SimpleFileHandler(mLogger.getName(), limitMB, mContext);
+                mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
                 mFileHandler.setLevel(level);
 
                 mLogger.addHandler(mFileHandler);
