@@ -239,5 +239,10 @@ public abstract class FLogger
         mLogger.log(Level.SEVERE, msg, throwable);
     }
 
+    public final void log(Level level, String msg, Throwable thrown)
+    {
+        mLogger.log(level, msg, thrown);
+    }
+
     //---------- log end ----------
 }
