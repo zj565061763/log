@@ -25,7 +25,7 @@ class SimpleFileHandler extends FileHandler
      */
     public SimpleFileHandler(Context context, String filename, int limitMB) throws IOException, SecurityException
     {
-        super(getLogFilePath(filename + FILE_SUFFIX, context), limitMB * MB, 1, true);
+        super(getLogFilePath(context, filename + FILE_SUFFIX), limitMB * MB, 1, true);
 
         if (TextUtils.isEmpty(filename))
             throw new NullPointerException("filename is null or empty");
@@ -46,26 +46,29 @@ class SimpleFileHandler extends FileHandler
      */
     public final void deleteLogFile()
     {
-        final File logDir = getLogFileDir(mContext);
-        if (logDir == null)
+        final File dir = getLogFileDir(mContext);
+        if (dir == null)
             return;
 
-        final File[] files = logDir.listFiles();
+        if (!dir.exists())
+            return;
+
+        final File[] files = dir.listFiles();
         if (files == null || files.length <= 0)
             return;
 
         for (File item : files)
         {
             final String name = item.getName();
-            if (name.startsWith(mFilename))
+            if (name.equals(mFilename) || name.startsWith(mFilename))
                 item.delete();
         }
     }
 
-    private static String getLogFilePath(String fileName, Context context)
+    private static String getLogFilePath(Context context, String fileName)
     {
         if (TextUtils.isEmpty(fileName))
-            return null;
+            new IllegalArgumentException("fileName is empty when getLogFilePath()");
 
         final File dir = getLogFileDir(context);
         if (dir == null)
