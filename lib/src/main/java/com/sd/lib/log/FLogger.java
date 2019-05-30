@@ -18,6 +18,8 @@ public abstract class FLogger
     private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
 
+    private static final Map<WeakReference<FLogger>, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
+
     private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
@@ -76,8 +78,11 @@ public abstract class FLogger
             if (MAP_TAG.containsKey(clazz))
                 throw new RuntimeException("you must remove tag from tag map after logger instance created");
 
+            final WeakReference<FLogger> loggerRef = new WeakReference<>(logger, REFERENCE_QUEUE);
+            MAP_LOGGER.put(clazz, loggerRef);
+            MAP_LOGGER_BACKUP.put(loggerRef, clazz);
+
             logger.onCreate();
-            MAP_LOGGER.put(clazz, new WeakReference<>(logger, REFERENCE_QUEUE));
             return logger;
         } catch (Exception e)
         {
@@ -93,14 +98,11 @@ public abstract class FLogger
             if (reference == null)
                 return;
 
-            for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
-            {
-                if (item.getValue() == reference)
-                {
-                    MAP_LOGGER.remove(item.getKey());
-                    break;
-                }
-            }
+            final Class<?> clazz = MAP_LOGGER_BACKUP.remove(reference);
+            if (clazz == null)
+                throw new RuntimeException("class was not found in logger backup map");
+
+            MAP_LOGGER.remove(clazz);
         }
     }
 
