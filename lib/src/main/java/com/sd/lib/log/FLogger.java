@@ -53,7 +53,7 @@ public abstract class FLogger
     public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz)
     {
         if (clazz == null)
-            return null;
+            throw new IllegalArgumentException("clazz is null when get logger");
         if (clazz == FLogger.class)
             throw new IllegalArgumentException("clazz must not be " + FLogger.class);
 
