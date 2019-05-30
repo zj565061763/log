@@ -91,7 +91,7 @@ public abstract class FLogger
         {
             final Reference<? extends FLogger> reference = REFERENCE_QUEUE.poll();
             if (reference == null)
-                break;
+                return;
 
             for (Map.Entry<Class<?>, WeakReference<FLogger>> item : MAP_LOGGER.entrySet())
             {
