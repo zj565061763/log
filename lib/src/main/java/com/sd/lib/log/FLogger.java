@@ -8,7 +8,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -200,10 +199,11 @@ public abstract class FLogger
 
     private boolean closeLogFileInternal(boolean delete)
     {
-        removeHandlers(mLogger);
         if (mFileHandler != null)
         {
             mFileHandler.close();
+            mLogger.removeHandler(mFileHandler);
+
             if (delete)
                 mFileHandler.deleteLogFile();
 
@@ -243,17 +243,4 @@ public abstract class FLogger
     }
 
     //---------- log end ----------
-
-    //---------- utils start ----------
-
-    private final static void removeHandlers(Logger logger)
-    {
-        final Handler[] handlers = logger.getHandlers();
-        for (Handler item : handlers)
-        {
-            logger.removeHandler(item);
-        }
-    }
-
-    //---------- utils end ----------
 }
