@@ -27,16 +27,6 @@ class SimpleFileHandler extends FileHandler
     {
         super(getLogFilePath(context, filename + FILE_SUFFIX), limitMB * MB, 1, true);
 
-        if (TextUtils.isEmpty(filename))
-            throw new IllegalArgumentException("filename is null or empty");
-
-        if (limitMB <= 0)
-            throw new IllegalArgumentException("limitMB must greater than 0");
-
-        final int max = Integer.MAX_VALUE / MB;
-        if (limitMB > max)
-            throw new IllegalArgumentException("limitMB must less than " + max);
-
         mFilename = filename + FILE_SUFFIX;
         mContext = context.getApplicationContext();
     }
