@@ -164,6 +164,9 @@ public abstract class FLogger
      */
     public synchronized final void openLogFile(Context context, int limitMB)
     {
+        if (limitMB <= 0)
+            throw new IllegalArgumentException("limitMB must greater than 0");
+
         if (mFileHandler == null || mLogFileLimit != limitMB)
         {
             mContext = context.getApplicationContext();
@@ -180,10 +183,7 @@ public abstract class FLogger
                 mLogFileLimit = limitMB;
             } catch (Exception e)
             {
-                if (e instanceof IllegalArgumentException)
-                    throw new RuntimeException(e);
-                else
-                    e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
