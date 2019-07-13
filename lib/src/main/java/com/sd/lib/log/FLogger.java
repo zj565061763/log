@@ -170,7 +170,7 @@ public abstract class FLogger
         if (mFileHandler == null || mLogFileLimit != limitMB)
         {
             mContext = context.getApplicationContext();
-            closeLogFile();
+            closeLogFile(false);
 
             try
             {
@@ -191,23 +191,9 @@ public abstract class FLogger
     /**
      * 关闭日志文件功能
      */
-    public synchronized final void closeLogFile()
+    public synchronized final void closeLogFile(boolean delete)
     {
-        closeLogFileInternal(false);
-    }
-
-    /**
-     * 删除并关闭文件功能
-     *
-     * @param open 成功删除关闭后是否重新打开
-     */
-    public synchronized final void deleteLogFile(boolean open)
-    {
-        if (closeLogFileInternal(true))
-        {
-            if (open)
-                openLogFile(mContext, mLogFileLimit);
-        }
+        closeLogFileInternal(delete);
     }
 
     private boolean closeLogFileInternal(boolean delete)
@@ -230,7 +216,7 @@ public abstract class FLogger
     protected void finalize() throws Throwable
     {
         super.finalize();
-        closeLogFile();
+        closeLogFile(false);
     }
 
     //---------- log start ----------
