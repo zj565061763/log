@@ -1,7 +1,6 @@
 package com.sd.lib.log;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.util.logging.FileHandler;
 class SimpleFileHandler extends FileHandler
 {
     private static final int MB = 1024 * 1024;
-    private static final String DEFAULT_DIR_NAME = "flog";
+    private static final String DIR_NAME = "flog";
     private static final String FILE_SUFFIX = ".log";
 
     private final Context mContext;
@@ -57,9 +56,6 @@ class SimpleFileHandler extends FileHandler
 
     private static String getLogFilePath(Context context, String fileName)
     {
-        if (TextUtils.isEmpty(fileName))
-            new IllegalArgumentException("fileName is empty when getLogFilePath()");
-
         final File dir = getLogFileDir(context);
         if (dir == null)
             return null;
@@ -69,11 +65,11 @@ class SimpleFileHandler extends FileHandler
 
     private static File getLogFileDir(Context context)
     {
-        File dir = context.getExternalFilesDir(DEFAULT_DIR_NAME);
+        File dir = context.getExternalFilesDir(DIR_NAME);
         if (checkDir(dir))
             return dir;
 
-        dir = new File(context.getFilesDir(), DEFAULT_DIR_NAME);
+        dir = new File(context.getFilesDir(), DIR_NAME);
         if (checkDir(dir))
             return dir;
 
