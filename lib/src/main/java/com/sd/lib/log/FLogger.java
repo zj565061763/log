@@ -73,8 +73,6 @@ public abstract class FLogger
         {
             MAP_TAG.put(clazz, clazz);
             logger = clazz.newInstance();
-            if (MAP_TAG.containsKey(clazz))
-                throw new RuntimeException("you must remove tag from tag map after logger instance created");
 
             final WeakReference<FLogger> loggerRef = new WeakReference<>(logger, REFERENCE_QUEUE);
             MAP_LOGGER.put(clazz, loggerRef);
