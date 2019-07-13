@@ -179,8 +179,8 @@ public abstract class FLogger
                 mFileHandler.setLevel(getLogFileLevel());
 
                 mLogger.addHandler(mFileHandler);
-
                 mLogFileLimit = limitMB;
+
             } catch (Exception e)
             {
                 e.printStackTrace();
