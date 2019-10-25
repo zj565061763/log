@@ -75,6 +75,7 @@ public abstract class FLogger
             logger = clazz.newInstance();
 
             final WeakReference<FLogger> loggerRef = new WeakReference<>(logger, REFERENCE_QUEUE);
+
             MAP_LOGGER.put(clazz, loggerRef);
             MAP_LOGGER_BACKUP.put(loggerRef, clazz);
 
