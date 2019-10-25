@@ -107,15 +107,19 @@ public abstract class FLogger
      *
      * @param level
      */
-    public static final void setGlobalLevel(Level level)
+    public synchronized static final void setGlobalLevel(Level level)
     {
-        if (!MAP_LOGGER.isEmpty())
-            throw new RuntimeException("you can not call this method after logger instance created");
-
         if (level == null)
             level = Level.ALL;
 
-        sGlobalLevel = level;
+        if (sGlobalLevel != level)
+        {
+            sGlobalLevel = level;
+
+            releaseIfNeed();
+            MAP_LOGGER.clear();
+            MAP_LOGGER_BACKUP.clear();
+        }
     }
 
     /**
