@@ -15,7 +15,7 @@ public abstract class FLogger
 {
     private static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
     private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
-    private static final Map<Class<?>, Class<?>> MAP_TAG = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
 
     private static final Map<WeakReference<FLogger>, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
 
