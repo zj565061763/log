@@ -5,7 +5,6 @@ import android.content.Context;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -30,10 +29,11 @@ public abstract class FLogger
 
     protected FLogger()
     {
-        if (MAP_TAG.remove(getClass()) == null)
+        final Class<?> clazz = getClass();
+        if (MAP_TAG.remove(clazz) == null)
             throw new RuntimeException("you can not call this constructor");
 
-        mLogger = Logger.getLogger(getClass().getName());
+        mLogger = Logger.getLogger(clazz.getName());
         mLogger.setLevel(sGlobalLevel);
     }
 
