@@ -2,6 +2,7 @@ package com.sd.lib.log;
 
 import android.content.Context;
 
+import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -198,11 +199,6 @@ public abstract class FLogger
      */
     public synchronized final void closeLogFile(boolean delete)
     {
-        closeLogFileInternal(delete);
-    }
-
-    private boolean closeLogFileInternal(boolean delete)
-    {
         if (mFileHandler != null)
         {
             mFileHandler.close();
@@ -212,9 +208,7 @@ public abstract class FLogger
                 mFileHandler.deleteLogFile();
 
             mFileHandler = null;
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -252,4 +246,47 @@ public abstract class FLogger
     }
 
     //---------- log end ----------
+
+    /**
+     * 删除所有日志文件
+     *
+     * @param context
+     */
+    public static synchronized void deleteLogFile(Context context)
+    {
+        final File dir = SimpleFileHandler.getLogFileDir(context);
+        if (dir == null || !dir.exists())
+            return;
+
+        releaseIfNeed();
+        for (WeakReference<FLogger> item : MAP_LOGGER.values())
+        {
+            final FLogger logger = item.get();
+            if (logger != null)
+                logger.closeLogFile(false);
+        }
+        MAP_LOGGER.clear();
+        MAP_LOGGER_BACKUP.clear();
+
+        deleteFileOrDir(dir);
+    }
+
+    private static boolean deleteFileOrDir(File file)
+    {
+        if (file == null || !file.exists())
+            return true;
+
+        if (file.isFile())
+            return file.delete();
+
+        final File[] files = file.listFiles();
+        if (files != null)
+        {
+            for (File item : files)
+            {
+                deleteFileOrDir(item);
+            }
+        }
+        return file.delete();
+    }
 }

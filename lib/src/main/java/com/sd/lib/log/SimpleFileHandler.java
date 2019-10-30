@@ -63,7 +63,7 @@ class SimpleFileHandler extends FileHandler
         return dir.getAbsolutePath() + File.separator + fileName;
     }
 
-    private static File getLogFileDir(Context context)
+    static File getLogFileDir(Context context)
     {
         File dir = context.getExternalFilesDir(DIR_NAME);
         if (checkDir(dir))
