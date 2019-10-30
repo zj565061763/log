@@ -41,5 +41,6 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         FLogger.get(AppLogger.class).info("onDestroy");
+        FLogger.deleteLogFile(this);
     }
 }
