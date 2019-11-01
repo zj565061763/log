@@ -109,6 +109,24 @@ public abstract class FLogger
     }
 
     /**
+     * 清空所有日志对象
+     */
+    private synchronized static void clearLogger()
+    {
+        releaseIfNeed();
+
+        for (WeakReference<FLogger> item : MAP_LOGGER.values())
+        {
+            final FLogger logger = item.get();
+            if (logger != null)
+                logger.closeLogFile(false);
+        }
+
+        MAP_LOGGER.clear();
+        MAP_LOGGER_BACKUP.clear();
+    }
+
+    /**
      * 设置全局日志输出等级，小于设置等级的将不会被输出
      * <br>
      * 此方法需要在日志对象未被实例化之前调用
@@ -123,10 +141,7 @@ public abstract class FLogger
         if (sGlobalLevel != level)
         {
             sGlobalLevel = level;
-
-            releaseIfNeed();
-            MAP_LOGGER.clear();
-            MAP_LOGGER_BACKUP.clear();
+            clearLogger();
         }
     }
 
@@ -262,16 +277,7 @@ public abstract class FLogger
         if (dir == null || !dir.exists())
             return;
 
-        releaseIfNeed();
-        for (WeakReference<FLogger> item : MAP_LOGGER.values())
-        {
-            final FLogger logger = item.get();
-            if (logger != null)
-                logger.closeLogFile(false);
-        }
-        MAP_LOGGER.clear();
-        MAP_LOGGER_BACKUP.clear();
-
+        clearLogger();
         deleteFileOrDir(dir);
     }
 
