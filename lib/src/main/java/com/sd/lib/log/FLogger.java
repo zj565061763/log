@@ -268,7 +268,10 @@ public abstract class FLogger
     public static synchronized void deleteLogFile(Context context)
     {
         final File dir = SimpleFileHandler.getLogFileDir(context);
-        if (dir == null || !dir.exists())
+        if (dir == null)
+            return;
+
+        if (!dir.exists())
             return;
 
         clearLogger();
