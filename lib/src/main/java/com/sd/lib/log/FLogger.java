@@ -155,17 +155,17 @@ public abstract class FLogger
     /**
      * 设置写入文件的日志等级
      *
-     * @param level
+     * @param level null-表示跟随默认的日志等级
      */
     public synchronized final void setFileLevel(Level level)
     {
-        if (level == null)
-            level = Level.ALL;
+        if (mLogFileLevel != level)
+        {
+            mLogFileLevel = level;
 
-        mLogFileLevel = level;
-
-        if (mFileHandler != null)
-            mFileHandler.setLevel(level);
+            if (mFileHandler != null)
+                mFileHandler.setLevel(level != null ? level : mLogger.getLevel());
+        }
     }
 
     /**
