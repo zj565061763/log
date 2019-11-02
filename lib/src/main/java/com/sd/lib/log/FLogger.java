@@ -150,6 +150,12 @@ public abstract class FLogger
             level = Level.ALL;
 
         mLogger.setLevel(level);
+
+        if (mFileHandler != null)
+        {
+            if (mLogFileLevel == null)
+                mFileHandler.setLevel(level);
+        }
     }
 
     /**
