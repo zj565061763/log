@@ -5,7 +5,7 @@ import android.content.Context;
 import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 
 public abstract class FLogger
 {
-    private static final Map<Class<?>, WeakReference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Reference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
     private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
 
-    private static final Map<WeakReference<FLogger>, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
+    private static final Map<Reference<FLogger>, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
 
     private static Level sGlobalLevel = Level.ALL;
 
@@ -62,7 +62,7 @@ public abstract class FLogger
         releaseIfNeed();
 
         FLogger logger = null;
-        final WeakReference<FLogger> reference = MAP_LOGGER.get(clazz);
+        final Reference<FLogger> reference = MAP_LOGGER.get(clazz);
         if (reference != null)
         {
             logger = reference.get();
@@ -75,7 +75,7 @@ public abstract class FLogger
             MAP_TAG.put(clazz, clazz);
             logger = clazz.newInstance();
 
-            final WeakReference<FLogger> loggerRef = new WeakReference<>(logger, REFERENCE_QUEUE);
+            final Reference<FLogger> loggerRef = new SoftReference<>(logger, REFERENCE_QUEUE);
 
             MAP_LOGGER.put(clazz, loggerRef);
             MAP_LOGGER_BACKUP.put(loggerRef, clazz);
@@ -109,7 +109,7 @@ public abstract class FLogger
      */
     private synchronized static void clearLogger()
     {
-        for (WeakReference<FLogger> item : MAP_LOGGER.values())
+        for (Reference<FLogger> item : MAP_LOGGER.values())
         {
             final FLogger logger = item.get();
             if (logger != null)
