@@ -101,10 +101,6 @@ public abstract class FLogger
                 throw new RuntimeException("class was not found in logger backup map");
 
             MAP_LOGGER.remove(clazz);
-
-            final FLogger logger = reference.get();
-            if (logger != null)
-                logger.closeLogFile(false);
         }
     }
 
