@@ -168,13 +168,6 @@ public abstract class FLogger
             mFileHandler.setLevel(level);
     }
 
-    private Level getLogFileLevel()
-    {
-        if (mLogFileLevel == null)
-            mLogFileLevel = mLogger.getLevel();
-        return mLogFileLevel;
-    }
-
     /**
      * 打开日志文件功能
      *
@@ -195,7 +188,7 @@ public abstract class FLogger
             {
                 mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
                 mFileHandler.setFormatter(new SimpleLogFormatter());
-                mFileHandler.setLevel(getLogFileLevel());
+                mFileHandler.setLevel(mLogFileLevel != null ? mLogFileLevel : mLogger.getLevel());
 
                 mLogger.addHandler(mFileHandler);
                 mLogFileLimit = limitMB;
