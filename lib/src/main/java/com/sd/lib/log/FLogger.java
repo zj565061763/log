@@ -109,8 +109,6 @@ public abstract class FLogger
      */
     private synchronized static void clearLogger()
     {
-        releaseIfNeed();
-
         for (WeakReference<FLogger> item : MAP_LOGGER.values())
         {
             final FLogger logger = item.get();
