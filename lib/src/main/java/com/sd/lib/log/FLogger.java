@@ -188,7 +188,7 @@ public abstract class FLogger
         if (mFileHandler == null || mLogFileLimit != limitMB)
         {
             mContext = context.getApplicationContext();
-            closeLogFile(false);
+            closeLogFileInternal(false);
 
             try
             {
@@ -211,6 +211,11 @@ public abstract class FLogger
      */
     public synchronized final void closeLogFile(boolean delete)
     {
+        closeLogFileInternal(delete);
+    }
+
+    private void closeLogFileInternal(boolean delete)
+    {
         if (mFileHandler != null)
         {
             mFileHandler.close();
@@ -227,7 +232,7 @@ public abstract class FLogger
     protected void finalize() throws Throwable
     {
         super.finalize();
-        closeLogFile(false);
+        closeLogFileInternal(false);
     }
 
     //---------- log start ----------
