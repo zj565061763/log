@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
 
         /**
          * FLogger.get(AppLogger.class)获得指定的日志类对象，
-         * 内部采用软引用指向对象，在对象未被回收之前返回的是同一个对象，如果对象已经被回收，则会创建新的对象返回
+         * 内部会保存日志对象，在对象未被移除之前返回的是同一个对象
          */
         FLogger.get(AppLogger.class).info("onCreate");
     }
@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         FLogger.get(AppLogger.class).info("onDestroy");
+        /**
+         * 清空日志对象并删除所有日志文件
+         */
+        FLogger.deleteLogFile(this);
     }
 }
 ```
