@@ -3,9 +3,6 @@ package com.sd.lib.log;
 import android.content.Context;
 
 import java.io.File;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -13,11 +10,10 @@ import java.util.logging.Logger;
 
 public abstract class FLogger
 {
-    private static final Map<Class<?>, Reference<FLogger>> MAP_LOGGER = new ConcurrentHashMap<>();
-    private static final ReferenceQueue<FLogger> REFERENCE_QUEUE = new ReferenceQueue<>();
+    private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
 
-    private static final Map<Reference<FLogger>, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
+    private static final Map<FLogger, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
 
     private static Level sGlobalLevel = Level.ALL;
 
@@ -59,26 +55,17 @@ public abstract class FLogger
         if (clazz == FLogger.class)
             throw new IllegalArgumentException("clazz must not be " + FLogger.class);
 
-        releaseIfNeed();
-
-        FLogger logger = null;
-        final Reference<FLogger> reference = MAP_LOGGER.get(clazz);
-        if (reference != null)
-        {
-            logger = reference.get();
-            if (logger != null)
-                return logger;
-        }
+        FLogger logger = MAP_LOGGER.get(clazz);
+        if (logger != null)
+            return logger;
 
         try
         {
             MAP_TAG.put(clazz, clazz);
             logger = clazz.newInstance();
 
-            final Reference<FLogger> loggerRef = new SoftReference<>(logger, REFERENCE_QUEUE);
-
-            MAP_LOGGER.put(clazz, loggerRef);
-            MAP_LOGGER_BACKUP.put(loggerRef, clazz);
+            MAP_LOGGER.put(clazz, logger);
+            MAP_LOGGER_BACKUP.put(logger, clazz);
 
             logger.onCreate();
             return logger;
@@ -88,32 +75,14 @@ public abstract class FLogger
         }
     }
 
-    private static void releaseIfNeed()
-    {
-        while (true)
-        {
-            final Reference<? extends FLogger> reference = REFERENCE_QUEUE.poll();
-            if (reference == null)
-                return;
-
-            final Class<?> clazz = MAP_LOGGER_BACKUP.remove(reference);
-            if (clazz == null)
-                throw new RuntimeException("class was not found in logger backup map");
-
-            MAP_LOGGER.remove(clazz);
-        }
-    }
-
     /**
      * 清空所有日志对象
      */
     private synchronized static void clearLogger()
     {
-        for (Reference<FLogger> item : MAP_LOGGER.values())
+        for (FLogger item : MAP_LOGGER.values())
         {
-            final FLogger logger = item.get();
-            if (logger != null)
-                logger.closeLogFile(false);
+            item.closeLogFile(false);
         }
 
         MAP_LOGGER.clear();
