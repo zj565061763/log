@@ -74,7 +74,7 @@ public abstract class FLogger
     /**
      * 清空所有日志对象
      */
-    private synchronized static void clearLogger()
+    public synchronized static void clearLogger()
     {
         for (FLogger item : MAP_LOGGER.values())
         {
