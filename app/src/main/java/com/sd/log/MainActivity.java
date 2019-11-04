@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         FLogger.get(AppLogger.class).info("onDestroy");
+        /**
+         * 清空日志对象并删除所有日志文件
+         */
         FLogger.deleteLogFile(this);
     }
 }
