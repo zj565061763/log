@@ -12,6 +12,13 @@ public class AppLogger extends FLogger
     protected void onCreate()
     {
         openLogFile(App.getInstance(), 50);
-        Log.i(TAG, "onCreate:" + this);
+        Log.i(TAG, "Logger onCreate:" + this);
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        Log.i(TAG, "Logger finalize:" + this);
     }
 }
