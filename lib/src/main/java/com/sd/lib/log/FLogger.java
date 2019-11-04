@@ -13,8 +13,6 @@ public abstract class FLogger
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
 
-    private static final Map<FLogger, Class<?>> MAP_LOGGER_BACKUP = new ConcurrentHashMap<>();
-
     private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
@@ -42,7 +40,7 @@ public abstract class FLogger
     /**
      * 获得指定的日志类对象
      * <p>
-     * 内部采用弱引用指向对象，在对象未被回收之前返回的是同一个对象，如果对象已经被回收，则会创建新的对象返回
+     * 内部会保存日志对象，在对象未被移除之前返回的是同一个对象
      *
      * @param clazz
      * @param <T>
@@ -65,8 +63,6 @@ public abstract class FLogger
             logger = clazz.newInstance();
 
             MAP_LOGGER.put(clazz, logger);
-            MAP_LOGGER_BACKUP.put(logger, clazz);
-
             logger.onCreate();
             return logger;
         } catch (Exception e)
@@ -86,7 +82,6 @@ public abstract class FLogger
         }
 
         MAP_LOGGER.clear();
-        MAP_LOGGER_BACKUP.clear();
     }
 
     /**
