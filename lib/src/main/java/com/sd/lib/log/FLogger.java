@@ -104,6 +104,16 @@ public abstract class FLogger
     }
 
     /**
+     * 返回日志等级
+     *
+     * @return
+     */
+    public Level getLevel()
+    {
+        return mLogger.getLevel();
+    }
+
+    /**
      * 设置日志等级{@link Logger#setLevel(Level)}
      *
      * @param level
