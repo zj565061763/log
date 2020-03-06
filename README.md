@@ -18,7 +18,7 @@ public class AppLogger extends FLogger
     protected void onCreate()
     {
         /**
-         * 打开日志文件功能，设置最大50MB，日志文件位于sdcard/Android/data/包名/files/flog/当前对象的全类名.log
+         * 打开日志文件功能，设置最大50MB，日志文件位于sdcard/Android/data/包名/files/flog/当天日期/当前对象的全类名.log
          */
         openLogFile(App.getInstance(), 50);
     }
@@ -67,10 +67,12 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         FLogger.get(AppLogger.class).info("onDestroy");
-        /**
-         * 清空日志对象并删除所有日志文件
-         */
-        FLogger.deleteLogFile(this);
+
+        // 删除所有日志文件
+//        FLogger.deleteLogFile(this);
+
+        // 删除2天之前的日志目录
+        FLogger.deleteExpiredLogDir(this, 2);
     }
 }
 ```
