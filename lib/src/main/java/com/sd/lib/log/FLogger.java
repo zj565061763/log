@@ -213,22 +213,27 @@ public abstract class FLogger
 
     public final void info(String msg)
     {
-        mLogger.log(Level.INFO, msg);
+        log(Level.INFO, msg);
     }
 
     public final void warning(String msg)
     {
-        mLogger.log(Level.WARNING, msg);
+        log(Level.WARNING, msg);
     }
 
     public final void severe(String msg)
     {
-        mLogger.log(Level.SEVERE, msg);
+        log(Level.SEVERE, msg);
     }
 
     public final void severe(String msg, Throwable throwable)
     {
-        mLogger.log(Level.SEVERE, msg, throwable);
+        log(Level.SEVERE, msg, throwable);
+    }
+
+    public final void log(Level level, String msg)
+    {
+        mLogger.log(level, msg);
     }
 
     public final void log(Level level, String msg, Throwable thrown)
