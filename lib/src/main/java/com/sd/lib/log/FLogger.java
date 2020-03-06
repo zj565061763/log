@@ -3,6 +3,10 @@ package com.sd.lib.log;
 import android.content.Context;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -274,5 +278,53 @@ public abstract class FLogger
             }
         }
         return file.delete();
+    }
+
+    public static synchronized int deleteExpiredLogDir(Context context)
+    {
+        final File dir = SimpleFileHandler.getLogFileDir(context);
+        if (dir == null)
+            return 0;
+
+        final File[] files = dir.listFiles();
+        if (files == null || files.length <= 0)
+            return 0;
+
+        final int logDay = FLoggerConfig.get().mLogDay - 1;
+        final Calendar calendar = Calendar.getInstance();
+        if (logDay > 0)
+            calendar.add(Calendar.DAY_OF_YEAR, -logDay);
+
+        final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        final Date dateLimit = calendar.getTime();
+
+        int count = 0;
+        for (File item : files)
+        {
+            if (item.isFile())
+            {
+                item.delete();
+            } else if (item.isDirectory())
+            {
+                final String filename = item.getName();
+                try
+                {
+                    final Date dateFile = format.parse(filename);
+                    final boolean before = dateFile.before(dateLimit);
+
+                    if (before)
+                    {
+                        deleteFileOrDir(item);
+                        count++;
+                    }
+                } catch (ParseException e)
+                {
+                    e.printStackTrace();
+                    deleteFileOrDir(item);
+                    continue;
+                }
+            }
+        }
+        return count;
     }
 }

@@ -44,5 +44,8 @@ public class MainActivity extends AppCompatActivity
 
         // 清空日志对象并删除所有日志文件
 //        FLogger.deleteLogFile(this);
+
+        // 删除过期的日志目录
+        FLogger.deleteExpiredLogDir(this);
     }
 }

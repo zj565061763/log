@@ -43,9 +43,10 @@ public class FLoggerConfig
     {
         private int mLogDay;
 
-        public void setLogDay(int logDay)
+        public Builder setLogDay(int logDay)
         {
             mLogDay = logDay;
+            return this;
         }
 
         public FLoggerConfig build()
