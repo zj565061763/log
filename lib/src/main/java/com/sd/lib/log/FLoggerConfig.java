@@ -8,7 +8,7 @@ public class FLoggerConfig
 
     private FLoggerConfig(Builder builder)
     {
-        mLogDay = builder.mLogDay <= 0 ? 7 : builder.mLogDay;
+        mLogDay = builder.mLogDay <= 0 ? 5 : builder.mLogDay;
     }
 
     public static FLoggerConfig get()

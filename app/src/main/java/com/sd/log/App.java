@@ -16,8 +16,8 @@ public class App extends Application
 
         FLoggerConfig.init(
                 new FLoggerConfig.Builder()
-                        // 设置默认保存最近7天的日志
-                        .setLogDay(7)
+                        // 设置默认保存最近5天的日志
+                        .setLogDay(5)
                         .build());
     }
 
