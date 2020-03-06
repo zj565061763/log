@@ -266,12 +266,12 @@ public abstract class FLogger
      * 删除过期的日志
      *
      * @param context
-     * @param effectiveDays 要保留的日志天数
+     * @param saveDays 要保留的日志天数
      * @return 被删除的日志天数
      */
-    public static synchronized int deleteExpiredLogDir(Context context, int effectiveDays)
+    public static synchronized int deleteExpiredLogDir(Context context, int saveDays)
     {
-        if (effectiveDays <= 0)
+        if (saveDays <= 0)
             return 0;
 
         final File dir = SimpleFileHandler.getLogFileDir(context);
@@ -282,7 +282,7 @@ public abstract class FLogger
         if (files == null || files.length <= 0)
             return 0;
 
-        final int logDay = effectiveDays - 1;
+        final int logDay = saveDays - 1;
         final Calendar calendar = Calendar.getInstance();
         if (logDay > 0)
             calendar.add(Calendar.DAY_OF_YEAR, -logDay);
