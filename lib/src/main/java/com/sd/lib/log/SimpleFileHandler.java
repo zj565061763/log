@@ -32,33 +32,9 @@ class SimpleFileHandler extends FileHandler
         mContext = context.getApplicationContext();
     }
 
-    /**
-     * 删除日志文件
-     */
-    public final void deleteLogFile()
-    {
-        final File dir = getLogFileDir(mContext);
-        if (dir == null)
-            return;
-
-        if (!dir.exists())
-            return;
-
-        final File[] files = dir.listFiles();
-        if (files == null || files.length <= 0)
-            return;
-
-        for (File item : files)
-        {
-            final String name = item.getName();
-            if (name.equals(mFilename) || name.startsWith(mFilename))
-                item.delete();
-        }
-    }
-
     private static String getLogFilePath(Context context, String fileName)
     {
-        final File dir = getLogFileDir(context);
+        final File dir = getLogDayFileDir(context);
         if (dir == null)
             return null;
 
@@ -67,14 +43,18 @@ class SimpleFileHandler extends FileHandler
 
     private static File getLogDayFileDir(Context context)
     {
-        final File dir = getLogFileDir(context);
+        File dir = getLogFileDir(context);
         if (dir == null)
             return null;
 
         final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         final String formatDate = format.format(new Date());
 
-        return new File(dir, formatDate);
+        dir = new File(dir, formatDate);
+        if (checkDir(dir))
+            return dir;
+
+        return null;
     }
 
     static File getLogFileDir(Context context)

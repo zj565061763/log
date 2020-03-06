@@ -78,7 +78,7 @@ public abstract class FLogger
     {
         for (FLogger item : MAP_LOGGER.values())
         {
-            item.closeLogFile(false);
+            item.closeLogFile();
         }
 
         MAP_LOGGER.clear();
@@ -162,7 +162,7 @@ public abstract class FLogger
         if (mFileHandler == null || mLogFileLimit != limitMB)
         {
             mContext = context.getApplicationContext();
-            closeLogFileInternal(false);
+            closeLogFileInternal();
 
             try
             {
@@ -183,21 +183,17 @@ public abstract class FLogger
     /**
      * 关闭日志文件功能
      */
-    public synchronized final void closeLogFile(boolean delete)
+    public synchronized final void closeLogFile()
     {
-        closeLogFileInternal(delete);
+        closeLogFileInternal();
     }
 
-    private void closeLogFileInternal(boolean delete)
+    private void closeLogFileInternal()
     {
         if (mFileHandler != null)
         {
             mFileHandler.close();
             mLogger.removeHandler(mFileHandler);
-
-            if (delete)
-                mFileHandler.deleteLogFile();
-
             mFileHandler = null;
         }
     }
@@ -206,7 +202,7 @@ public abstract class FLogger
     protected void finalize() throws Throwable
     {
         super.finalize();
-        closeLogFileInternal(false);
+        closeLogFileInternal();
     }
 
     //---------- log start ----------
