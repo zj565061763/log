@@ -5,8 +5,10 @@ import android.content.Context;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -284,10 +286,14 @@ public abstract class FLogger
      * 删除过期的日志
      *
      * @param context
+     * @param effectiveDays 要保留的日志天数
      * @return 被删除的日志天数
      */
-    public static synchronized int deleteExpiredLogDir(Context context)
+    public static synchronized int deleteExpiredLogDir(Context context, int effectiveDays)
     {
+        if (effectiveDays <= 0)
+            return 0;
+
         final File dir = SimpleFileHandler.getLogFileDir(context);
         if (dir == null)
             return 0;
@@ -296,7 +302,7 @@ public abstract class FLogger
         if (files == null || files.length <= 0)
             return 0;
 
-        final int logDay = FLoggerConfig.get().mLogDay - 1;
+        final int logDay = effectiveDays - 1;
         final Calendar calendar = Calendar.getInstance();
         if (logDay > 0)
             calendar.add(Calendar.DAY_OF_YEAR, -logDay);
@@ -304,7 +310,7 @@ public abstract class FLogger
         final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         final Date dateLimit = calendar.getTime();
 
-        int count = 0;
+        final List<File> listExpired = new ArrayList<>(5);
         for (File item : files)
         {
             if (item.isFile())
@@ -317,12 +323,8 @@ public abstract class FLogger
                 {
                     final Date dateFile = format.parse(filename);
                     final boolean before = dateFile.before(dateLimit);
-
                     if (before)
-                    {
-                        deleteFileOrDir(item);
-                        count++;
-                    }
+                        listExpired.add(item);
                 } catch (ParseException e)
                 {
                     e.printStackTrace();
@@ -331,6 +333,17 @@ public abstract class FLogger
                 }
             }
         }
-        return count;
+
+        if (listExpired.isEmpty())
+            return 0;
+
+        // 删除之前要先清空日志对象
+        clearLogger();
+        for (File item : listExpired)
+        {
+            deleteFileOrDir(item);
+        }
+
+        return listExpired.size();
     }
 }
