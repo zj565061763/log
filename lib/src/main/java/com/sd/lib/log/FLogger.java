@@ -280,6 +280,12 @@ public abstract class FLogger
         return file.delete();
     }
 
+    /**
+     * 删除过期的日志
+     *
+     * @param context
+     * @return 被删除的日志天数
+     */
     public static synchronized int deleteExpiredLogDir(Context context)
     {
         final File dir = SimpleFileHandler.getLogFileDir(context);
