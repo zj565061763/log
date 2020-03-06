@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -308,7 +307,17 @@ public abstract class FLogger
             calendar.add(Calendar.DAY_OF_YEAR, -logDay);
 
         final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        final Date dateLimit = calendar.getTime();
+        final String dateLimitString = format.format(calendar.getTime());
+
+        long dateLimit = 0;
+        try
+        {
+            dateLimit = format.parse(dateLimitString).getTime();
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
 
         final List<File> listExpired = new ArrayList<>(5);
         for (File item : files)
@@ -321,9 +330,9 @@ public abstract class FLogger
                 final String filename = item.getName();
                 try
                 {
-                    final Date dateFile = format.parse(filename);
-                    final boolean before = dateFile.before(dateLimit);
-                    if (before)
+                    final long dateFile = format.parse(filename).getTime();
+                    final long dateDelta = dateFile - dateLimit;
+                    if (dateDelta < 0)
                         listExpired.add(item);
                 } catch (ParseException e)
                 {
