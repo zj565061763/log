@@ -262,25 +262,6 @@ public abstract class FLogger
         deleteFileOrDir(dir);
     }
 
-    private static boolean deleteFileOrDir(File file)
-    {
-        if (file == null || !file.exists())
-            return true;
-
-        if (file.isFile())
-            return file.delete();
-
-        final File[] files = file.listFiles();
-        if (files != null)
-        {
-            for (File item : files)
-            {
-                deleteFileOrDir(item);
-            }
-        }
-        return file.delete();
-    }
-
     /**
      * 删除过期的日志
      *
@@ -354,5 +335,24 @@ public abstract class FLogger
         }
 
         return listExpired.size();
+    }
+
+    private static boolean deleteFileOrDir(File file)
+    {
+        if (file == null || !file.exists())
+            return true;
+
+        if (file.isFile())
+            return file.delete();
+
+        final File[] files = file.listFiles();
+        if (files != null)
+        {
+            for (File item : files)
+            {
+                deleteFileOrDir(item);
+            }
+        }
+        return file.delete();
     }
 }
