@@ -72,6 +72,8 @@ class SimpleFileHandler extends FileHandler
 
     private static boolean checkDir(File dir)
     {
+        if (dir == null)
+            return false;
         return dir.exists() || dir.mkdirs();
     }
 }
