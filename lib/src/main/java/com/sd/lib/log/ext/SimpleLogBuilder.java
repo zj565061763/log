@@ -7,17 +7,21 @@ import java.util.List;
 
 public class SimpleLogBuilder implements ILogBuilder
 {
-    private final InternalLogFormatter mFormatter;
+    private ILogFormatter mFormatter;
     private final List<KeyValue> mList = new ArrayList<>();
 
-    public SimpleLogBuilder()
+    @Override
+    public ILogBuilder setFormatter(ILogFormatter formatter)
     {
-        this(null);
+        mFormatter = formatter;
+        return this;
     }
 
-    public SimpleLogBuilder(InternalLogFormatter formatter)
+    private ILogFormatter getFormatter()
     {
-        mFormatter = formatter == null ? InternalLogFormatter.DEFAULT : formatter;
+        if (mFormatter == null)
+            return InternalLogFormatter.DEFAULT;
+        return mFormatter;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class SimpleLogBuilder implements ILogBuilder
     }
 
     @Override
-    public ILogBuilder kv(String key, Object value)
+    public ILogBuilder pair(String key, Object value)
     {
         if (TextUtils.isEmpty(key))
             return this;
@@ -49,13 +53,13 @@ public class SimpleLogBuilder implements ILogBuilder
     @Override
     public ILogBuilder instance(Object instance)
     {
-        return kv("instance", instance);
+        return pair("instance", instance);
     }
 
     @Override
     public ILogBuilder uuid(String uuid)
     {
-        return kv("uuid", uuid);
+        return pair("uuid", uuid);
     }
 
     @Override
@@ -77,14 +81,14 @@ public class SimpleLogBuilder implements ILogBuilder
         for (KeyValue item : mList)
         {
             if (index != 0)
-                builder.append(mFormatter.getSeparatorBetweenPart());
+                builder.append(getFormatter().getSeparatorBetweenPart());
 
             if (TextUtils.isEmpty(item.key))
             {
                 builder.append(item.value);
             } else
             {
-                builder.append(item.key).append(mFormatter.getSeparatorForKeyValue()).append(item.value);
+                builder.append(item.key).append(getFormatter().getSeparatorForKeyValue()).append(item.value);
             }
 
             index++;

@@ -2,9 +2,11 @@ package com.sd.lib.log.ext;
 
 public interface ILogBuilder
 {
+    ILogBuilder setFormatter(ILogFormatter formatter);
+
     ILogBuilder add(Object content);
 
-    ILogBuilder kv(String key, Object value);
+    ILogBuilder pair(String key, Object value);
 
     ILogBuilder instance(Object instance);
 
