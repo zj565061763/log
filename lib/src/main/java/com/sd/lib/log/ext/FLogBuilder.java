@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleLogBuilder implements ILogBuilder
+public class FLogBuilder implements ILogBuilder
 {
     private ILogFormatter mFormatter;
     private final List<KeyValue> mList = new ArrayList<>();
@@ -80,7 +80,9 @@ public class SimpleLogBuilder implements ILogBuilder
         int index = 0;
         for (KeyValue item : mList)
         {
-            if (index != 0)
+            if (index == 0)
+                builder.append(" ");
+            else
                 builder.append(getFormatter().getSeparatorBetweenPart());
 
             if (TextUtils.isEmpty(item.key))
