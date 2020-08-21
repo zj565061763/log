@@ -4,7 +4,9 @@ public interface ILogBuilder
 {
     ILogBuilder add(Object content);
 
-    ILogBuilder add(String key, Object value);
+    ILogBuilder kv(String key, Object value);
+
+    ILogBuilder instance(Object instance);
 
     ILogBuilder uuid(String uuid);
 

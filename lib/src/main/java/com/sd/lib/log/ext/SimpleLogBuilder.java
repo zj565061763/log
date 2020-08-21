@@ -37,7 +37,7 @@ public class SimpleLogBuilder implements ILogBuilder
     }
 
     @Override
-    public ILogBuilder add(String key, Object value)
+    public ILogBuilder kv(String key, Object value)
     {
         if (TextUtils.isEmpty(key))
             return this;
@@ -47,9 +47,15 @@ public class SimpleLogBuilder implements ILogBuilder
     }
 
     @Override
+    public ILogBuilder instance(Object instance)
+    {
+        return kv("instance", instance);
+    }
+
+    @Override
     public ILogBuilder uuid(String uuid)
     {
-        return add("uuid", uuid);
+        return kv("uuid", uuid);
     }
 
     @Override
