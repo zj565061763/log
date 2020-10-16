@@ -57,6 +57,12 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
+    public ILogBuilder instanceHash(Object instance)
+    {
+        return pair("instanceHash", System.identityHashCode(System.in));
+    }
+
+    @Override
     public ILogBuilder uuid(String uuid)
     {
         return pair("uuid", uuid);
