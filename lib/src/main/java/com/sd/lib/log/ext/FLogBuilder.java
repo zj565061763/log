@@ -46,7 +46,8 @@ public class FLogBuilder implements ILogBuilder
         if (TextUtils.isEmpty(key))
             return this;
 
-        mList.add(new KeyValue(key, value));
+        final String stringValue = value == null ? "null" : value.toString();
+        mList.add(new KeyValue(key, stringValue));
         return this;
     }
 
@@ -59,7 +60,8 @@ public class FLogBuilder implements ILogBuilder
     @Override
     public ILogBuilder instanceHash(Object instance)
     {
-        return pair("instanceHash", System.identityHashCode(System.in));
+        final String stringValue = instance == null ? null : instance.getClass().getName() + "@" + Integer.toHexString(instance.hashCode());
+        return pair("instanceHash", stringValue);
     }
 
     @Override
