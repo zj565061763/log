@@ -1,9 +1,11 @@
 package com.sd.log;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.sd.lib.log.FLogger;
+import com.sd.lib.log.ext.FLogBuilder;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        FLogger.get(AppLogger.class).info("onResume");
+        FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder().instanceHash(getWindow().getDecorView()));
     }
 
     @Override
