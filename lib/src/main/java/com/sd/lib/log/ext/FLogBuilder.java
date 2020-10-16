@@ -54,14 +54,13 @@ public class FLogBuilder implements ILogBuilder
     @Override
     public ILogBuilder instance(Object instance)
     {
-        return pair("instance", instance);
+        return pair("instance", getInstanceHash(instance));
     }
 
     @Override
-    public ILogBuilder instanceHash(Object instance)
+    public ILogBuilder instanceString(Object instance)
     {
-        final String stringValue = instance == null ? null : instance.getClass().getName() + "@" + Integer.toHexString(instance.hashCode());
-        return pair("instanceHash", stringValue);
+        return pair("instanceString", instance);
     }
 
     @Override
@@ -111,6 +110,11 @@ public class FLogBuilder implements ILogBuilder
     public String toString()
     {
         return build();
+    }
+
+    private static String getInstanceHash(Object object)
+    {
+        return object == null ? null : object.getClass().getName() + "@" + Integer.toHexString(object.hashCode());
     }
 
     private final class KeyValue

@@ -10,7 +10,7 @@ public interface ILogBuilder
 
     ILogBuilder instance(Object instance);
 
-    ILogBuilder instanceHash(Object instance);
+    ILogBuilder instanceString(Object instance);
 
     ILogBuilder uuid(String uuid);
 
