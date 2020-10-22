@@ -80,7 +80,8 @@ public class FLogBuilder implements ILogBuilder
     @Override
     public ILogBuilder instanceString(Object instance)
     {
-        return pair("instanceString", instance);
+        final String stringValue = instance == null ? "null" : instance.toString();
+        return pair("instanceString", stringValue);
     }
 
     @Override

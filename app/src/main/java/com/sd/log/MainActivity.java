@@ -2,7 +2,6 @@ package com.sd.log;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,10 +29,11 @@ public class MainActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        final View decorView = findViewById(Window.ID_ANDROID_CONTENT);
+        final View textView = findViewById(R.id.tv_content);
         FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder()
-                .instance(decorView)
-                .instanceString(decorView));
+                .pair("textView", textView)
+                .instance(textView)
+                .instanceString(textView));
     }
 
     @Override
