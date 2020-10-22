@@ -1,6 +1,7 @@
 package com.sd.lib.log.ext;
 
 import android.text.TextUtils;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +10,19 @@ public class FLogBuilder implements ILogBuilder
 {
     private ILogFormatter mFormatter;
     private final List<KeyValue> mList = new ArrayList<>();
+    private boolean mHashPairView = true;
 
     @Override
     public ILogBuilder setFormatter(ILogFormatter formatter)
     {
         mFormatter = formatter;
+        return this;
+    }
+
+    @Override
+    public ILogBuilder setHashPairView(boolean hash)
+    {
+        mHashPairView = hash;
         return this;
     }
 
@@ -46,7 +55,18 @@ public class FLogBuilder implements ILogBuilder
         if (TextUtils.isEmpty(key))
             return this;
 
-        final String stringValue = value == null ? "null" : value.toString();
+        String stringValue = null;
+        if (value == null)
+        {
+            stringValue = "null";
+        } else
+        {
+            if (value instanceof View)
+                stringValue = getInstanceHash(value);
+            else
+                stringValue = value.toString();
+        }
+
         mList.add(new KeyValue(key, stringValue));
         return this;
     }

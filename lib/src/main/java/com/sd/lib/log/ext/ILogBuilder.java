@@ -4,6 +4,8 @@ public interface ILogBuilder
 {
     ILogBuilder setFormatter(ILogFormatter formatter);
 
+    ILogBuilder setHashPairView(boolean hashView);
+
     ILogBuilder add(Object content);
 
     ILogBuilder pair(String key, Object value);
