@@ -10,6 +10,8 @@ public interface ILogBuilder
 
     ILogBuilder pair(String key, Object value);
 
+    ILogBuilder pairHash(String key, Object value);
+
     ILogBuilder instance(Object instance);
 
     ILogBuilder instanceString(Object instance);

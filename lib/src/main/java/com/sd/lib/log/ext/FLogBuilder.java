@@ -61,7 +61,7 @@ public class FLogBuilder implements ILogBuilder
             stringValue = "null";
         } else
         {
-            if (value instanceof View)
+            if (mHashPairView && (value instanceof View))
                 stringValue = getInstanceHash(value);
             else
                 stringValue = value.toString();
@@ -69,6 +69,12 @@ public class FLogBuilder implements ILogBuilder
 
         mList.add(new KeyValue(key, stringValue));
         return this;
+    }
+
+    @Override
+    public ILogBuilder pairHash(String key, Object value)
+    {
+        return pair(key, getInstanceHash(value));
     }
 
     @Override
