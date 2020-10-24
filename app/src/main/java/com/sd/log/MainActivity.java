@@ -31,11 +31,11 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         final View textView = findViewById(R.id.tv_content);
 
-        FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder()
-                .pair("textView", textView)
-                .pairHash("textView hash", textView)
-                .pairStr("textView string", textView)
-                .instance(textView)
+        FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder().nextLine()
+                .pair("textView", textView).nextLine()
+                .pairHash("textView hash", textView).nextLine()
+                .pairStr("textView string", textView).nextLine()
+                .instance(textView).nextLine()
                 .instanceStr(textView));
     }
 

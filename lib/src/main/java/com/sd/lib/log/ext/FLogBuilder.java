@@ -103,6 +103,12 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
+    public ILogBuilder nextLine()
+    {
+        return add("\r\n");
+    }
+
+    @Override
     public ILogBuilder clear()
     {
         mList.clear();

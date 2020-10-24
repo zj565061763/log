@@ -20,6 +20,8 @@ public interface ILogBuilder
 
     ILogBuilder uuid(String uuid);
 
+    ILogBuilder nextLine();
+
     ILogBuilder clear();
 
     String build();
