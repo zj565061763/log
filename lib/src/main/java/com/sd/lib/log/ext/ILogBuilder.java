@@ -22,6 +22,10 @@ public interface ILogBuilder
 
     ILogBuilder nextLine();
 
+    ILogBuilder clazz(Class<?> clazz);
+
+    ILogBuilder clazzFull(Class<?> clazz);
+
     ILogBuilder clear();
 
     String build();

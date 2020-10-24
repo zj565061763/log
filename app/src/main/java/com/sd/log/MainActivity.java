@@ -43,7 +43,11 @@ public class MainActivity extends AppCompatActivity
     protected void onStop()
     {
         super.onStop();
-        FLogger.get(AppLogger.class).info("onStop");
+        FLogger.get(AppLogger.class).info(new FLogBuilder()
+                .clazz(MainActivity.class)
+                .clazzFull(MainActivity.class)
+                .add("onStop")
+                .toString());
     }
 
     @Override

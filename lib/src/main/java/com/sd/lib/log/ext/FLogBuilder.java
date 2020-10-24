@@ -109,6 +109,20 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
+    public ILogBuilder clazz(Class<?> clazz)
+    {
+        final String stringValue = clazz == null ? "null" : clazz.getSimpleName();
+        return add(stringValue);
+    }
+
+    @Override
+    public ILogBuilder clazzFull(Class<?> clazz)
+    {
+        final String stringValue = clazz == null ? "null" : clazz.getName();
+        return add(stringValue);
+    }
+
+    @Override
     public ILogBuilder clear()
     {
         mList.clear();
@@ -126,10 +140,7 @@ public class FLogBuilder implements ILogBuilder
         int index = 0;
         for (KeyValue item : mList)
         {
-            if (index == 0)
-                builder.append(" ");
-            else
-                builder.append(getFormatter().getSeparatorBetweenPart());
+            builder.append(getFormatter().getSeparatorBetweenPart());
 
             if (TextUtils.isEmpty(item.key))
             {
@@ -138,6 +149,9 @@ public class FLogBuilder implements ILogBuilder
             {
                 builder.append(item.key).append(getFormatter().getSeparatorForKeyValue()).append(item.value);
             }
+
+            if (index == mList.size() - 1)
+                builder.append(" ");
 
             index++;
         }
