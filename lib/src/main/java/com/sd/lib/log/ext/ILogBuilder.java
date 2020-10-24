@@ -12,9 +12,11 @@ public interface ILogBuilder
 
     ILogBuilder pairHash(String key, Object value);
 
+    ILogBuilder pairStr(String key, Object value);
+
     ILogBuilder instance(Object instance);
 
-    ILogBuilder instanceString(Object instance);
+    ILogBuilder instanceStr(Object instance);
 
     ILogBuilder uuid(String uuid);
 

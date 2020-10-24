@@ -2,7 +2,6 @@ package com.sd.log;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,13 +30,13 @@ public class MainActivity extends AppCompatActivity
     {
         super.onResume();
         final View textView = findViewById(R.id.tv_content);
-        final View contentView = findViewById(Window.ID_ANDROID_CONTENT);
 
         FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder()
                 .pair("textView", textView)
-                .pairHash("contentView", contentView)
+                .pairHash("textView hash", textView)
+                .pairStr("textView string", textView)
                 .instance(textView)
-                .instanceString(textView));
+                .instanceStr(textView));
     }
 
     @Override
