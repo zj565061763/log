@@ -1,9 +1,12 @@
 package com.sd.log;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.sd.lib.log.FLogger;
+import com.sd.lib.log.ext.FLogBuilder;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -22,13 +25,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        FLogger.get(AppLogger.class).info("onResume");
+        final View textView = findViewById(R.id.tv_content);
+
+        FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder().nextLine()
+                .pair("textView", textView).nextLine()
+                .pairHash("textView hash", textView).nextLine()
+                .pairStr("textView string", textView).nextLine()
+                .instance(textView).nextLine()
+                .instanceStr(textView));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        FLogger.get(AppLogger.class).info("onStop");
+        FLogger.get(AppLogger.class).info(new FLogBuilder()
+                .clazz(MainActivity.class)
+                .clazzFull(MainActivity.class)
+                .add("onStop")
+                .toString());
     }
 
     @Override
