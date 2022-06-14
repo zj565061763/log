@@ -1,7 +1,6 @@
 package com.sd.lib.log.ext;
 
-public interface ILogBuilder
-{
+public interface ILogBuilder {
     ILogBuilder setFormatter(ILogFormatter formatter);
 
     ILogBuilder setHashPairView(boolean hashView);
@@ -30,8 +29,7 @@ public interface ILogBuilder
 
     String build();
 
-    interface ILogFormatter
-    {
+    interface ILogFormatter {
         String getSeparatorForKeyValue();
 
         String getSeparatorBetweenPart();

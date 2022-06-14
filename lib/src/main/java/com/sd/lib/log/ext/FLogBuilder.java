@@ -6,43 +6,40 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FLogBuilder implements ILogBuilder
-{
+public class FLogBuilder implements ILogBuilder {
     private ILogFormatter mFormatter;
     private final List<KeyValue> mList = new ArrayList<>();
     private boolean mHashPairView = true;
 
     @Override
-    public ILogBuilder setFormatter(ILogFormatter formatter)
-    {
+    public ILogBuilder setFormatter(ILogFormatter formatter) {
         mFormatter = formatter;
         return this;
     }
 
     @Override
-    public ILogBuilder setHashPairView(boolean hash)
-    {
+    public ILogBuilder setHashPairView(boolean hash) {
         mHashPairView = hash;
         return this;
     }
 
-    private ILogFormatter getFormatter()
-    {
-        if (mFormatter == null)
+    private ILogFormatter getFormatter() {
+        if (mFormatter == null) {
             return InternalLogFormatter.DEFAULT;
+        }
         return mFormatter;
     }
 
     @Override
-    public ILogBuilder add(Object content)
-    {
-        if (content == null)
+    public ILogBuilder add(Object content) {
+        if (content == null) {
             return this;
+        }
 
-        if (content instanceof String)
-        {
-            if (TextUtils.isEmpty(content.toString()))
+        if (content instanceof String) {
+            if (TextUtils.isEmpty(content.toString())) {
                 return this;
+            }
         }
 
         mList.add(new KeyValue(null, content));
@@ -50,21 +47,20 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
-    public ILogBuilder pair(String key, Object value)
-    {
-        if (TextUtils.isEmpty(key))
+    public ILogBuilder pair(String key, Object value) {
+        if (TextUtils.isEmpty(key)) {
             return this;
+        }
 
         String stringValue = null;
-        if (value == null)
-        {
+        if (value == null) {
             stringValue = "null";
-        } else
-        {
-            if (mHashPairView && (value instanceof View))
+        } else {
+            if (mHashPairView && (value instanceof View)) {
                 stringValue = getInstanceHash(value);
-            else
+            } else {
                 stringValue = value.toString();
+            }
         }
 
         mList.add(new KeyValue(key, stringValue));
@@ -72,86 +68,75 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
-    public ILogBuilder pairHash(String key, Object value)
-    {
+    public ILogBuilder pairHash(String key, Object value) {
         return pair(key, getInstanceHash(value));
     }
 
     @Override
-    public ILogBuilder pairStr(String key, Object value)
-    {
+    public ILogBuilder pairStr(String key, Object value) {
         return pair(key, getInstanceString(value));
     }
 
     @Override
-    public ILogBuilder instance(Object instance)
-    {
+    public ILogBuilder instance(Object instance) {
         return pair("instance", getInstanceHash(instance));
     }
 
     @Override
-    public ILogBuilder instanceStr(Object instance)
-    {
+    public ILogBuilder instanceStr(Object instance) {
         final String stringValue = instance == null ? "null" : instance.toString();
         return pair("instanceStr", stringValue);
     }
 
     @Override
-    public ILogBuilder uuid(String uuid)
-    {
+    public ILogBuilder uuid(String uuid) {
         return pair("uuid", uuid);
     }
 
     @Override
-    public ILogBuilder nextLine()
-    {
+    public ILogBuilder nextLine() {
         return add("\r\n");
     }
 
     @Override
-    public ILogBuilder clazz(Class<?> clazz)
-    {
+    public ILogBuilder clazz(Class<?> clazz) {
         final String stringValue = clazz == null ? "null" : clazz.getSimpleName();
         return add(stringValue);
     }
 
     @Override
-    public ILogBuilder clazzFull(Class<?> clazz)
-    {
+    public ILogBuilder clazzFull(Class<?> clazz) {
         final String stringValue = clazz == null ? "null" : clazz.getName();
         return add(stringValue);
     }
 
     @Override
-    public ILogBuilder clear()
-    {
+    public ILogBuilder clear() {
         mList.clear();
         return this;
     }
 
     @Override
-    public String build()
-    {
-        if (mList.isEmpty())
+    public String build() {
+        if (mList.isEmpty()) {
             return "";
+        }
 
         final StringBuilder builder = new StringBuilder();
 
         int index = 0;
-        for (KeyValue item : mList)
-        {
+        for (KeyValue item : mList) {
             builder.append(getFormatter().getSeparatorBetweenPart());
 
-            if (TextUtils.isEmpty(item.key))
-            {
+            if (TextUtils.isEmpty(item.key)) {
                 builder.append(item.value);
-            } else
-            {
+            } else {
                 builder.append(item.key).append(getFormatter().getSeparatorForKeyValue()).append(item.value);
             }
 
-            if (index == mList.size() - 1)
+            if (index == mList.size() - 1) {
                 builder.append(" ");
+            }
 
             index++;
         }
@@ -160,46 +145,38 @@ public class FLogBuilder implements ILogBuilder
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return build();
     }
 
-    private static String getInstanceHash(Object object)
-    {
+    private static String getInstanceHash(Object object) {
         return object == null ? null : object.getClass().getName() + "@" + Integer.toHexString(object.hashCode());
     }
 
-    private static String getInstanceString(Object object)
-    {
+    private static String getInstanceString(Object object) {
         return object == null ? null : object.toString();
     }
 
-    private final class KeyValue
-    {
+    private final class KeyValue {
         public final String key;
         public final Object value;
 
-        public KeyValue(String key, Object value)
-        {
+        public KeyValue(String key, Object value) {
             this.key = key;
             this.value = value;
         }
     }
 
-    private static final class InternalLogFormatter implements ILogFormatter
-    {
+    private static final class InternalLogFormatter implements ILogFormatter {
         public static final InternalLogFormatter DEFAULT = new InternalLogFormatter();
 
         @Override
-        public String getSeparatorForKeyValue()
-        {
+        public String getSeparatorForKeyValue() {
             return ":";
         }
 
         @Override
-        public String getSeparatorBetweenPart()
-        {
+        public String getSeparatorBetweenPart() {
             return "|";
         }
     }
