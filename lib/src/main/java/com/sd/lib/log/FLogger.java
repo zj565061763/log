@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class FLogger
-{
+public abstract class FLogger {
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
 
@@ -27,11 +26,11 @@ public abstract class FLogger
     private int mLogFileLimit;
     private Level mLogFileLevel;
 
-    protected FLogger()
-    {
+    protected FLogger() {
         final Class<?> clazz = getClass();
-        if (MAP_TAG.remove(clazz) == null)
+        if (MAP_TAG.remove(clazz) == null) {
             throw new RuntimeException("you can not call this constructor");
+        }
 
         mLogger = Logger.getLogger(clazz.getName());
         mLogger.setLevel(sGlobalLevel);
@@ -51,27 +50,27 @@ public abstract class FLogger
      * @param <T>
      * @return
      */
-    public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz)
-    {
-        if (clazz == null)
+    public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz) {
+        if (clazz == null) {
             throw new IllegalArgumentException("clazz is null when get logger");
-        if (clazz == FLogger.class)
+        }
+        if (clazz == FLogger.class) {
             throw new IllegalArgumentException("clazz must not be " + FLogger.class);
+        }
 
         FLogger logger = MAP_LOGGER.get(clazz);
-        if (logger != null)
+        if (logger != null) {
             return logger;
+        }
 
-        try
-        {
+        try {
             MAP_TAG.put(clazz, clazz);
             logger = clazz.newInstance();
 
             MAP_LOGGER.put(clazz, logger);
             logger.onCreate();
             return logger;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -79,10 +78,8 @@ public abstract class FLogger
     /**
      * 清空所有日志对象
      */
-    public synchronized static void clearLogger()
-    {
-        for (FLogger item : MAP_LOGGER.values())
-        {
+    public synchronized static void clearLogger() {
+        for (FLogger item : MAP_LOGGER.values()) {
             item.closeLogFile();
         }
 
@@ -96,13 +93,12 @@ public abstract class FLogger
      *
      * @param level
      */
-    public synchronized static final void setGlobalLevel(Level level)
-    {
-        if (level == null)
+    public synchronized static final void setGlobalLevel(Level level) {
+        if (level == null) {
             level = Level.ALL;
+        }
 
-        if (sGlobalLevel != level)
-        {
+        if (sGlobalLevel != level) {
             sGlobalLevel = level;
             clearLogger();
         }
@@ -113,8 +109,7 @@ public abstract class FLogger
      *
      * @return
      */
-    public Level getLevel()
-    {
+    public Level getLevel() {
         return mLogger.getLevel();
     }
 
@@ -123,17 +118,17 @@ public abstract class FLogger
      *
      * @param level
      */
-    public synchronized final void setLevel(Level level)
-    {
-        if (level == null)
+    public synchronized final void setLevel(Level level) {
+        if (level == null) {
             level = Level.ALL;
+        }
 
         mLogger.setLevel(level);
 
-        if (mFileHandler != null)
-        {
-            if (mLogFileLevel == null)
+        if (mFileHandler != null) {
+            if (mLogFileLevel == null) {
                 mFileHandler.setLevel(level);
+            }
         }
     }
 
@@ -142,14 +137,13 @@ public abstract class FLogger
      *
      * @param level null-表示跟随默认的日志等级
      */
-    public synchronized final void setFileLevel(Level level)
-    {
-        if (mLogFileLevel != level)
-        {
+    public synchronized final void setFileLevel(Level level) {
+        if (mLogFileLevel != level) {
             mLogFileLevel = level;
 
-            if (mFileHandler != null)
+            if (mFileHandler != null) {
                 mFileHandler.setLevel(level != null ? level : mLogger.getLevel());
+            }
         }
     }
 
@@ -159,18 +153,16 @@ public abstract class FLogger
      * @param context
      * @param limitMB 文件大小限制(MB)
      */
-    public synchronized final void openLogFile(Context context, int limitMB)
-    {
-        if (limitMB <= 0)
+    public synchronized final void openLogFile(Context context, int limitMB) {
+        if (limitMB <= 0) {
             throw new IllegalArgumentException("limitMB must greater than 0");
+        }
 
-        if (mFileHandler == null || mLogFileLimit != limitMB)
-        {
+        if (mFileHandler == null || mLogFileLimit != limitMB) {
             mContext = context.getApplicationContext();
             closeLogFileInternal();
 
-            try
-            {
+            try {
                 mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
                 mFileHandler.setFormatter(new SimpleLogFormatter());
                 mFileHandler.setLevel(mLogFileLevel != null ? mLogFileLevel : mLogger.getLevel());
@@ -178,8 +170,7 @@ public abstract class FLogger
                 mLogger.addHandler(mFileHandler);
                 mLogFileLimit = limitMB;
 
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -188,15 +179,12 @@ public abstract class FLogger
     /**
      * 关闭日志文件功能
      */
-    public synchronized final void closeLogFile()
-    {
+    public synchronized final void closeLogFile() {
         closeLogFileInternal();
     }
 
-    private void closeLogFileInternal()
-    {
-        if (mFileHandler != null)
-        {
+    private void closeLogFileInternal() {
+        if (mFileHandler != null) {
             mFileHandler.close();
             mLogger.removeHandler(mFileHandler);
             mFileHandler = null;
@@ -204,41 +192,34 @@ public abstract class FLogger
     }
 
     @Override
-    protected void finalize() throws Throwable
-    {
+    protected void finalize() throws Throwable {
         super.finalize();
         closeLogFileInternal();
     }
 
     //---------- log start ----------
 
-    public final void info(String msg)
-    {
+    public final void info(String msg) {
         log(Level.INFO, msg);
     }
 
-    public final void warning(String msg)
-    {
+    public final void warning(String msg) {
         log(Level.WARNING, msg);
     }
 
-    public final void severe(String msg)
-    {
+    public final void severe(String msg) {
         log(Level.SEVERE, msg);
     }
 
-    public final void severe(String msg, Throwable throwable)
-    {
+    public final void severe(String msg, Throwable throwable) {
         log(Level.SEVERE, msg, throwable);
     }
 
-    public final void log(Level level, String msg)
-    {
+    public final void log(Level level, String msg) {
         mLogger.log(level, msg);
     }
 
-    public final void log(Level level, String msg, Throwable thrown)
-    {
+    public final void log(Level level, String msg, Throwable thrown) {
         mLogger.log(level, msg, thrown);
     }
 
@@ -249,14 +230,15 @@ public abstract class FLogger
      *
      * @param context
      */
-    public static synchronized void deleteLogFile(Context context)
-    {
+    public static synchronized void deleteLogFile(Context context) {
         final File dir = SimpleFileHandler.getLogFileDir(context);
-        if (dir == null)
+        if (dir == null) {
             return;
+        }
 
-        if (!dir.exists())
+        if (!dir.exists()) {
             return;
+        }
 
         clearLogger();
         deleteFileOrDir(dir);
@@ -269,54 +251,51 @@ public abstract class FLogger
      * @param saveDays 要保留的日志天数
      * @return 被删除的日志天数
      */
-    public static synchronized int deleteExpiredLogDir(Context context, int saveDays)
-    {
-        if (saveDays <= 0)
+    public static synchronized int deleteExpiredLogDir(Context context, int saveDays) {
+        if (saveDays <= 0) {
             return 0;
+        }
 
         final File dir = SimpleFileHandler.getLogFileDir(context);
-        if (dir == null)
+        if (dir == null) {
             return 0;
+        }
 
         final File[] files = dir.listFiles();
-        if (files == null || files.length <= 0)
+        if (files == null || files.length <= 0) {
             return 0;
+        }
 
         final int logDay = saveDays - 1;
         final Calendar calendar = Calendar.getInstance();
-        if (logDay > 0)
+        if (logDay > 0) {
             calendar.add(Calendar.DAY_OF_YEAR, -logDay);
+        }
 
         final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         final String dateLimitString = format.format(calendar.getTime());
 
         long dateLimit = 0;
-        try
-        {
+        try {
             dateLimit = format.parse(dateLimitString).getTime();
-        } catch (ParseException e)
-        {
+        } catch (ParseException e) {
             e.printStackTrace();
             return 0;
         }
 
         final List<File> listExpired = new ArrayList<>(5);
-        for (File item : files)
-        {
-            if (item.isFile())
-            {
+        for (File item : files) {
+            if (item.isFile()) {
                 item.delete();
-            } else if (item.isDirectory())
-            {
+            } else if (item.isDirectory()) {
                 final String filename = item.getName();
-                try
-                {
+                try {
                     final long dateFile = format.parse(filename).getTime();
                     final long dateDelta = dateFile - dateLimit;
-                    if (dateDelta < 0)
+                    if (dateDelta < 0) {
                         listExpired.add(item);
-                } catch (ParseException e)
-                {
+                    }
+                } catch (ParseException e) {
                     e.printStackTrace();
                     deleteFileOrDir(item);
                     continue;
@@ -324,32 +303,31 @@ public abstract class FLogger
             }
         }
 
-        if (listExpired.isEmpty())
+        if (listExpired.isEmpty()) {
             return 0;
+        }
 
         // 删除之前要先清空日志对象
         clearLogger();
-        for (File item : listExpired)
-        {
+        for (File item : listExpired) {
             deleteFileOrDir(item);
         }
 
         return listExpired.size();
     }
 
-    private static boolean deleteFileOrDir(File file)
-    {
-        if (file == null || !file.exists())
+    private static boolean deleteFileOrDir(File file) {
+        if (file == null || !file.exists()) {
             return true;
+        }
 
-        if (file.isFile())
+        if (file.isFile()) {
             return file.delete();
+        }
 
         final File[] files = file.listFiles();
-        if (files != null)
-        {
-            for (File item : files)
-            {
+        if (files != null) {
+            for (File item : files) {
                 deleteFileOrDir(item);
             }
         }
