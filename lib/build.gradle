@@ -1,15 +1,18 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
 
-group = 'com.github.zj565061763'
+def libGroupId = "com.sd.lib.android"
+def libArtifactId = "log"
+def libVersionName = "1.2.0-rc1"
 
 android {
-    compileSdkVersion 27
+    compileSdk 32
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 20200306
-        versionName "1.2.0-rc1"
+        minSdk 19
+        targetSdk 32
     }
 
     buildTypes {
@@ -18,40 +21,38 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        kotlinOptions.freeCompilerArgs += ['-module-name', "$libGroupId.$libArtifactId"]
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
 }
 
-// 指定编码
-tasks.withType(Javadoc) {
-    options {
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        failOnError false
-    }
-}
-
-// 打包源码
-task sourcesJar(type: Jar) {
+task generateSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    classifier 'sources'
 }
 
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
 
-// 制作文档(Javadoc)
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
+                groupId = libGroupId
+                artifactId = libArtifactId
+                version = libVersionName
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+                // 上传源码
+                artifact generateSourcesJar
+            }
+        }
+    }
 }
