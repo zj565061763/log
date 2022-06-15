@@ -35,6 +35,7 @@ abstract class FLogger protected constructor() {
      */
     @Synchronized
     fun setLevel(level: Level?) {
+        if (!_isAlive) return
         val safeLevel = level ?: Level.ALL
         _logger.level = safeLevel
         _logFileHandler?.level = safeLevel
@@ -62,6 +63,7 @@ abstract class FLogger protected constructor() {
     @Synchronized
     private fun openLogFileInternal(context: Context, limitMB: Int) {
         require(limitMB > 0) { "limitMB must greater than 0" }
+        if (!_isAlive) return
         if (_logFileHandler != null && _logFileLimit == limitMB) {
             return
         }
@@ -174,8 +176,8 @@ abstract class FLogger protected constructor() {
         fun clearLogger() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
-                    item.closeLogFile()
                     item._isAlive = false
+                    item.closeLogFile()
                 }
                 sLoggerHolder.clear()
             }
