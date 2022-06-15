@@ -1,6 +1,7 @@
 package com.sd.lib.log
 
 import android.content.Context
+import com.sd.lib.context.FContext
 import java.io.File
 import java.text.ParseException
 import java.util.*
@@ -120,25 +121,11 @@ abstract class FLogger protected constructor() {
     companion object {
         private val sLoggerHolder: MutableMap<Class<*>, FLogger> = HashMap()
         private var sGlobalLevel = Level.ALL
-        private var sContext: Context? = null
 
         private val savedContext: Context
             get() {
-                return checkNotNull(sContext) { "You should call FLogger.init(Context) before this" }
+                return checkNotNull(FContext.get()) { "Context is null" }
             }
-
-        /**
-         * 初始化
-         */
-        @JvmStatic
-        fun init(context: Context?) {
-            if (context == null) return
-            synchronized(this@Companion) {
-                if (sContext == null) {
-                    sContext = context.applicationContext
-                }
-            }
-        }
 
         /**
          * 获得指定的日志类对象，内部会保存日志对象
