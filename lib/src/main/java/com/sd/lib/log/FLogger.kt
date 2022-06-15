@@ -14,6 +14,8 @@ abstract class FLogger protected constructor() {
         level = sGlobalLevel
     }
 
+    @Volatile
+    private var _isAlive = true
     private var _logFileLimit = 0
     private var _logFileHandler: SimpleFileHandler? = null
 
@@ -109,11 +111,15 @@ abstract class FLogger protected constructor() {
     }
 
     fun log(level: Level, msg: String?) {
-        _logger.log(level, msg ?: "")
+        if (_isAlive) {
+            _logger.log(level, msg ?: "")
+        }
     }
 
     fun log(level: Level, msg: String?, thrown: Throwable?) {
-        _logger.log(level, msg ?: "", thrown)
+        if (_isAlive) {
+            _logger.log(level, msg ?: "", thrown)
+        }
     }
 
     //---------- log end ----------
@@ -169,6 +175,7 @@ abstract class FLogger protected constructor() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
                     item.closeLogFile()
+                    item._isAlive = false
                 }
                 sLoggerHolder.clear()
             }
