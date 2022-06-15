@@ -1,61 +1,61 @@
-package com.sd.log;
+package com.sd.log
 
-import android.os.Bundle;
-import android.view.View;
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.sd.lib.log.FLogger
+import com.sd.lib.log.ext.FLogBuilder
+import com.sd.lib.log.info
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.sd.lib.log.FLogger;
-import com.sd.lib.log.ext.FLogBuilder;
-
-public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        FLogger.get(AppLogger.class).info("onCreate");
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        // 传统写法
+        FLogger.get(AppLogger::class.java).info("onCreate")
 
         // 删除所有日志文件
-//        FLogger.deleteLogFile();
+//        FLogger.deleteLogFile()
 
         // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
-        FLogger.deleteLogFile(1);
+        FLogger.deleteLogFile(1)
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FLogger.get(AppLogger.class).info("onStart");
+    override fun onStart() {
+        super.onStart()
+        // Kotlin扩展写法
+        AppLogger::class.java.info { "onStart" }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        final View textView = findViewById(R.id.tv_content);
+    override fun onResume() {
+        super.onResume()
+        val textView = findViewById<View>(R.id.tv_content)
 
-        FLogger.get(AppLogger.class).info("onResume" + new FLogBuilder().nextLine()
+        // FlogBuilder写法
+        AppLogger::class.java.info {
+            FLogBuilder().add("onResume").nextLine()
                 .pair("textView", textView).nextLine()
                 .pairHash("textView hash", textView).nextLine()
                 .pairStr("textView string", textView).nextLine()
                 .instance(textView).nextLine()
-                .instanceStr(textView));
+                .instanceStr(textView)
+        }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        final String nullValue = null;
-        FLogger.get(AppLogger.class).info(new FLogBuilder()
-                .clazz(MainActivity.class)
-                .clazzFull(MainActivity.class)
+    override fun onStop() {
+        super.onStop()
+        val nullValue: String? = null
+        AppLogger::class.java.info {
+            FLogBuilder()
+                .clazz(MainActivity::class.java)
+                .clazzFull(MainActivity::class.java)
                 .add("onStop")
                 .pair("nullValue", nullValue)
-                .toString());
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        FLogger.get(AppLogger.class).info("onDestroy");
+    override fun onDestroy() {
+        super.onDestroy()
+        AppLogger::class.java.info { "onDestroy" }
     }
 }
