@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public abstract class FLogger {
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
     private static Level sGlobalLevel = Level.ALL;
+    private static Context sContext = null;
 
     private final Logger mLogger;
 
@@ -31,6 +32,15 @@ public abstract class FLogger {
      * 日志对象被创建回调
      */
     protected abstract void onCreate();
+
+    /**
+     * 初始化
+     */
+    public synchronized static void init(Context context) {
+        if (sContext == null) {
+            sContext = context;
+        }
+    }
 
     /**
      * 获得指定的日志类对象
@@ -106,21 +116,36 @@ public abstract class FLogger {
     }
 
     /**
-     * 打开日志文件功能
+     * 开启日志文件
      *
      * @param limitMB 文件大小限制(MB)
      */
-    public synchronized final void openLogFile(Context context, int limitMB) {
+    public final void openLogFile(int limitMB) {
+        openLogFileInternal(sContext, limitMB);
+    }
+
+    /**
+     * 关闭日志文件
+     */
+    public final void closeLogFile() {
+        closeLogFileInternal();
+    }
+
+    /**
+     * 开启日志文件
+     *
+     * @param limitMB 文件大小限制(MB)
+     */
+    private synchronized void openLogFileInternal(Context context, int limitMB) {
         if (limitMB <= 0) {
             throw new IllegalArgumentException("limitMB must greater than 0");
         }
 
         if (mFileHandler == null || mLogFileLimit != limitMB) {
-            final Context appContext = context.getApplicationContext();
             closeLogFileInternal();
 
             try {
-                mFileHandler = new SimpleFileHandler(appContext, mLogger.getName(), limitMB);
+                mFileHandler = new SimpleFileHandler(context, mLogger.getName(), limitMB);
                 mFileHandler.setFormatter(new SimpleLogFormatter());
                 mFileHandler.setLevel(mLogger.getLevel());
 
@@ -133,24 +158,14 @@ public abstract class FLogger {
     }
 
     /**
-     * 关闭日志文件功能
+     * 关闭日志文件
      */
-    public final void closeLogFile() {
-        closeLogFileInternal();
-    }
-
     private synchronized void closeLogFileInternal() {
         if (mFileHandler != null) {
             mFileHandler.close();
             mLogger.removeHandler(mFileHandler);
             mFileHandler = null;
         }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        closeLogFileInternal();
     }
 
     //---------- log start ----------
