@@ -19,10 +19,9 @@ public abstract class FLogger {
 
     private final Logger mLogger;
 
-    private Context mContext;
-    private SimpleFileHandler mFileHandler;
     private int mLogFileLimit;
     private Level mLogFileLevel;
+    private SimpleFileHandler mFileHandler;
 
     protected FLogger() {
         mLogger = Logger.getLogger(getClass().getName());
@@ -136,17 +135,16 @@ public abstract class FLogger {
         }
 
         if (mFileHandler == null || mLogFileLimit != limitMB) {
-            mContext = context.getApplicationContext();
+            final Context appContext = context.getApplicationContext();
             closeLogFileInternal();
 
             try {
-                mFileHandler = new SimpleFileHandler(mContext, mLogger.getName(), limitMB);
+                mFileHandler = new SimpleFileHandler(appContext, mLogger.getName(), limitMB);
                 mFileHandler.setFormatter(new SimpleLogFormatter());
                 mFileHandler.setLevel(mLogFileLevel != null ? mLogFileLevel : mLogger.getLevel());
 
                 mLogger.addHandler(mFileHandler);
                 mLogFileLimit = limitMB;
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
