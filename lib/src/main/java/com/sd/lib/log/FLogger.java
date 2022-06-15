@@ -79,6 +79,7 @@ public abstract class FLogger {
         if (level == null) {
             level = Level.ALL;
         }
+
         if (sGlobalLevel != level) {
             sGlobalLevel = level;
             clearLogger();
@@ -86,14 +87,14 @@ public abstract class FLogger {
     }
 
     /**
-     * 返回日志等级
+     * 返回当前的日志等级
      */
     public Level getLevel() {
         return mLogger.getLevel();
     }
 
     /**
-     * 设置日志等级{@link Logger#setLevel(Level)}
+     * 设置日志等级
      */
     public synchronized final void setLevel(Level level) {
         if (level == null) {
@@ -102,8 +103,8 @@ public abstract class FLogger {
 
         mLogger.setLevel(level);
 
-        if (mFileHandler != null) {
-            if (mLogFileLevel == null) {
+        if (mLogFileLevel == null) {
+            if (mFileHandler != null) {
                 mFileHandler.setLevel(level);
             }
         }
