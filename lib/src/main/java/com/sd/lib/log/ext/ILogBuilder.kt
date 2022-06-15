@@ -1,37 +1,36 @@
-package com.sd.lib.log.ext;
+package com.sd.lib.log.ext
 
-public interface ILogBuilder {
-    ILogBuilder setFormatter(ILogFormatter formatter);
+interface ILogBuilder {
+    fun setFormatter(formatter: ILogFormatter?): ILogBuilder
 
-    ILogBuilder setHashPairView(boolean hashView);
+    fun setHashPairView(hashView: Boolean): ILogBuilder
 
-    ILogBuilder add(Object content);
+    fun add(content: Any?): ILogBuilder
 
-    ILogBuilder pair(String key, Object value);
+    fun pair(key: String?, value: Any?): ILogBuilder
 
-    ILogBuilder pairHash(String key, Object value);
+    fun pairHash(key: String?, value: Any?): ILogBuilder
 
-    ILogBuilder pairStr(String key, Object value);
+    fun pairStr(key: String?, value: Any?): ILogBuilder
 
-    ILogBuilder instance(Object instance);
+    fun instance(instance: Any?): ILogBuilder
 
-    ILogBuilder instanceStr(Object instance);
+    fun instanceStr(instance: Any?): ILogBuilder
 
-    ILogBuilder uuid(String uuid);
+    fun uuid(uuid: String?): ILogBuilder
 
-    ILogBuilder nextLine();
+    fun nextLine(): ILogBuilder
 
-    ILogBuilder clazz(Class<?> clazz);
+    fun clazz(clazz: Class<*>?): ILogBuilder
 
-    ILogBuilder clazzFull(Class<?> clazz);
+    fun clazzFull(clazz: Class<*>?): ILogBuilder
 
-    ILogBuilder clear();
+    fun clear(): ILogBuilder
 
-    String build();
+    fun build(): String
 
     interface ILogFormatter {
-        String getSeparatorForKeyValue();
-
-        String getSeparatorBetweenPart();
+        val separatorForKeyValue: String?
+        val separatorBetweenPart: String?
     }
 }
