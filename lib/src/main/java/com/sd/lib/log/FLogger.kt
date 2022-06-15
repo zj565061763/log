@@ -275,3 +275,10 @@ abstract class FLogger protected constructor() {
         }
     }
 }
+
+inline fun <T : FLogger> Class<T>.info(block: () -> Any) {
+    val log = block().toString()
+    if (log.isNotEmpty()) {
+        FLogger.get(this).info(log)
+    }
+}
