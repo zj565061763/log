@@ -211,60 +211,61 @@ abstract class FLogger protected constructor() {
          * @param saveDays 要保留的日志天数，如果 saveDays <= 0 ，则删除所有日志
          */
         @JvmStatic
-        @Synchronized
         fun deleteLogFile(saveDays: Int) {
-            val dir = SimpleFileHandler.getLogFileDir(savedContext)
-            if (!dir.exists()) return
+            synchronized(this@Companion) {
+                val dir = SimpleFileHandler.getLogFileDir(savedContext)
+                if (!dir.exists()) return
 
-            if (saveDays <= 0) {
-                // 删除全部日志
-                clearLogger()
-                deleteFileOrDir(dir)
-                return
-            }
-
-            val files = dir.listFiles()
-            if (files.isNullOrEmpty()) {
-                return
-            }
-
-            val calendar = Calendar.getInstance().apply {
-                add(Calendar.DAY_OF_YEAR, -(saveDays - 1))
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            val limitTime = calendar.time.time
-            val format = SimpleFileHandler.newDateFormat()
-
-            val listExpired = mutableListOf<File>()
-            for (item in files) {
-                if (item.isFile) {
-                    deleteFileOrDir(item)
-                    continue
+                if (saveDays <= 0) {
+                    // 删除全部日志
+                    clearLogger()
+                    deleteFileOrDir(dir)
+                    return
                 }
 
-                try {
-                    val fileTime = format.parse(item.name).time
-                    if (fileTime < limitTime) {
-                        listExpired.add(item)
+                val files = dir.listFiles()
+                if (files.isNullOrEmpty()) {
+                    return
+                }
+
+                val calendar = Calendar.getInstance().apply {
+                    add(Calendar.DAY_OF_YEAR, -(saveDays - 1))
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+
+                val limitTime = calendar.time.time
+                val format = SimpleFileHandler.newDateFormat()
+
+                val listExpired = mutableListOf<File>()
+                for (item in files) {
+                    if (item.isFile) {
+                        deleteFileOrDir(item)
+                        continue
                     }
-                } catch (e: ParseException) {
-                    e.printStackTrace()
+
+                    try {
+                        val fileTime = format.parse(item.name).time
+                        if (fileTime < limitTime) {
+                            listExpired.add(item)
+                        }
+                    } catch (e: ParseException) {
+                        e.printStackTrace()
+                        deleteFileOrDir(item)
+                    }
+                }
+
+                if (listExpired.isEmpty()) {
+                    return
+                }
+
+                // 删除之前要先清空日志对象
+                clearLogger()
+                for (item in listExpired) {
                     deleteFileOrDir(item)
                 }
-            }
-
-            if (listExpired.isEmpty()) {
-                return
-            }
-
-            // 删除之前要先清空日志对象
-            clearLogger()
-            for (item in listExpired) {
-                deleteFileOrDir(item)
             }
         }
 
