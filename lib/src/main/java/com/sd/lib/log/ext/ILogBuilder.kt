@@ -39,7 +39,7 @@ interface ILogBuilder {
     fun instance(instance: Any?): ILogBuilder
 
     /**
-     * 等价与：pair("instance", instance)，用[Object.toString]的方式显示instance对象
+     * 等价与：pair("instanceStr", instance)，用[Object.toString]的方式显示instance对象
      */
     fun instanceStr(instance: Any?): ILogBuilder
 
@@ -56,12 +56,12 @@ interface ILogBuilder {
     /**
      * 等价与：add(clazz.getSimpleName())
      */
-    fun clazz(clazz: Class<*>?): ILogBuilder
+    fun clazz(clazz: Class<*>): ILogBuilder
 
     /**
      * 等价与：add(clazz.getName())
      */
-    fun clazzFull(clazz: Class<*>?): ILogBuilder
+    fun clazzFull(clazz: Class<*>): ILogBuilder
 
     /**
      * 清空

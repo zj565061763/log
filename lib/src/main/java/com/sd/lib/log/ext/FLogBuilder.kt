@@ -31,14 +31,10 @@ class FLogBuilder : ILogBuilder {
     override fun pair(key: String?, value: Any?): ILogBuilder {
         if (key.isNullOrEmpty()) return this
 
-        val stringValue = if (value == null) {
-            "null"
+        val stringValue = if (_hashPairView && value is View) {
+            getInstanceHash(value)
         } else {
-            if (_hashPairView && value is View) {
-                getInstanceHash(value)
-            } else {
-                value.toString()
-            }
+            value.toString()
         }
         _list.add(KeyValue(key, stringValue))
         return this
@@ -49,7 +45,7 @@ class FLogBuilder : ILogBuilder {
     }
 
     override fun pairStr(key: String?, value: Any?): ILogBuilder {
-        return pair(key, getInstanceString(value))
+        return pair(key, value?.toString())
     }
 
     override fun instance(instance: Any?): ILogBuilder {
@@ -57,8 +53,7 @@ class FLogBuilder : ILogBuilder {
     }
 
     override fun instanceStr(instance: Any?): ILogBuilder {
-        val stringValue = instance?.toString() ?: "null"
-        return pair("instanceStr", stringValue)
+        return pair("instanceStr", instance?.toString())
     }
 
     override fun uuid(uuid: String?): ILogBuilder {
@@ -69,14 +64,12 @@ class FLogBuilder : ILogBuilder {
         return add("\r\n")
     }
 
-    override fun clazz(clazz: Class<*>?): ILogBuilder {
-        val stringValue = clazz?.simpleName ?: "null"
-        return add(stringValue)
+    override fun clazz(clazz: Class<*>): ILogBuilder {
+        return add(clazz.simpleName)
     }
 
-    override fun clazzFull(clazz: Class<*>?): ILogBuilder {
-        val stringValue = clazz?.name ?: "null"
-        return add(stringValue)
+    override fun clazzFull(clazz: Class<*>): ILogBuilder {
+        return add(clazz.name)
     }
 
     override fun clear(): ILogBuilder {
@@ -123,12 +116,9 @@ class FLogBuilder : ILogBuilder {
     }
 
     companion object {
-        private fun getInstanceHash(`object`: Any?): String? {
-            return if (`object` == null) null else `object`.javaClass.name + "@" + Integer.toHexString(`object`.hashCode())
-        }
-
-        private fun getInstanceString(`object`: Any?): String? {
-            return `object`?.toString()
+        private fun getInstanceHash(instance: Any?): String? {
+            if (instance == null) return null
+            return instance.javaClass.name + "@" + Integer.toHexString(instance.hashCode())
         }
     }
 }

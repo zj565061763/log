@@ -1,6 +1,7 @@
 package com.sd.log;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
 
         // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
         FLogger.deleteLogFile(1);
+
+        final String name = null;
+        final StringBuilder builder = new StringBuilder();
+        builder.append(name);
+        Log.i("AppLogger", builder.toString());
     }
 
     @Override
