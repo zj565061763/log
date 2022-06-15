@@ -37,8 +37,9 @@ public abstract class FLogger {
      * 初始化
      */
     public synchronized static void init(Context context) {
+        if (context == null) return;
         if (sContext == null) {
-            sContext = context;
+            sContext = context.getApplicationContext();
         }
     }
 
