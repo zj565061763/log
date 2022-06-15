@@ -1,183 +1,134 @@
-package com.sd.lib.log.ext;
+package com.sd.lib.log.ext
 
-import android.text.TextUtils;
-import android.view.View;
+import android.view.View
+import com.sd.lib.log.ext.ILogBuilder.ILogFormatter
 
-import java.util.ArrayList;
-import java.util.List;
+class FLogBuilder : ILogBuilder {
+    private val _list = mutableListOf<KeyValue>()
+    private var _formatter: ILogFormatter? = null
+    private var _hashPairView = true
 
-public class FLogBuilder implements ILogBuilder {
-    private ILogFormatter mFormatter;
-    private final List<KeyValue> mList = new ArrayList<>();
-    private boolean mHashPairView = true;
-
-    @Override
-    public ILogBuilder setFormatter(ILogFormatter formatter) {
-        mFormatter = formatter;
-        return this;
+    override fun setFormatter(formatter: ILogFormatter?): ILogBuilder {
+        _formatter = formatter
+        return this
     }
 
-    @Override
-    public ILogBuilder setHashPairView(boolean hash) {
-        mHashPairView = hash;
-        return this;
+    override fun setHashPairView(hash: Boolean): ILogBuilder {
+        _hashPairView = hash
+        return this
     }
 
-    private ILogFormatter getFormatter() {
-        if (mFormatter == null) {
-            return InternalLogFormatter.DEFAULT;
-        }
-        return mFormatter;
+    private val formatter: ILogFormatter
+        get() = _formatter ?: InternalLogFormatter.sDefault
+
+    override fun add(content: Any?): ILogBuilder {
+        if (content == null) return this
+        if (content is String && content.isEmpty()) return this
+        _list.add(KeyValue(null, content))
+        return this
     }
 
-    @Override
-    public ILogBuilder add(Object content) {
-        if (content == null) {
-            return this;
-        }
+    override fun pair(key: String?, value: Any?): ILogBuilder {
+        if (key.isNullOrEmpty()) return this
 
-        if (content instanceof String) {
-            if (TextUtils.isEmpty(content.toString())) {
-                return this;
-            }
-        }
-
-        mList.add(new KeyValue(null, content));
-        return this;
-    }
-
-    @Override
-    public ILogBuilder pair(String key, Object value) {
-        if (TextUtils.isEmpty(key)) {
-            return this;
-        }
-
-        String stringValue = null;
-        if (value == null) {
-            stringValue = "null";
+        val stringValue = if (value == null) {
+            "null"
         } else {
-            if (mHashPairView && (value instanceof View)) {
-                stringValue = getInstanceHash(value);
+            if (_hashPairView && value is View) {
+                getInstanceHash(value)
             } else {
-                stringValue = value.toString();
+                value.toString()
             }
         }
-
-        mList.add(new KeyValue(key, stringValue));
-        return this;
+        _list.add(KeyValue(key, stringValue))
+        return this
     }
 
-    @Override
-    public ILogBuilder pairHash(String key, Object value) {
-        return pair(key, getInstanceHash(value));
+    override fun pairHash(key: String?, value: Any?): ILogBuilder {
+        return pair(key, getInstanceHash(value))
     }
 
-    @Override
-    public ILogBuilder pairStr(String key, Object value) {
-        return pair(key, getInstanceString(value));
+    override fun pairStr(key: String?, value: Any?): ILogBuilder {
+        return pair(key, getInstanceString(value))
     }
 
-    @Override
-    public ILogBuilder instance(Object instance) {
-        return pair("instance", getInstanceHash(instance));
+    override fun instance(instance: Any?): ILogBuilder {
+        return pair("instance", getInstanceHash(instance))
     }
 
-    @Override
-    public ILogBuilder instanceStr(Object instance) {
-        final String stringValue = instance == null ? "null" : instance.toString();
-        return pair("instanceStr", stringValue);
+    override fun instanceStr(instance: Any?): ILogBuilder {
+        val stringValue = instance?.toString() ?: "null"
+        return pair("instanceStr", stringValue)
     }
 
-    @Override
-    public ILogBuilder uuid(String uuid) {
-        return pair("uuid", uuid);
+    override fun uuid(uuid: String?): ILogBuilder {
+        return pair("uuid", uuid)
     }
 
-    @Override
-    public ILogBuilder nextLine() {
-        return add("\r\n");
+    override fun nextLine(): ILogBuilder {
+        return add("\r\n")
     }
 
-    @Override
-    public ILogBuilder clazz(Class<?> clazz) {
-        final String stringValue = clazz == null ? "null" : clazz.getSimpleName();
-        return add(stringValue);
+    override fun clazz(clazz: Class<*>?): ILogBuilder {
+        val stringValue = clazz?.simpleName ?: "null"
+        return add(stringValue)
     }
 
-    @Override
-    public ILogBuilder clazzFull(Class<?> clazz) {
-        final String stringValue = clazz == null ? "null" : clazz.getName();
-        return add(stringValue);
+    override fun clazzFull(clazz: Class<*>?): ILogBuilder {
+        val stringValue = clazz?.name ?: "null"
+        return add(stringValue)
     }
 
-    @Override
-    public ILogBuilder clear() {
-        mList.clear();
-        return this;
+    override fun clear(): ILogBuilder {
+        _list.clear()
+        return this
     }
 
-    @Override
-    public String build() {
-        if (mList.isEmpty()) {
-            return "";
-        }
+    override fun build(): String {
+        if (_list.isEmpty()) return ""
 
-        final StringBuilder builder = new StringBuilder();
+        val builder = StringBuilder()
+        _list.forEachIndexed { index, item ->
+            builder.append(formatter.separatorBetweenPart)
 
-        int index = 0;
-        for (KeyValue item : mList) {
-            builder.append(getFormatter().getSeparatorBetweenPart());
-
-            if (TextUtils.isEmpty(item.key)) {
-                builder.append(item.value);
+            if (item.key.isNullOrEmpty()) {
+                builder.append(item.value)
             } else {
-                builder.append(item.key).append(getFormatter().getSeparatorForKeyValue()).append(item.value);
+                builder.append(item.key).append(formatter.separatorForKeyValue).append(item.value)
             }
 
-            if (index == mList.size() - 1) {
-                builder.append(" ");
+            if (index == _list.lastIndex) {
+                builder.append(" ")
             }
-
-            index++;
         }
-
-        return builder.toString();
+        return builder.toString()
     }
 
-    @Override
-    public String toString() {
-        return build();
+    override fun toString(): String {
+        return build()
     }
 
-    private static String getInstanceHash(Object object) {
-        return object == null ? null : object.getClass().getName() + "@" + Integer.toHexString(object.hashCode());
-    }
+    private inner class KeyValue(val key: String?, val value: Any?)
 
-    private static String getInstanceString(Object object) {
-        return object == null ? null : object.toString();
-    }
+    private class InternalLogFormatter : ILogFormatter {
+        override val separatorForKeyValue: String
+            get() = ":"
 
-    private final class KeyValue {
-        public final String key;
-        public final Object value;
+        override val separatorBetweenPart: String
+            get() = "|"
 
-        public KeyValue(String key, Object value) {
-            this.key = key;
-            this.value = value;
+        companion object {
+            val sDefault = InternalLogFormatter()
         }
     }
 
-    private static final class InternalLogFormatter implements ILogFormatter {
-        public static final InternalLogFormatter DEFAULT = new InternalLogFormatter();
-
-        @Override
-        public String getSeparatorForKeyValue() {
-            return ":";
+    companion object {
+        private fun getInstanceHash(`object`: Any?): String? {
+            return if (`object` == null) null else `object`.javaClass.name + "@" + Integer.toHexString(`object`.hashCode())
         }
 
-        @Override
-        public String getSeparatorBetweenPart() {
-            return "|";
+        private fun getInstanceString(`object`: Any?): String? {
+            return `object`?.toString()
         }
     }
 }

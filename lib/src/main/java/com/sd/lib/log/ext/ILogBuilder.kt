@@ -11,7 +11,7 @@ interface ILogBuilder {
     /**
      * 调用[pair]时，如果传入的value是[View]，是否用hash的方式显示该对象，默认true
      */
-    fun setHashPairView(hashView: Boolean): ILogBuilder
+    fun setHashPairView(hash: Boolean): ILogBuilder
 
     /**
      * 添加一段内容，如果[content]为null或者空，则不添加
