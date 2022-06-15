@@ -22,29 +22,10 @@ class SimpleFileHandler extends FileHandler {
     }
 
     private static String getLogFilePath(Context context, String fileName) {
-        final File dir = getLogDayFileDir(context);
-        if (dir == null) {
-            return null;
-        }
-
+        final String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        final File dir = new File(getLogFileDir(context), today);
+        checkDir(dir);
         return dir.getAbsolutePath() + File.separator + fileName;
-    }
-
-    private static File getLogDayFileDir(Context context) {
-        File dir = getLogFileDir(context);
-        if (dir == null) {
-            return null;
-        }
-
-        final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        final String formatDate = format.format(new Date());
-
-        dir = new File(dir, formatDate);
-        if (checkDir(dir)) {
-            return dir;
-        }
-
-        return null;
     }
 
     static File getLogFileDir(Context context) {
@@ -54,11 +35,8 @@ class SimpleFileHandler extends FileHandler {
         }
 
         dir = new File(context.getFilesDir(), DIR_NAME);
-        if (checkDir(dir)) {
-            return dir;
-        }
-
-        return null;
+        checkDir(dir);
+        return dir;
     }
 
     private static boolean checkDir(File dir) {
