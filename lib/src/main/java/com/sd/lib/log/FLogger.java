@@ -20,7 +20,6 @@ public abstract class FLogger {
     private final Logger mLogger;
 
     private int mLogFileLimit;
-    private Level mLogFileLevel;
     private SimpleFileHandler mFileHandler;
 
     protected FLogger() {
@@ -101,26 +100,8 @@ public abstract class FLogger {
         }
 
         mLogger.setLevel(level);
-
-        if (mLogFileLevel == null) {
-            if (mFileHandler != null) {
-                mFileHandler.setLevel(level);
-            }
-        }
-    }
-
-    /**
-     * 设置写入文件的日志等级
-     *
-     * @param level null-表示跟随默认的日志等级
-     */
-    public synchronized final void setFileLevel(Level level) {
-        if (mLogFileLevel != level) {
-            mLogFileLevel = level;
-
-            if (mFileHandler != null) {
-                mFileHandler.setLevel(level != null ? level : mLogger.getLevel());
-            }
+        if (mFileHandler != null) {
+            mFileHandler.setLevel(level);
         }
     }
 
@@ -141,7 +122,7 @@ public abstract class FLogger {
             try {
                 mFileHandler = new SimpleFileHandler(appContext, mLogger.getName(), limitMB);
                 mFileHandler.setFormatter(new SimpleLogFormatter());
-                mFileHandler.setLevel(mLogFileLevel != null ? mLogFileLevel : mLogger.getLevel());
+                mFileHandler.setLevel(mLogger.getLevel());
 
                 mLogger.addHandler(mFileHandler);
                 mLogFileLimit = limitMB;
