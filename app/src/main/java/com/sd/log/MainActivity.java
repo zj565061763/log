@@ -44,10 +44,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        final String nullValue = null;
         FLogger.get(AppLogger.class).info(new FLogBuilder()
                 .clazz(MainActivity.class)
                 .clazzFull(MainActivity.class)
                 .add("onStop")
+                .pair("nullValue", nullValue)
                 .toString());
     }
 
