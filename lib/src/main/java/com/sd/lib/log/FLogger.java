@@ -42,6 +42,12 @@ public abstract class FLogger {
         }
     }
 
+    private static void checkInit() {
+        if (sContext == null) {
+            throw new IllegalStateException("You should call FLogger.init(Context) before this");
+        }
+    }
+
     /**
      * 获得指定的日志类对象
      * <p>
@@ -121,6 +127,7 @@ public abstract class FLogger {
      * @param limitMB 文件大小限制(MB)
      */
     public final void openLogFile(int limitMB) {
+        checkInit();
         openLogFileInternal(sContext, limitMB);
     }
 
