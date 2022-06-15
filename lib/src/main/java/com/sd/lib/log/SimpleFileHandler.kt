@@ -12,7 +12,7 @@ internal class SimpleFileHandler(
     filename: String,
     limitMB: Int,
 ) : FileHandler(
-    getLogFilePath(context, filename + FILE_SUFFIX),
+    getLogFilePath(context, filename),
     limitMB * MB,
     1,
     true,
@@ -24,25 +24,26 @@ internal class SimpleFileHandler(
 
         private fun getLogFilePath(context: Context, fileName: String): String {
             val today = newDateFormat().format(Date())
-            val dir = File(getLogFileDir(context), today)
-            checkDir(dir)
-            return dir.absolutePath + File.separator + fileName
+            val dir = File(getLogFileDir(context), today).also {
+                checkDir(it)
+            }
+            return dir.absolutePath + File.separator + fileName + FILE_SUFFIX
         }
 
         fun getLogFileDir(context: Context): File {
-            var dir = context.getExternalFilesDir(DIR_NAME)
-            if (checkDir(dir)) return dir!!
-            dir = File(context.filesDir, DIR_NAME)
-            checkDir(dir)
-            return dir
+            val dir = context.getExternalFilesDir(DIR_NAME)
+            if (dir != null && checkDir(dir)) return dir
+            return File(context.filesDir, DIR_NAME).also {
+                checkDir(it)
+            }
         }
 
         fun newDateFormat(): DateFormat {
             return SimpleDateFormat("yyyyMMdd")
         }
 
-        private fun checkDir(dir: File?): Boolean {
-            return if (dir == null) false else dir.exists() || dir.mkdirs()
+        private fun checkDir(dir: File): Boolean {
+            return dir.exists() || dir.mkdirs()
         }
     }
 }
