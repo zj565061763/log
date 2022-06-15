@@ -205,31 +205,31 @@ public abstract class FLogger {
     /**
      * 删除所有日志文件
      */
-    public static synchronized void deleteLogFile() {
-        final File dir = SimpleFileHandler.getLogFileDir(getContext());
-        if (dir.exists()) {
-            clearLogger();
-            deleteFileOrDir(dir);
-        }
+    public static void deleteLogFile() {
+        deleteLogFile(0);
     }
 
     /**
-     * 删除过期的日志
+     * 删除日志文件
      *
-     * @param saveDays 要保留的日志天数
-     * @return 被删除的日志天数
+     * @param saveDays 要保留的日志天数，如果 saveDays <= 0 ，则删除所有日志
      */
-    public static synchronized int deleteExpiredLogDir(int saveDays) {
-        if (saveDays <= 0) return 0;
-
+    public static synchronized void deleteLogFile(int saveDays) {
         final File dir = SimpleFileHandler.getLogFileDir(getContext());
         if (!dir.exists()) {
-            return 0;
+            return;
+        }
+
+        if (saveDays <= 0) {
+            // 删除全部日志
+            clearLogger();
+            deleteFileOrDir(dir);
+            return;
         }
 
         final File[] files = dir.listFiles();
         if (files == null || files.length <= 0) {
-            return 0;
+            return;
         }
 
         final Calendar calendar = Calendar.getInstance();
@@ -261,7 +261,7 @@ public abstract class FLogger {
         }
 
         if (listExpired.isEmpty()) {
-            return 0;
+            return;
         }
 
         // 删除之前要先清空日志对象
@@ -269,8 +269,6 @@ public abstract class FLogger {
         for (File item : listExpired) {
             deleteFileOrDir(item);
         }
-
-        return listExpired.size();
     }
 
     private static boolean deleteFileOrDir(File file) {

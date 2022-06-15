@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         FLogger.get(AppLogger.class).info("onDestroy");
 
         // 删除所有日志文件
-//        FLogger.deleteLogFile(this);
+//        FLogger.deleteLogFile();
 
-        // 删除2天之前的日志目录
-        FLogger.deleteExpiredLogDir(this, 2);
+        // 删除今天之前的日志目录
+        FLogger.deleteLogFile(1);
     }
 }
