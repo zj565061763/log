@@ -45,12 +45,8 @@ public abstract class FLogger {
      * 获得指定的日志类对象
      * <p>
      * 内部会保存日志对象，在对象未被移除之前返回的是同一个对象
-     *
-     * @param clazz
-     * @param <T>
-     * @return
      */
-    public synchronized static final <T extends FLogger> FLogger get(Class<T> clazz) {
+    public synchronized static <T extends FLogger> FLogger get(Class<T> clazz) {
         if (clazz == null) {
             throw new IllegalArgumentException("clazz is null when get logger");
         }
@@ -90,8 +86,6 @@ public abstract class FLogger {
      * 设置全局日志输出等级，小于设置等级的将不会被输出
      * <br>
      * 此方法需要在日志对象未被实例化之前调用
-     *
-     * @param level
      */
     public synchronized static final void setGlobalLevel(Level level) {
         if (level == null) {
@@ -106,8 +100,6 @@ public abstract class FLogger {
 
     /**
      * 返回日志等级
-     *
-     * @return
      */
     public Level getLevel() {
         return mLogger.getLevel();
@@ -115,8 +107,6 @@ public abstract class FLogger {
 
     /**
      * 设置日志等级{@link Logger#setLevel(Level)}
-     *
-     * @param level
      */
     public synchronized final void setLevel(Level level) {
         if (level == null) {
@@ -150,7 +140,6 @@ public abstract class FLogger {
     /**
      * 打开日志文件功能
      *
-     * @param context
      * @param limitMB 文件大小限制(MB)
      */
     public synchronized final void openLogFile(Context context, int limitMB) {
@@ -179,11 +168,11 @@ public abstract class FLogger {
     /**
      * 关闭日志文件功能
      */
-    public synchronized final void closeLogFile() {
+    public final void closeLogFile() {
         closeLogFileInternal();
     }
 
-    private void closeLogFileInternal() {
+    private synchronized void closeLogFileInternal() {
         if (mFileHandler != null) {
             mFileHandler.close();
             mLogger.removeHandler(mFileHandler);
