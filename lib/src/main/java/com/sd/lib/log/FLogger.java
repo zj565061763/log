@@ -73,15 +73,12 @@ public abstract class FLogger {
     }
 
     /**
-     * 设置全局日志输出等级，小于设置等级的将不会被输出
-     * <br>
-     * 此方法需要在日志对象未被实例化之前调用
+     * 设置全局日志输出等级
      */
-    public synchronized static final void setGlobalLevel(Level level) {
+    public synchronized static void setGlobalLevel(Level level) {
         if (level == null) {
             level = Level.ALL;
         }
-
         if (sGlobalLevel != level) {
             sGlobalLevel = level;
             clearLogger();
