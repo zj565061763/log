@@ -202,8 +202,6 @@ public abstract class FLogger {
 
     /**
      * 删除所有日志文件
-     *
-     * @param context
      */
     public static synchronized void deleteLogFile(Context context) {
         final File dir = SimpleFileHandler.getLogFileDir(context);
@@ -222,7 +220,6 @@ public abstract class FLogger {
     /**
      * 删除过期的日志
      *
-     * @param context
      * @param saveDays 要保留的日志天数
      * @return 被删除的日志天数
      */
