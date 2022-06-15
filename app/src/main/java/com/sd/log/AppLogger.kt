@@ -1,11 +1,10 @@
-package com.sd.log;
+package com.sd.log
 
-import com.sd.lib.log.FLogger;
+import com.sd.lib.log.FLogger
 
-public class AppLogger extends FLogger {
-    @Override
-    protected void onCreate() {
+class AppLogger : FLogger() {
+    override fun onCreate() {
         // 开启日志文件，限制最大50MB
-        openLogFile(50);
+        openLogFile(50)
     }
 }
