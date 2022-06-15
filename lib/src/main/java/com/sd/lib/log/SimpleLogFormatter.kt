@@ -1,51 +1,48 @@
-package com.sd.lib.log;
+package com.sd.lib.log
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.logging.Formatter
+import java.util.logging.LogRecord
 
-class SimpleLogFormatter extends Formatter {
-    private final Date mDate = new Date();
-    private final DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+internal class SimpleLogFormatter : Formatter() {
+    private val _date = Date()
+    private val _dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 
-    @Override
-    public String format(LogRecord record) {
-        mDate.setTime(record.getMillis());
-        final String date = mDateFormat.format(mDate);
-        final String message = formatMessage(record);
+    override fun format(record: LogRecord): String {
+        _date.time = record.millis
+        val date = _dateFormat.format(_date)
+        val message = formatMessage(record)
 
-        String error = "";
-        final Throwable throwable = record.getThrown();
-        if (throwable != null) {
-            final StringWriter stringWriter = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(stringWriter);
-
-            printWriter.println();
-            throwable.printStackTrace(printWriter);
-            printWriter.close();
-
-            error = stringWriter.toString();
+        val thrown = record.thrown
+        val error = if (thrown == null) "" else {
+            val stringWriter = StringWriter()
+            PrintWriter(stringWriter).use {
+                it.println()
+                thrown.printStackTrace(it)
+            }
+            stringWriter.toString()
         }
 
-        final StringBuilder builder = new StringBuilder();
-        // 日期
-        builder.append(date);
-        // 日志等级
-        builder.append(" (").append(record.getLevel()).append(") ");
-        // 日志信息
-        builder.append(message);
-        // 异常信息
-        builder.append(error);
-        // 换行
-        builder.append(getNextLine());
-        return builder.toString();
+        val builder = StringBuilder().apply {
+            // 日期
+            append(date)
+            // 日志等级
+            append(" (").append(record.level).append(") ")
+            // 日志信息
+            append(message)
+            // 异常信息
+            append(error)
+            // 换行
+            append(nextLine)
+        }
+        return builder.toString()
     }
 
-    private static String getNextLine() {
-        return System.getProperty("line.separator");
+    companion object {
+        private val nextLine: String
+            get() = System.getProperty("line.separator") ?: "\r\n"
     }
 }
