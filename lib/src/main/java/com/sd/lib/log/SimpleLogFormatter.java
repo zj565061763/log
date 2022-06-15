@@ -2,6 +2,7 @@ package com.sd.lib.log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
@@ -9,22 +10,15 @@ import java.util.logging.LogRecord;
 
 class SimpleLogFormatter extends Formatter {
     private final Date mDate = new Date();
-    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private final StringBuilder mStringBuilder = new StringBuilder();
+    private final DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
     public String format(LogRecord record) {
-        if (mStringBuilder.length() > 0) {
-            mStringBuilder.delete(0, mStringBuilder.length());
-        }
-
         mDate.setTime(record.getMillis());
         final String date = mDateFormat.format(mDate);
-
         final String message = formatMessage(record);
 
         String error = "";
-
         final Throwable throwable = record.getThrown();
         if (throwable != null) {
             final StringWriter stringWriter = new StringWriter();
@@ -37,18 +31,18 @@ class SimpleLogFormatter extends Formatter {
             error = stringWriter.toString();
         }
 
+        final StringBuilder builder = new StringBuilder();
         // 日期
-        mStringBuilder.append(date);
+        builder.append(date);
         // 日志等级
-        mStringBuilder.append(" (").append(record.getLevel()).append(") ");
+        builder.append(" (").append(record.getLevel()).append(") ");
         // 日志信息
-        mStringBuilder.append(message);
+        builder.append(message);
         // 异常信息
-        mStringBuilder.append(error);
+        builder.append(error);
         // 换行
-        mStringBuilder.append(getNextLine());
-
-        return mStringBuilder.toString();
+        builder.append(getNextLine());
+        return builder.toString();
     }
 
     private static String getNextLine() {
