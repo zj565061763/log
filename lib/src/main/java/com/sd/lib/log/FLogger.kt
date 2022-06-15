@@ -104,21 +104,13 @@ abstract class FLogger protected constructor() {
         log(Level.WARNING, msg)
     }
 
-    fun severe(msg: String?) {
-        log(Level.SEVERE, msg)
-    }
-
-    fun severe(msg: String?, throwable: Throwable?) {
+    @JvmOverloads
+    fun severe(msg: String?, throwable: Throwable? = null) {
         log(Level.SEVERE, msg, throwable)
     }
 
-    fun log(level: Level, msg: String?) {
-        if (_isAlive) {
-            _logger.log(level, msg ?: "")
-        }
-    }
-
-    fun log(level: Level, msg: String?, thrown: Throwable?) {
+    @JvmOverloads
+    fun log(level: Level, msg: String?, thrown: Throwable? = null) {
         if (_isAlive) {
             _logger.log(level, msg ?: "", thrown)
         }
@@ -280,5 +272,19 @@ inline fun <T : FLogger> Class<T>.info(block: () -> Any) {
     val log = block().toString()
     if (log.isNotEmpty()) {
         FLogger.get(this).info(log)
+    }
+}
+
+inline fun <T : FLogger> Class<T>.warning(block: () -> Any) {
+    val msg = block().toString()
+    if (msg.isNotEmpty()) {
+        FLogger.get(this).warning(msg)
+    }
+}
+
+inline fun <T : FLogger> Class<T>.severe(t: Throwable? = null, block: () -> Any) {
+    val msg = block().toString()
+    if (msg.isNotEmpty()) {
+        FLogger.get(this).severe(msg, t)
     }
 }
