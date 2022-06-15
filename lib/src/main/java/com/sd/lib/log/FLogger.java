@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 
 public abstract class FLogger {
     private static final Map<Class<?>, FLogger> MAP_LOGGER = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, Class<?>> MAP_TAG = new ConcurrentHashMap<>();
-
     private static Level sGlobalLevel = Level.ALL;
 
     private final Logger mLogger;
@@ -27,12 +25,7 @@ public abstract class FLogger {
     private Level mLogFileLevel;
 
     protected FLogger() {
-        final Class<?> clazz = getClass();
-        if (MAP_TAG.remove(clazz) == null) {
-            throw new RuntimeException("you can not call this constructor");
-        }
-
-        mLogger = Logger.getLogger(clazz.getName());
+        mLogger = Logger.getLogger(getClass().getName());
         mLogger.setLevel(sGlobalLevel);
     }
 
@@ -54,15 +47,13 @@ public abstract class FLogger {
             throw new IllegalArgumentException("clazz must not be " + FLogger.class);
         }
 
-        FLogger logger = MAP_LOGGER.get(clazz);
-        if (logger != null) {
-            return logger;
+        final FLogger cache = MAP_LOGGER.get(clazz);
+        if (cache != null) {
+            return cache;
         }
 
         try {
-            MAP_TAG.put(clazz, clazz);
-            logger = clazz.newInstance();
-
+            final FLogger logger = clazz.newInstance();
             MAP_LOGGER.put(clazz, logger);
             logger.onCreate();
             return logger;
@@ -78,7 +69,6 @@ public abstract class FLogger {
         for (FLogger item : MAP_LOGGER.values()) {
             item.closeLogFile();
         }
-
         MAP_LOGGER.clear();
     }
 
