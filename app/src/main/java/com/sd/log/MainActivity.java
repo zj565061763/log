@@ -14,6 +14,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FLogger.get(AppLogger.class).info("onCreate");
+
+
+        // 删除所有日志文件
+        FLogger.deleteLogFile();
+
+        // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
+//        FLogger.deleteLogFile(1);
     }
 
     @Override
@@ -49,11 +56,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         FLogger.get(AppLogger.class).info("onDestroy");
-
-        // 删除所有日志文件
-//        FLogger.deleteLogFile();
-
-        // 删除今天之前的日志目录
-        FLogger.deleteLogFile(1);
     }
 }
