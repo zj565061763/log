@@ -3,8 +3,8 @@ package com.sd.lib.log;
 import android.content.Context;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -43,10 +43,11 @@ public abstract class FLogger {
         }
     }
 
-    private static void checkInit() {
+    private static Context getContext() {
         if (sContext == null) {
             throw new IllegalStateException("You should call FLogger.init(Context) before this");
         }
+        return sContext;
     }
 
     /**
@@ -126,8 +127,7 @@ public abstract class FLogger {
      * @param limitMB 文件大小限制(MB)
      */
     public final void openLogFile(int limitMB) {
-        checkInit();
-        openLogFileInternal(sContext, limitMB);
+        openLogFileInternal(getContext(), limitMB);
     }
 
     /**
@@ -205,18 +205,12 @@ public abstract class FLogger {
     /**
      * 删除所有日志文件
      */
-    public static synchronized void deleteLogFile(Context context) {
-        final File dir = SimpleFileHandler.getLogFileDir(context);
-        if (dir == null) {
-            return;
+    public static synchronized void deleteLogFile() {
+        final File dir = SimpleFileHandler.getLogFileDir(getContext());
+        if (dir.exists()) {
+            clearLogger();
+            deleteFileOrDir(dir);
         }
-
-        if (!dir.exists()) {
-            return;
-        }
-
-        clearLogger();
-        deleteFileOrDir(dir);
     }
 
     /**
@@ -225,13 +219,11 @@ public abstract class FLogger {
      * @param saveDays 要保留的日志天数
      * @return 被删除的日志天数
      */
-    public static synchronized int deleteExpiredLogDir(Context context, int saveDays) {
-        if (saveDays <= 0) {
-            return 0;
-        }
+    public static synchronized int deleteExpiredLogDir(int saveDays) {
+        if (saveDays <= 0) return 0;
 
-        final File dir = SimpleFileHandler.getLogFileDir(context);
-        if (dir == null) {
+        final File dir = SimpleFileHandler.getLogFileDir(getContext());
+        if (!dir.exists()) {
             return 0;
         }
 
@@ -240,40 +232,31 @@ public abstract class FLogger {
             return 0;
         }
 
-        final int logDay = saveDays - 1;
         final Calendar calendar = Calendar.getInstance();
-        if (logDay > 0) {
-            calendar.add(Calendar.DAY_OF_YEAR, -logDay);
-        }
+        calendar.add(Calendar.DAY_OF_YEAR, -(saveDays - 1));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        final String dateLimitString = format.format(calendar.getTime());
+        final long limitTime = calendar.getTime().getTime();
+        final DateFormat format = SimpleFileHandler.newDateFormat();
 
-        long dateLimit = 0;
-        try {
-            dateLimit = format.parse(dateLimitString).getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
-
-        final List<File> listExpired = new ArrayList<>(5);
+        final List<File> listExpired = new ArrayList<>();
         for (File item : files) {
             if (item.isFile()) {
-                item.delete();
-            } else if (item.isDirectory()) {
-                final String filename = item.getName();
-                try {
-                    final long dateFile = format.parse(filename).getTime();
-                    final long dateDelta = dateFile - dateLimit;
-                    if (dateDelta < 0) {
-                        listExpired.add(item);
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    deleteFileOrDir(item);
-                    continue;
+                deleteFileOrDir(item);
+                continue;
+            }
+
+            try {
+                final long fileTime = format.parse(item.getName()).getTime();
+                if (fileTime < limitTime) {
+                    listExpired.add(item);
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                deleteFileOrDir(item);
             }
         }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.FileHandler;
@@ -22,7 +23,7 @@ class SimpleFileHandler extends FileHandler {
     }
 
     private static String getLogFilePath(Context context, String fileName) {
-        final String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        final String today = newDateFormat().format(new Date());
         final File dir = new File(getLogFileDir(context), today);
         checkDir(dir);
         return dir.getAbsolutePath() + File.separator + fileName;
@@ -37,6 +38,10 @@ class SimpleFileHandler extends FileHandler {
         dir = new File(context.getFilesDir(), DIR_NAME);
         checkDir(dir);
         return dir;
+    }
+
+    static DateFormat newDateFormat() {
+        return new SimpleDateFormat("yyyyMMdd");
     }
 
     private static boolean checkDir(File dir) {
