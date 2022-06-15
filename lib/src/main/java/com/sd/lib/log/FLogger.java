@@ -49,9 +49,7 @@ public abstract class FLogger {
     }
 
     /**
-     * 获得指定的日志类对象
-     * <p>
-     * 内部会保存日志对象，在对象未被移除之前返回的是同一个对象
+     * 获得指定的日志类对象，内部会保存日志对象
      */
     public synchronized static <T extends FLogger> FLogger get(Class<T> clazz) {
         if (clazz == null) {
