@@ -60,19 +60,21 @@ abstract class FLogger protected constructor() {
     @Synchronized
     private fun openLogFileInternal(context: Context, limitMB: Int) {
         require(limitMB > 0) { "limitMB must greater than 0" }
-        if (_logFileHandler == null || _logFileLimit != limitMB) {
-            closeLogFileInternal()
-            try {
-                _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB).apply {
-                    formatter = SimpleLogFormatter()
+        if (_logFileHandler != null && _logFileLimit == limitMB) {
+            return
+        }
+
+        closeLogFileInternal()
+        try {
+            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB)
+                .apply {
                     level = this@FLogger.level
                 }.also {
                     _logger.addHandler(it)
                 }
-                _logFileLimit = limitMB
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            _logFileLimit = limitMB
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

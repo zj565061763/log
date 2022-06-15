@@ -17,6 +17,10 @@ internal class SimpleFileHandler(
     1,
     true,
 ) {
+    init {
+        formatter = SimpleLogFormatter()
+    }
+
     companion object {
         private const val MB = 1024 * 1024
         private const val DIR_NAME = "flog"
