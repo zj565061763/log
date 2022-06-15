@@ -4,7 +4,6 @@ import android.content.Context
 import java.io.File
 import java.text.ParseException
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -119,7 +118,7 @@ abstract class FLogger protected constructor() {
     //---------- log end ----------
 
     companion object {
-        private val sLoggerHolder: MutableMap<Class<*>, FLogger> = ConcurrentHashMap()
+        private val sLoggerHolder: MutableMap<Class<*>, FLogger> = HashMap()
         private var sGlobalLevel = Level.ALL
         private var sContext: Context? = null
 
