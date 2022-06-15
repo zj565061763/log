@@ -29,7 +29,6 @@ internal class SimpleFileHandler(
             return dir.absolutePath + File.separator + fileName
         }
 
-        @JvmStatic
         fun getLogFileDir(context: Context): File {
             var dir = context.getExternalFilesDir(DIR_NAME)
             if (checkDir(dir)) return dir!!
@@ -38,7 +37,6 @@ internal class SimpleFileHandler(
             return dir
         }
 
-        @JvmStatic
         fun newDateFormat(): DateFormat {
             return SimpleDateFormat("yyyyMMdd")
         }
