@@ -42,6 +42,13 @@ abstract class FLogger protected constructor() {
     }
 
     /**
+     * 指定的[level]是否可以输出
+     */
+    fun isLoggable(level: Level): Boolean {
+        return _logger.isLoggable(level)
+    }
+
+    /**
      * 开启日志文件
      * @param limitMB 文件大小限制(MB)
      */
@@ -112,7 +119,9 @@ abstract class FLogger protected constructor() {
     @JvmOverloads
     fun log(level: Level, msg: String?, thrown: Throwable? = null) {
         if (_isAlive) {
-            _logger.log(level, msg ?: "", thrown)
+            if (!msg.isNullOrEmpty()) {
+                _logger.log(level, msg ?: "", thrown)
+            }
         }
     }
 
@@ -255,22 +264,35 @@ abstract class FLogger protected constructor() {
 }
 
 inline fun <T : FLogger> Class<T>.info(block: () -> Any) {
-    val log = block().toString()
-    if (log.isNotEmpty()) {
-        FLogger.get(this).info(log)
-    }
+    log(
+        level = Level.INFO,
+        block = block,
+    )
 }
 
 inline fun <T : FLogger> Class<T>.warning(block: () -> Any) {
-    val msg = block().toString()
-    if (msg.isNotEmpty()) {
-        FLogger.get(this).warning(msg)
-    }
+    log(
+        level = Level.WARNING,
+        block = block,
+    )
 }
 
-inline fun <T : FLogger> Class<T>.severe(t: Throwable? = null, block: () -> Any) {
-    val msg = block().toString()
-    if (msg.isNotEmpty()) {
-        FLogger.get(this).severe(msg, t)
+inline fun <T : FLogger> Class<T>.severe(thrown: Throwable? = null, block: () -> Any) {
+    log(
+        level = Level.SEVERE,
+        thrown = thrown,
+        block = block,
+    )
+}
+
+inline fun <T : FLogger> Class<T>.log(
+    level: Level,
+    thrown: Throwable? = null,
+    block: () -> Any,
+) {
+    val logger = FLogger.get(this)
+    if (logger.isLoggable(level)) {
+        val msg = block().toString()
+        logger.log(level = level, msg = msg, thrown = thrown)
     }
 }
