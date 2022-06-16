@@ -1,7 +1,9 @@
 # Gradle
+
 [![](https://jitpack.io/v/zj565061763/log.svg)](https://jitpack.io/#zj565061763/log)
 
 # Demo
+
 ```kotlin
 class AppLogger : FLogger() {
     override fun onCreate() {
@@ -12,5 +14,5 @@ class AppLogger : FLogger() {
 ```
 
 ```kotlin
-AppLogger::class.java.info { "hello world!" }
+AppLogger::class.info { "hello world!" }
 ```

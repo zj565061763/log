@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         // Kotlin扩展写法
-        AppLogger::class.java.info { "onStart" }
+        AppLogger::class.info { "onStart" }
     }
 
     override fun onResume() {
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val textView = findViewById<View>(R.id.tv_content)
 
         // FlogBuilder写法
-        AppLogger::class.java.info {
+        AppLogger::class.info {
             FLogBuilder().add("onResume").nextLine()
                 .pair("textView", textView).nextLine()
                 .pairHash("textView hash", textView).nextLine()
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         val nullValue: String? = null
-        AppLogger::class.java.info {
+        AppLogger::class.info {
             FLogBuilder()
                 .clazz(MainActivity::class.java)
                 .clazzFull(MainActivity::class.java)
@@ -56,6 +56,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        AppLogger::class.java.info { "onDestroy" }
+        AppLogger::class.info { "onDestroy" }
     }
 }

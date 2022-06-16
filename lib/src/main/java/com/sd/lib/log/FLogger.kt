@@ -7,6 +7,7 @@ import java.text.ParseException
 import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.reflect.KClass
 
 abstract class FLogger protected constructor() {
     private val _loggerName = javaClass.name
@@ -263,21 +264,21 @@ abstract class FLogger protected constructor() {
     }
 }
 
-inline fun <T : FLogger> Class<T>.info(block: () -> Any) {
+inline fun <T : FLogger> KClass<T>.info(block: () -> Any) {
     log(
         level = Level.INFO,
         block = block,
     )
 }
 
-inline fun <T : FLogger> Class<T>.warning(block: () -> Any) {
+inline fun <T : FLogger> KClass<T>.warning(block: () -> Any) {
     log(
         level = Level.WARNING,
         block = block,
     )
 }
 
-inline fun <T : FLogger> Class<T>.severe(thrown: Throwable? = null, block: () -> Any) {
+inline fun <T : FLogger> KClass<T>.severe(thrown: Throwable? = null, block: () -> Any) {
     log(
         level = Level.SEVERE,
         thrown = thrown,
@@ -285,12 +286,12 @@ inline fun <T : FLogger> Class<T>.severe(thrown: Throwable? = null, block: () ->
     )
 }
 
-inline fun <T : FLogger> Class<T>.log(
+inline fun <T : FLogger> KClass<T>.log(
     level: Level,
     thrown: Throwable? = null,
     block: () -> Any,
 ) {
-    val logger = FLogger.get(this)
+    val logger = FLogger.get(this.java)
     if (logger.isLoggable(level)) {
         val msg = block().toString()
         logger.log(level = level, msg = msg, thrown = thrown)
