@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity() {
                 .clazz(MainActivity::class.java)
                 .clazzFull(MainActivity::class.java)
                 .add("onStop")
+                .add(this)
+                .addHash(this)
                 .pair("nullValue", nullValue)
         }
     }
