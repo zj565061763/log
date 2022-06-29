@@ -79,12 +79,10 @@ abstract class FLogger protected constructor() {
 
         closeLogFileInternal()
         try {
-            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB)
-                .apply {
-                    level = this@FLogger.level
-                }.also {
-                    _logger.addHandler(it)
-                }
+            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB).also {
+                it.level = this@FLogger.level
+                _logger.addHandler(it)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
