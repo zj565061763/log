@@ -1,4 +1,4 @@
-package com.sd.log
+package com.sd.demo.log
 
 import com.sd.lib.log.FLogger
 
