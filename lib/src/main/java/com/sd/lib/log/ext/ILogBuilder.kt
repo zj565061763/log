@@ -1,7 +1,5 @@
 package com.sd.lib.log.ext
 
-import android.view.View
-
 interface ILogBuilder {
     /**
      * 设置格式化对象
@@ -75,13 +73,13 @@ interface ILogBuilder {
 
     interface ILogFormatter {
         /**
-         * 返回key-value之间的分隔符，默认：":"
+         * 返回key-value之间的分隔符，默认":"
          */
-        val separatorForKeyValue: String?
+        val separatorForKeyValue: String
 
         /**
-         * 返回段与段之间的分隔符，默认："|"
+         * 返回段与段之间的分隔符，默认"|"
          */
-        val separatorBetweenPart: String?
+        val separatorForPart: String
     }
 }

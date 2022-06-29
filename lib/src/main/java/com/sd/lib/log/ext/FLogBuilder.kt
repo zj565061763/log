@@ -78,7 +78,7 @@ class FLogBuilder : ILogBuilder {
 
         val builder = StringBuilder()
         _list.forEachIndexed { index, item ->
-            builder.append(formatter.separatorBetweenPart)
+            builder.append(formatter.separatorForPart)
 
             if (item.key.isNullOrEmpty()) {
                 builder.append(item.value)
@@ -97,14 +97,11 @@ class FLogBuilder : ILogBuilder {
         return build()
     }
 
-    private inner class KeyValue(val key: String?, val value: Any?)
+    private class KeyValue(val key: String?, val value: Any?)
 
     private class InternalLogFormatter : ILogFormatter {
-        override val separatorForKeyValue: String
-            get() = ":"
-
-        override val separatorBetweenPart: String
-            get() = "|"
+        override val separatorForKeyValue get() = ":"
+        override val separatorForPart get() = "|"
     }
 
     companion object {
