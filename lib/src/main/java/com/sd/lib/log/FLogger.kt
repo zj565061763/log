@@ -141,7 +141,7 @@ abstract class FLogger protected constructor() {
         @JvmStatic
         fun <T : FLogger> get(clazz: Class<T>): FLogger {
             require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
-            val logger = synchronized(this@Companion) {
+            return synchronized(this@Companion) {
                 val cache = sLoggerHolder[clazz]
                 if (cache != null) return cache
 
@@ -152,7 +152,6 @@ abstract class FLogger protected constructor() {
                 // onCreate()不需要同步，在synchronized外触发
                 it.onCreate()
             }
-            return logger
         }
 
         /**
