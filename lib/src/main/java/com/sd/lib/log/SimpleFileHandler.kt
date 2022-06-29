@@ -17,6 +17,8 @@ internal class SimpleFileHandler(
     1,
     true,
 ) {
+    val limitMB = limitMB
+
     init {
         formatter = SimpleLogFormatter()
     }

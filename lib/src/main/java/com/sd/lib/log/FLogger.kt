@@ -17,7 +17,6 @@ abstract class FLogger protected constructor() {
 
     @Volatile
     private var _isAlive = true
-    private var _logFileLimit = 0
     private var _logFileHandler: SimpleFileHandler? = null
 
     /**
@@ -72,7 +71,9 @@ abstract class FLogger protected constructor() {
     private fun openLogFileInternal(context: Context, limitMB: Int) {
         require(limitMB > 0) { "limitMB must greater than 0" }
         if (!_isAlive) return
-        if (_logFileHandler != null && _logFileLimit == limitMB) {
+
+        val fileHandler = _logFileHandler
+        if (fileHandler != null && fileHandler.limitMB == limitMB) {
             return
         }
 
@@ -84,7 +85,6 @@ abstract class FLogger protected constructor() {
                 }.also {
                     _logger.addHandler(it)
                 }
-            _logFileLimit = limitMB
         } catch (e: Exception) {
             e.printStackTrace()
         }
