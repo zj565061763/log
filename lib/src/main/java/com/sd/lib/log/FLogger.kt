@@ -155,20 +155,6 @@ abstract class FLogger protected constructor() {
         }
 
         /**
-         * 清空所有日志对象
-         */
-        @JvmStatic
-        fun clearLogger() {
-            synchronized(this@Companion) {
-                for (item in sLoggerHolder.values) {
-                    item._isAlive = false
-                    item.closeLogFile()
-                }
-                sLoggerHolder.clear()
-            }
-        }
-
-        /**
          * 设置全局日志输出等级
          */
         @JvmStatic
@@ -179,6 +165,20 @@ abstract class FLogger protected constructor() {
                     sGlobalLevel = safeLevel
                     clearLogger()
                 }
+            }
+        }
+
+        /**
+         * 清空所有日志对象
+         */
+        @JvmStatic
+        fun clearLogger() {
+            synchronized(this@Companion) {
+                for (item in sLoggerHolder.values) {
+                    item._isAlive = false
+                    item.closeLogFile()
+                }
+                sLoggerHolder.clear()
             }
         }
 
