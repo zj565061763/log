@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sd.lib.log.FLogger
 import com.sd.lib.log.ext.FLogBuilder
 import com.sd.lib.log.info
-import com.sd.log.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
