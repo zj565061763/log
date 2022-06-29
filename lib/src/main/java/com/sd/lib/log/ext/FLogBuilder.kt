@@ -8,7 +8,7 @@ class FLogBuilder : ILogBuilder {
     private var _formatter: ILogFormatter? = null
 
     private val formatter: ILogFormatter
-        get() = _formatter ?: defaultFormatter
+        get() = _formatter ?: DefaultLogFormatter
 
     override fun setFormatter(formatter: ILogFormatter?) = apply {
         _formatter = formatter
@@ -99,14 +99,12 @@ class FLogBuilder : ILogBuilder {
 
     private class KeyValue(val key: String?, val value: Any?)
 
-    private class InternalLogFormatter : ILogFormatter {
+    private object DefaultLogFormatter : ILogFormatter {
         override val separatorForKeyValue get() = ":"
         override val separatorForPart get() = "|"
     }
 
     companion object {
-        private val defaultFormatter = InternalLogFormatter()
-
         private fun getInstanceHash(instance: Any?): String? {
             if (instance == null) return null
             return instance.javaClass.name + "@" + Integer.toHexString(instance.hashCode())

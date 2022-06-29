@@ -72,14 +72,10 @@ interface ILogBuilder {
     fun build(): String
 
     interface ILogFormatter {
-        /**
-         * 返回key-value之间的分隔符，默认":"
-         */
+        /** 返回key-value之间的分隔符，默认":" */
         val separatorForKeyValue: String
 
-        /**
-         * 返回段与段之间的分隔符，默认"|"
-         */
+        /** 返回段与段之间的分隔符，默认"|" */
         val separatorForPart: String
     }
 }
