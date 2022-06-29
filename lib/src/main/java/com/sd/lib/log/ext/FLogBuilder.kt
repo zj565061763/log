@@ -6,24 +6,18 @@ import com.sd.lib.log.ext.ILogBuilder.ILogFormatter
 class FLogBuilder : ILogBuilder {
     private val _list = mutableListOf<KeyValue>()
     private var _formatter: ILogFormatter? = null
-    private var _hashPairView = true
+
+    private val formatter: ILogFormatter
+        get() = _formatter ?: defaultFormatter
 
     override fun setFormatter(formatter: ILogFormatter?) = apply {
         _formatter = formatter
     }
 
-    override fun setHashPairView(hash: Boolean) = apply {
-        _hashPairView = hash
-    }
-
-    private val formatter: ILogFormatter
-        get() = _formatter ?: InternalLogFormatter.sDefault
-
-    override fun add(content: Any?): ILogBuilder {
-        if (content == null) return this
-        if (content is String && content.isEmpty()) return this
+    override fun add(content: Any?) = apply {
+        if (content == null) return@apply
+        if (content is String && content.isEmpty()) return@apply
         _list.add(KeyValue(null, content))
-        return this
     }
 
     override fun addHash(content: Any?) = apply {
@@ -32,24 +26,23 @@ class FLogBuilder : ILogBuilder {
         _list.add(KeyValue(null, getInstanceHash(content)))
     }
 
-    override fun pair(key: String?, value: Any?): ILogBuilder {
-        if (key.isNullOrEmpty()) return this
+    override fun pair(key: String?, value: Any?) = apply {
+        if (key.isNullOrEmpty()) return@apply
 
-        val stringValue = if (_hashPairView && value is View) {
+        val stringValue = if (value is View) {
             getInstanceHash(value)
         } else {
             value.toString()
         }
         _list.add(KeyValue(key, stringValue))
-        return this
     }
 
-    override fun pairHash(key: String?, value: Any?): ILogBuilder {
-        return pair(key, getInstanceHash(value))
+    override fun pairHash(key: String?, value: Any?) = apply {
+        pair(key, getInstanceHash(value))
     }
 
-    override fun pairStr(key: String?, value: Any?): ILogBuilder {
-        return pair(key, value?.toString())
+    override fun pairStr(key: String?, value: Any?) = apply {
+        pair(key, value.toString())
     }
 
     override fun instance(instance: Any?): ILogBuilder {
@@ -113,13 +106,11 @@ class FLogBuilder : ILogBuilder {
 
         override val separatorBetweenPart: String
             get() = "|"
-
-        companion object {
-            val sDefault = InternalLogFormatter()
-        }
     }
 
     companion object {
+        private val defaultFormatter = InternalLogFormatter()
+
         private fun getInstanceHash(instance: Any?): String? {
             if (instance == null) return null
             return instance.javaClass.name + "@" + Integer.toHexString(instance.hashCode())
