@@ -75,22 +75,19 @@ class FLogBuilder : ILogBuilder {
 
     override fun build(): String {
         if (_list.isEmpty()) return ""
+        return buildString {
+            _list.forEachIndexed { index, item ->
+                append(formatter.separatorForPart)
 
-        val builder = StringBuilder()
-        _list.forEachIndexed { index, item ->
-            builder.append(formatter.separatorForPart)
+                if (item.key.isNullOrEmpty()) {
+                    append(item.value)
+                } else {
+                    append(item.key).append(formatter.separatorForKeyValue).append(item.value)
+                }
 
-            if (item.key.isNullOrEmpty()) {
-                builder.append(item.value)
-            } else {
-                builder.append(item.key).append(formatter.separatorForKeyValue).append(item.value)
-            }
-
-            if (index == _list.lastIndex) {
-                builder.append(" ")
+                if (index == _list.lastIndex) append(" ")
             }
         }
-        return builder.toString()
     }
 
     override fun toString(): String {
