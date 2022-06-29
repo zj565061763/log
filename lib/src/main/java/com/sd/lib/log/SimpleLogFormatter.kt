@@ -24,7 +24,7 @@ internal class SimpleLogFormatter : Formatter() {
             stringWriter.toString()
         }
 
-        val builder = StringBuilder().apply {
+        return buildString {
             // 日期
             append(date)
             // 日志等级
@@ -36,11 +36,10 @@ internal class SimpleLogFormatter : Formatter() {
             // 换行
             append(nextLine)
         }
-        return builder.toString()
     }
 
     companion object {
-        private val nextLine: String
+        private val nextLine
             get() = System.getProperty("line.separator") ?: "\r\n"
     }
 }
