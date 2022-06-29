@@ -8,14 +8,12 @@ class FLogBuilder : ILogBuilder {
     private var _formatter: ILogFormatter? = null
     private var _hashPairView = true
 
-    override fun setFormatter(formatter: ILogFormatter?): ILogBuilder {
+    override fun setFormatter(formatter: ILogFormatter?) = apply {
         _formatter = formatter
-        return this
     }
 
-    override fun setHashPairView(hash: Boolean): ILogBuilder {
+    override fun setHashPairView(hash: Boolean) = apply {
         _hashPairView = hash
-        return this
     }
 
     private val formatter: ILogFormatter
