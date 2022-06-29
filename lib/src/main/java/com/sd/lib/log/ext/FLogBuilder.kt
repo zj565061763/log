@@ -45,33 +45,32 @@ class FLogBuilder : ILogBuilder {
         pair(key, value.toString())
     }
 
-    override fun instance(instance: Any?): ILogBuilder {
-        return pair("instance", getInstanceHash(instance))
+    override fun instance(instance: Any?) = apply {
+        pair("instance", getInstanceHash(instance))
     }
 
-    override fun instanceStr(instance: Any?): ILogBuilder {
-        return pair("instanceStr", instance?.toString())
+    override fun instanceStr(instance: Any?) = apply {
+        pair("instanceStr", instance.toString())
     }
 
-    override fun uuid(uuid: String?): ILogBuilder {
-        return pair("uuid", uuid)
+    override fun uuid(uuid: String?) = apply {
+        pair("uuid", uuid)
     }
 
-    override fun nextLine(): ILogBuilder {
-        return add("\r\n")
+    override fun nextLine() = apply {
+        add("\r\n")
     }
 
-    override fun clazz(clazz: Class<*>): ILogBuilder {
-        return add(clazz.simpleName)
+    override fun clazz(clazz: Class<*>) = apply {
+        add(clazz.simpleName)
     }
 
-    override fun clazzFull(clazz: Class<*>): ILogBuilder {
-        return add(clazz.name)
+    override fun clazzFull(clazz: Class<*>) = apply {
+        add(clazz.name)
     }
 
-    override fun clear(): ILogBuilder {
+    override fun clear() = apply {
         _list.clear()
-        return this
     }
 
     override fun build(): String {
