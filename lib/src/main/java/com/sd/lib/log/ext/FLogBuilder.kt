@@ -28,6 +28,12 @@ class FLogBuilder : ILogBuilder {
         return this
     }
 
+    override fun addHash(content: Any?) = apply {
+        if (content == null) return@apply
+        if (content is String && content.isEmpty()) return@apply
+        _list.add(KeyValue(null, getInstanceHash(content)))
+    }
+
     override fun pair(key: String?, value: Any?): ILogBuilder {
         if (key.isNullOrEmpty()) return this
 

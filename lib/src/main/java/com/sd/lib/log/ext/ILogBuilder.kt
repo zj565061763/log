@@ -14,9 +14,14 @@ interface ILogBuilder {
     fun setHashPairView(hash: Boolean): ILogBuilder
 
     /**
-     * 添加一段内容，如果[content]为null或者空，则不添加
+     * 添加一段内容，如果[content]为null或者空，不添加
      */
     fun add(content: Any?): ILogBuilder
+
+    /**
+     * 添加一段内容，如果[content]为null或者空，不添加，否则用hash的方式显示对象
+     */
+    fun addHash(content: Any?): ILogBuilder
 
     /**
      * 添加一对内容，如果[key]为null或者空，则不添加
