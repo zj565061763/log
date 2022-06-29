@@ -132,10 +132,8 @@ abstract class FLogger protected constructor() {
         private val sLoggerHolder: MutableMap<Class<*>, FLogger> = HashMap()
         private var sGlobalLevel = Level.ALL
 
-        private val savedContext: Context
-            get() {
-                return checkNotNull(FContext.get()) { "Context is null" }
-            }
+        private val savedContext
+            get() = checkNotNull(FContext.get()) { "Context is null" }
 
         /**
          * 获得指定的日志类对象，内部会保存日志对象
