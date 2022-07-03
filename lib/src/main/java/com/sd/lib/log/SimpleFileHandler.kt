@@ -29,11 +29,15 @@ internal class SimpleFileHandler(
         private const val FILE_SUFFIX = ".log"
 
         private fun getLogFilePath(context: Context, fileName: String): String {
+            val dir = getLogFileDirToday(context)
+            return dir.absolutePath + File.separator + fileName + FILE_SUFFIX
+        }
+
+        private fun getLogFileDirToday(context: Context): File {
             val today = newDateFormat().format(Date())
-            val dir = File(getLogFileDir(context), today).also {
+            return File(getLogFileDir(context), today).also {
                 checkDir(it)
             }
-            return dir.absolutePath + File.separator + fileName + FILE_SUFFIX
         }
 
         fun getLogFileDir(context: Context): File {
