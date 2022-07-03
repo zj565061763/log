@@ -229,31 +229,31 @@ abstract class FLogger protected constructor() {
                 val limitTime = calendar.time.time
                 val format = SimpleFileHandler.newDateFormat()
 
-                val listExpired = mutableListOf<File>()
+                val listDelete = mutableListOf<File>()
                 for (item in files) {
                     if (item.isFile) {
-                        deleteFileOrDir(item)
+                        listDelete.add(item)
                         continue
                     }
 
                     try {
                         val fileTime = format.parse(item.name)?.time ?: 0
                         if (fileTime < limitTime) {
-                            listExpired.add(item)
+                            listDelete.add(item)
                         }
                     } catch (e: ParseException) {
                         e.printStackTrace()
-                        listExpired.add(item)
+                        listDelete.add(item)
                     }
                 }
 
-                if (listExpired.isEmpty()) {
+                if (listDelete.isEmpty()) {
                     return
                 }
 
                 // 删除之前要先清空日志对象
                 clearLogger()
-                for (item in listExpired) {
+                for (item in listDelete) {
                     deleteFileOrDir(item)
                 }
             }
