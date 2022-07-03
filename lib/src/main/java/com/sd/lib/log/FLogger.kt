@@ -7,6 +7,7 @@ import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
 import java.text.ParseException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
@@ -78,9 +79,12 @@ abstract class FLogger protected constructor() {
 
         closeLogFileInternal()
         try {
-            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB).also {
-                it.level = this@FLogger.level
-                _logger.addHandler(it)
+            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
+                handler.level = this@FLogger.level
+                _logger.addHandler(handler)
+                synchronized(Companion) {
+                    sLoggerHandlerHolder[this@FLogger.javaClass] = handler
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -100,6 +104,11 @@ abstract class FLogger protected constructor() {
             } finally {
                 _logger.removeHandler(handler)
                 _logFileHandler = null
+                synchronized(Companion) {
+                    if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
+                        sLoggerHandlerHolder.remove(this@FLogger.javaClass)
+                    }
+                }
             }
         }
     }
@@ -110,6 +119,17 @@ abstract class FLogger protected constructor() {
     private fun destroy() {
         _isAlive = false
         closeLogFileInternal()
+    }
+
+    /**
+     * 对象即将被销毁，子类不能调用此方法
+     */
+    protected fun finalize() {
+        try {
+            destroy()
+        } catch (e: Exception) {
+            // 忽略
+        }
     }
 
     //---------- log start ----------
@@ -138,6 +158,13 @@ abstract class FLogger protected constructor() {
     //---------- log end ----------
 
     companion object {
+        /**
+         * 如果[FLogger]被添加到[sRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._logFileHandler]可能还未关闭。
+         * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[SimpleFileHandler]指向同一个日志文件。
+         * 所以需要[sLoggerHandlerHolder]来保存[SimpleFileHandler]避免这种情况。
+         */
+        private val sLoggerHandlerHolder: MutableMap<Class<*>, SimpleFileHandler> = ConcurrentHashMap()
+
         private val sRefQueue = ReferenceQueue<FLogger>()
         private val sLoggerHolder: MutableMap<Class<*>, LoggerRef<FLogger>> = HashMap()
         private var sGlobalLevel = Level.ALL
@@ -155,6 +182,14 @@ abstract class FLogger protected constructor() {
                 releaseReference()
                 val cache = sLoggerHolder[clazz]?.get()
                 if (cache != null) return cache
+
+                sLoggerHandlerHolder[clazz]?.let { handler ->
+                    /**
+                     * [FLogger.finalize]还未触发，手动关闭[SimpleFileHandler]
+                     */
+                    handler.close()
+                    sLoggerHandlerHolder.remove(clazz)
+                }
 
                 clazz.newInstance().also { logger ->
                     sLoggerHolder[clazz] = LoggerRef(clazz, logger, sRefQueue)
