@@ -142,6 +142,10 @@ abstract class FLogger protected constructor() {
             destroy()
         } catch (e: Exception) {
             // 忽略
+            if (debug) {
+                Log.e(FLogger::class.simpleName,
+                    "finalize error ${this@FLogger.javaClass.name} $e")
+            }
         }
     }
 
