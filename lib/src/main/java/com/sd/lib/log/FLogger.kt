@@ -1,6 +1,7 @@
 package com.sd.lib.log
 
 import android.content.Context
+import android.util.Log
 import com.sd.lib.context.FContext
 import java.io.File
 import java.lang.ref.ReferenceQueue
@@ -84,6 +85,10 @@ abstract class FLogger protected constructor() {
                 _logger.addHandler(handler)
                 synchronized(Companion) {
                     sLoggerHandlerHolder[this@FLogger.javaClass] = handler
+                    if (debug) {
+                        Log.i(FLogger::class.simpleName,
+                            "handler +++++ ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -107,6 +112,10 @@ abstract class FLogger protected constructor() {
                 synchronized(Companion) {
                     if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
                         sLoggerHandlerHolder.remove(this@FLogger.javaClass)
+                        if (debug) {
+                            Log.i(FLogger::class.simpleName,
+                                "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
+                        }
                     }
                 }
             }
@@ -126,6 +135,10 @@ abstract class FLogger protected constructor() {
      */
     protected fun finalize() {
         try {
+            if (debug) {
+                Log.i(FLogger::class.simpleName,
+                    "finalize ${this@FLogger.javaClass.name}")
+            }
             destroy()
         } catch (e: Exception) {
             // 忽略
@@ -172,6 +185,8 @@ abstract class FLogger protected constructor() {
         private val savedContext
             get() = checkNotNull(FContext.get()) { "Context is null" }
 
+        var debug = false
+
         /**
          * 获得指定的日志类对象，内部会保存日志对象
          */
@@ -189,10 +204,18 @@ abstract class FLogger protected constructor() {
                      */
                     handler.close()
                     sLoggerHandlerHolder.remove(clazz)
+                    if (debug) {
+                        Log.w(FLogger::class.simpleName,
+                            "handler closed before finalize ${clazz.name} size:${sLoggerHandlerHolder.size}")
+                    }
                 }
 
                 clazz.newInstance().also { logger ->
                     sLoggerHolder[clazz] = LoggerRef(clazz, logger, sRefQueue)
+                    if (debug) {
+                        Log.i(FLogger::class.simpleName,
+                            "+++++ ${clazz.name} size:${sLoggerHolder.size}")
+                    }
                 }
             }.also {
                 // onCreate()不需要同步，在synchronized外触发
@@ -208,6 +231,10 @@ abstract class FLogger protected constructor() {
                 val reference = sRefQueue.poll()
                 if (reference is LoggerRef) {
                     sLoggerHolder.remove(reference.clazz)
+                    if (debug) {
+                        Log.i(FLogger::class.simpleName,
+                            "----- ${reference.clazz.name} size:${sLoggerHolder.size}")
+                    }
                 } else {
                     break
                 }

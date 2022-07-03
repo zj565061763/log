@@ -8,6 +8,11 @@ import com.sd.lib.log.ext.FLogBuilder
 import com.sd.lib.log.info
 
 class MainActivity : AppCompatActivity() {
+
+    init {
+        FLogger.debug = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
