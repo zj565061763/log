@@ -52,4 +52,11 @@ internal class SimpleFileHandler(
             return dir.exists() || dir.mkdirs()
         }
     }
+
+    fun finalize() {
+        try {
+            close()
+        } catch (e: Exception) {
+        }
+    }
 }
