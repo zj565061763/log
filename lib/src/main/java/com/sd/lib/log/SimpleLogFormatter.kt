@@ -9,7 +9,7 @@ import java.util.logging.Level
 import java.util.logging.LogRecord
 
 internal class SimpleLogFormatter : Formatter() {
-    private val _dateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS")
+    private val _dateFormat = SimpleDateFormat("MMdd HH:mm:ss.SSS")
 
     override fun format(record: LogRecord): String {
         val date = _dateFormat.format(Date(record.millis))
