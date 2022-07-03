@@ -5,7 +5,7 @@ import android.util.Log
 import com.sd.lib.context.FContext
 import java.io.File
 import java.lang.ref.ReferenceQueue
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 import java.text.ParseException
 import java.util.*
 import java.util.logging.Level
@@ -349,7 +349,7 @@ private class LoggerRef<T>(
     val clazz: Class<*>,
     referent: T,
     q: ReferenceQueue<in T>,
-) : WeakReference<T>(referent, q)
+) : SoftReference<T>(referent, q)
 
 inline fun <T : FLogger> KClass<T>.info(block: () -> Any) {
     log(
