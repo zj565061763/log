@@ -8,7 +8,6 @@ import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
 import java.text.ParseException
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
@@ -176,7 +175,7 @@ abstract class FLogger protected constructor() {
          * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[SimpleFileHandler]指向同一个日志文件。
          * 所以需要[sLoggerHandlerHolder]来保存[SimpleFileHandler]避免这种情况。
          */
-        private val sLoggerHandlerHolder: MutableMap<Class<*>, SimpleFileHandler> = ConcurrentHashMap()
+        private val sLoggerHandlerHolder: MutableMap<Class<*>, SimpleFileHandler> = HashMap()
 
         private val sRefQueue = ReferenceQueue<FLogger>()
         private val sLoggerHolder: MutableMap<Class<*>, LoggerRef<FLogger>> = HashMap()
