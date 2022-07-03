@@ -53,10 +53,11 @@ internal class SimpleFileHandler(
         }
     }
 
-    fun finalize() {
+    protected fun finalize() {
         try {
             close()
         } catch (e: Exception) {
+            // 忽略
         }
     }
 }
