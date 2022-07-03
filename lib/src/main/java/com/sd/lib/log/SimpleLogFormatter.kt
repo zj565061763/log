@@ -5,6 +5,7 @@ import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.Formatter
+import java.util.logging.Level
 import java.util.logging.LogRecord
 
 internal class SimpleLogFormatter : Formatter() {
@@ -28,7 +29,7 @@ internal class SimpleLogFormatter : Formatter() {
             // 日期
             append(date)
             // 日志等级
-            append(" ").append(record.level).append(" ")
+            append(getLevelString(record.level))
             // 日志信息
             append(message)
             // 异常信息
@@ -39,7 +40,16 @@ internal class SimpleLogFormatter : Formatter() {
     }
 
     companion object {
-        private val nextLine
+        private val nextLine: String
             get() = System.getProperty("line.separator") ?: "\r\n"
+
+        private fun getLevelString(level: Level): String {
+            return when (level) {
+                Level.INFO -> " "
+                Level.WARNING -> "(w)"
+                Level.SEVERE -> "(s)"
+                else -> "($level)"
+            }
+        }
     }
 }
