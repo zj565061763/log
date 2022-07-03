@@ -102,20 +102,15 @@ abstract class FLogger protected constructor() {
     @Synchronized
     private fun closeLogFileInternal() {
         _logFileHandler?.let { handler ->
-            try {
-                handler.close()
-            } catch (e: Exception) {
-                // 忽略
-            } finally {
-                _logger.removeHandler(handler)
-                _logFileHandler = null
-                synchronized(Companion) {
-                    if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
-                        sLoggerHandlerHolder.remove(this@FLogger.javaClass)
-                        if (debug) {
-                            Log.i(FLogger::class.simpleName,
-                                "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
-                        }
+            handler.close()
+            _logger.removeHandler(handler)
+            _logFileHandler = null
+            synchronized(Companion) {
+                if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
+                    sLoggerHandlerHolder.remove(this@FLogger.javaClass)
+                    if (debug) {
+                        Log.i(FLogger::class.simpleName,
+                            "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
                     }
                 }
             }
@@ -142,6 +137,7 @@ abstract class FLogger protected constructor() {
             destroy()
         } catch (e: Exception) {
             // 忽略
+            e.printStackTrace()
             if (debug) {
                 Log.e(FLogger::class.simpleName,
                     "finalize error ${this@FLogger.javaClass.name} $e")
