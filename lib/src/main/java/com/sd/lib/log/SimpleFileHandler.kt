@@ -53,11 +53,16 @@ internal class SimpleFileHandler(
         }
     }
 
-    protected fun finalize() {
+    override fun close() {
         try {
-            close()
+            super.close()
         } catch (e: Exception) {
             // 忽略
+            e.printStackTrace()
         }
+    }
+
+    protected fun finalize() {
+        close()
     }
 }
