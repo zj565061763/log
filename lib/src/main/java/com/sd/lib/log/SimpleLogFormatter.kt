@@ -8,7 +8,7 @@ import java.util.logging.Formatter
 import java.util.logging.LogRecord
 
 internal class SimpleLogFormatter : Formatter() {
-    private val _dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+    private val _dateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS")
 
     override fun format(record: LogRecord): String {
         val date = _dateFormat.format(Date(record.millis))
@@ -28,7 +28,7 @@ internal class SimpleLogFormatter : Formatter() {
             // 日期
             append(date)
             // 日志等级
-            append(" (").append(record.level).append(") ")
+            append(" ").append(record.level).append(" ")
             // 日志信息
             append(message)
             // 异常信息
