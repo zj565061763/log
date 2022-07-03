@@ -90,10 +90,15 @@ abstract class FLogger protected constructor() {
      */
     @Synchronized
     private fun closeLogFileInternal() {
-        _logFileHandler?.let {
-            it.close()
-            _logger.removeHandler(it)
-            _logFileHandler = null
+        _logFileHandler?.let { handler ->
+            try {
+                handler.close()
+            } catch (e: Exception) {
+                // 忽略
+            } finally {
+                _logger.removeHandler(handler)
+                _logFileHandler = null
+            }
         }
     }
 
