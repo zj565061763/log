@@ -26,7 +26,7 @@ abstract class FLogger protected constructor() {
             field = value
         }
 
-    private var _logFileHandler: SimpleFileHandler? = null
+    private var _fileHandler: SimpleFileHandler? = null
 
     /**
      * 日志对象被创建回调
@@ -46,7 +46,7 @@ abstract class FLogger protected constructor() {
     fun setLevel(level: Level) {
         if (!_isAlive) return
         _logger.level = level
-        _logFileHandler?.level = level
+        _fileHandler?.level = level
     }
 
     /**
@@ -73,14 +73,14 @@ abstract class FLogger protected constructor() {
         require(limitMB > 0) { "limitMB must greater than 0" }
         if (!_isAlive) return
 
-        val fileHandler = _logFileHandler
+        val fileHandler = _fileHandler
         if (fileHandler != null && fileHandler.limitMB == limitMB) {
             return
         }
 
         closeLogFileInternal()
         try {
-            _logFileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
+            _fileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
                 handler.level = this@FLogger.level
                 _logger.addHandler(handler)
                 synchronized(Companion) {
@@ -101,10 +101,10 @@ abstract class FLogger protected constructor() {
      */
     @Synchronized
     private fun closeLogFileInternal() {
-        _logFileHandler?.let { handler ->
+        _fileHandler?.let { handler ->
             handler.close()
             _logger.removeHandler(handler)
-            _logFileHandler = null
+            _fileHandler = null
             synchronized(Companion) {
                 if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
                     sLoggerHandlerHolder.remove(this@FLogger.javaClass)
@@ -172,7 +172,7 @@ abstract class FLogger protected constructor() {
 
     companion object {
         /**
-         * 如果[FLogger]被添加到[sRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._logFileHandler]可能还未关闭。
+         * 如果[FLogger]被添加到[sRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._fileHandler]可能还未关闭。
          * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[SimpleFileHandler]指向同一个日志文件。
          * 所以需要[sLoggerHandlerHolder]来保存[SimpleFileHandler]避免这种情况。
          */
