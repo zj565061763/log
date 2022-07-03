@@ -74,18 +74,14 @@ class FLogBuilder : ILogBuilder {
     }
 
     override fun build(): String {
-        if (_list.isEmpty()) return ""
         return buildString {
-            _list.forEachIndexed { index, item ->
+            _list.forEach { item ->
                 append(formatter.separatorForPart)
-
                 if (item.key.isNullOrEmpty()) {
                     append(item.value)
                 } else {
                     append(item.key).append(formatter.separatorForKeyValue).append(item.value)
                 }
-
-                if (index == _list.lastIndex) append(" ")
             }
         }
     }
