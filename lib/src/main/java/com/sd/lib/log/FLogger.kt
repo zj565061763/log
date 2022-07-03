@@ -3,6 +3,8 @@ package com.sd.lib.log
 import android.content.Context
 import com.sd.lib.context.FContext
 import java.io.File
+import java.lang.ref.ReferenceQueue
+import java.lang.ref.WeakReference
 import java.text.ParseException
 import java.util.*
 import java.util.logging.Level
@@ -136,7 +138,8 @@ abstract class FLogger protected constructor() {
     //---------- log end ----------
 
     companion object {
-        private val sLoggerHolder: MutableMap<Class<*>, FLogger> = HashMap()
+        private val sRefQueue = ReferenceQueue<FLogger>()
+        private val sLoggerHolder: MutableMap<Class<*>, LoggerRef<FLogger>> = HashMap()
         private var sGlobalLevel = Level.ALL
 
         private val savedContext
@@ -149,15 +152,30 @@ abstract class FLogger protected constructor() {
         fun <T : FLogger> get(clazz: Class<T>): FLogger {
             require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
             return synchronized(this@Companion) {
-                val cache = sLoggerHolder[clazz]
+                releaseReference()
+                val cache = sLoggerHolder[clazz]?.get()
                 if (cache != null) return cache
 
-                clazz.newInstance().also {
-                    sLoggerHolder[clazz] = it
+                clazz.newInstance().also { logger ->
+                    sLoggerHolder[clazz] = LoggerRef(clazz, logger, sRefQueue)
                 }
             }.also {
                 // onCreate()不需要同步，在synchronized外触发
                 it.onCreate()
+            }
+        }
+
+        /**
+         * 移除引用
+         */
+        private fun releaseReference() {
+            while (true) {
+                val reference = sRefQueue.poll()
+                if (reference is LoggerRef) {
+                    sLoggerHolder.remove(reference.clazz)
+                } else {
+                    break
+                }
             }
         }
 
@@ -181,7 +199,7 @@ abstract class FLogger protected constructor() {
         fun clearLogger() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
-                    item.destroy()
+                    item.get()?.destroy()
                 }
                 sLoggerHolder.clear()
             }
@@ -265,6 +283,12 @@ abstract class FLogger protected constructor() {
         }
     }
 }
+
+private class LoggerRef<T>(
+    val clazz: Class<*>,
+    referent: T,
+    q: ReferenceQueue<in T>,
+) : WeakReference<T>(referent, q)
 
 inline fun <T : FLogger> KClass<T>.info(block: () -> Any) {
     log(
