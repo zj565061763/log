@@ -17,6 +17,11 @@ abstract class FLogger protected constructor() {
 
     @Volatile
     private var _isAlive = true
+        set(value) {
+            require(!value) { "Can not set active to true" }
+            field = value
+        }
+
     private var _logFileHandler: SimpleFileHandler? = null
 
     /**
@@ -34,11 +39,10 @@ abstract class FLogger protected constructor() {
      * 设置日志等级
      */
     @Synchronized
-    fun setLevel(level: Level?) {
+    fun setLevel(level: Level) {
         if (!_isAlive) return
-        val safeLevel = level ?: Level.ALL
-        _logger.level = safeLevel
-        _logFileHandler?.level = safeLevel
+        _logger.level = level
+        _logFileHandler?.level = level
     }
 
     /**
@@ -52,15 +56,8 @@ abstract class FLogger protected constructor() {
      * 开启日志文件
      * @param limitMB 文件大小限制(MB)
      */
-    fun openLogFile(limitMB: Int) {
+    protected fun openLogFile(limitMB: Int) {
         openLogFileInternal(savedContext, limitMB)
-    }
-
-    /**
-     * 关闭日志文件
-     */
-    fun closeLogFile() {
-        closeLogFileInternal()
     }
 
     /**
@@ -98,6 +95,14 @@ abstract class FLogger protected constructor() {
             _logger.removeHandler(it)
             _logFileHandler = null
         }
+    }
+
+    /**
+     * 销毁
+     */
+    private fun destroy() {
+        _isAlive = false
+        closeLogFileInternal()
     }
 
     //---------- log start ----------
@@ -155,11 +160,10 @@ abstract class FLogger protected constructor() {
          * 设置全局日志输出等级
          */
         @JvmStatic
-        fun setGlobalLevel(level: Level?) {
-            val safeLevel = level ?: Level.ALL
+        fun setGlobalLevel(level: Level) {
             synchronized(this@Companion) {
-                if (sGlobalLevel != safeLevel) {
-                    sGlobalLevel = safeLevel
+                if (sGlobalLevel != level) {
+                    sGlobalLevel = level
                     clearLogger()
                 }
             }
@@ -172,8 +176,7 @@ abstract class FLogger protected constructor() {
         fun clearLogger() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
-                    item._isAlive = false
-                    item.closeLogFile()
+                    item.destroy()
                 }
                 sLoggerHolder.clear()
             }
