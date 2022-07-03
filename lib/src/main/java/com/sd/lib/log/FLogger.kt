@@ -42,11 +42,12 @@ abstract class FLogger protected constructor() {
     /**
      * 设置日志等级
      */
-    @Synchronized
     fun setLevel(level: Level) {
         if (!_isAlive) return
-        _logger.level = level
-        _fileHandler?.level = level
+        synchronized(Companion) {
+            _logger.level = level
+            _fileHandler?.level = level
+        }
     }
 
     /**
@@ -68,50 +69,48 @@ abstract class FLogger protected constructor() {
      * 开启日志文件
      * @param limitMB 文件大小限制(MB)
      */
-    @Synchronized
     private fun openLogFileInternal(context: Context, limitMB: Int) {
         require(limitMB > 0) { "limitMB must greater than 0" }
         if (!_isAlive) return
+        synchronized(Companion) {
+            val fileHandler = _fileHandler
+            if (fileHandler != null && fileHandler.limitMB == limitMB) {
+                return
+            }
 
-        val fileHandler = _fileHandler
-        if (fileHandler != null && fileHandler.limitMB == limitMB) {
-            return
-        }
-
-        closeLogFileInternal()
-        try {
-            _fileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
-                handler.level = this@FLogger.level
-                _logger.addHandler(handler)
-                synchronized(Companion) {
+            closeLogFileInternal()
+            try {
+                _fileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
+                    handler.level = this@FLogger.level
+                    _logger.addHandler(handler)
                     sLoggerHandlerHolder[this@FLogger.javaClass] = handler
                     if (debug) {
                         Log.i(FLogger::class.simpleName,
                             "handler +++++ ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
                     }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     /**
      * 关闭日志文件
      */
-    @Synchronized
     private fun closeLogFileInternal() {
-        _fileHandler?.let { handler ->
+        synchronized(Companion) {
+            val handler = _fileHandler ?: return
+            _fileHandler = null
+
             handler.close()
             _logger.removeHandler(handler)
-            _fileHandler = null
-            synchronized(Companion) {
-                if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
-                    sLoggerHandlerHolder.remove(this@FLogger.javaClass)
-                    if (debug) {
-                        Log.i(FLogger::class.simpleName,
-                            "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
-                    }
+
+            if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
+                sLoggerHandlerHolder.remove(this@FLogger.javaClass)
+                if (debug) {
+                    Log.i(FLogger::class.simpleName,
+                        "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
                 }
             }
         }
