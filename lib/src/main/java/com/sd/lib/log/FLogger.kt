@@ -26,6 +26,7 @@ abstract class FLogger protected constructor() {
             field = value
         }
 
+    /** 日志文件处理 */
     private var _fileHandler: SimpleFileHandler? = null
 
     /**
