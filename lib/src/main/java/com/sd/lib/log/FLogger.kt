@@ -175,10 +175,10 @@ abstract class FLogger protected constructor() {
          * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[SimpleFileHandler]指向同一个日志文件。
          * 所以需要[sLoggerHandlerHolder]来保存[SimpleFileHandler]避免这种情况。
          */
-        private val sLoggerHandlerHolder: MutableMap<Class<*>, SimpleFileHandler> = HashMap()
+        private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, SimpleFileHandler> = HashMap()
 
         private val sRefQueue = ReferenceQueue<FLogger>()
-        private val sLoggerHolder: MutableMap<Class<*>, LoggerRef<FLogger>> = HashMap()
+        private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = HashMap()
         private var sGlobalLevel = Level.ALL
 
         private val savedContext
@@ -190,7 +190,7 @@ abstract class FLogger protected constructor() {
          * 获得指定的日志类对象，内部会保存日志对象
          */
         @JvmStatic
-        fun <T : FLogger> get(clazz: Class<T>): FLogger {
+        fun get(clazz: Class<out FLogger>): FLogger {
             require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
             return synchronized(this@Companion) {
                 releaseReference()
@@ -351,21 +351,21 @@ private class LoggerRef<T>(
     q: ReferenceQueue<in T>,
 ) : SoftReference<T>(referent, q)
 
-inline fun <T : FLogger> KClass<T>.info(block: () -> Any) {
+inline fun KClass<out FLogger>.info(block: () -> Any) {
     log(
         level = Level.INFO,
         block = block,
     )
 }
 
-inline fun <T : FLogger> KClass<T>.warning(block: () -> Any) {
+inline fun KClass<out FLogger>.warning(block: () -> Any) {
     log(
         level = Level.WARNING,
         block = block,
     )
 }
 
-inline fun <T : FLogger> KClass<T>.severe(thrown: Throwable? = null, block: () -> Any) {
+inline fun KClass<out FLogger>.severe(thrown: Throwable? = null, block: () -> Any) {
     log(
         level = Level.SEVERE,
         thrown = thrown,
@@ -373,7 +373,7 @@ inline fun <T : FLogger> KClass<T>.severe(thrown: Throwable? = null, block: () -
     )
 }
 
-inline fun <T : FLogger> KClass<T>.log(
+inline fun KClass<out FLogger>.log(
     level: Level,
     thrown: Throwable? = null,
     block: () -> Any,
