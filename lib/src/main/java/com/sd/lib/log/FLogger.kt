@@ -275,6 +275,18 @@ abstract class FLogger protected constructor() {
         }
 
         /**
+         * 日志文件目录
+         */
+        fun logFileDir(block: (dir: File) -> Unit) {
+            synchronized(this@Companion) {
+                val dir = SimpleFileHandler.getLogFileDir(savedContext)
+                if (dir.exists()) {
+                    block(dir)
+                }
+            }
+        }
+
+        /**
          * 删除日志文件
          *
          * @param saveDays 要保留的日志天数，如果 saveDays <= 0 ，则删除所有日志

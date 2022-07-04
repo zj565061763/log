@@ -24,6 +24,11 @@ class MainActivity : AppCompatActivity() {
 
         // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
         FLogger.deleteLogFile(1)
+
+        // 日志文件目录
+        FLogger.logFileDir {
+            AppLogger::class.info { "logFileDir $it" }
+        }
     }
 
     override fun onStart() {
