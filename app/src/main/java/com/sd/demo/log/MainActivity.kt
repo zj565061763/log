@@ -26,9 +26,7 @@ class MainActivity : AppCompatActivity() {
         FLogger.deleteLogFile(1)
 
         // 日志文件目录
-        FLogger.logFileDir {
-            AppLogger::class.info { "logFileDir $it" }
-        }
+        AppLogger::class.info { "logFileDir ${FLogger.getLogFileDir()}" }
     }
 
     override fun onStart() {

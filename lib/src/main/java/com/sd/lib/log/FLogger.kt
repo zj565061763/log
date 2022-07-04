@@ -277,12 +277,9 @@ abstract class FLogger protected constructor() {
         /**
          * 日志文件目录
          */
-        fun logFileDir(block: (dir: File) -> Unit) {
+        fun getLogFileDir(): File {
             synchronized(this@Companion) {
-                val dir = SimpleFileHandler.getLogFileDir(savedContext)
-                if (dir.exists()) {
-                    block(dir)
-                }
+                return SimpleFileHandler.getLogFileDir(savedContext)
             }
         }
 
@@ -294,7 +291,7 @@ abstract class FLogger protected constructor() {
         @JvmStatic
         fun deleteLogFile(saveDays: Int) {
             synchronized(this@Companion) {
-                val dir = SimpleFileHandler.getLogFileDir(savedContext)
+                val dir = getLogFileDir()
                 if (!dir.exists()) return
 
                 if (saveDays <= 0) {
