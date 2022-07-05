@@ -85,10 +85,7 @@ abstract class FLogger protected constructor() {
                     handler.level = this@FLogger.level
                     _logger.addHandler(handler)
                     sLoggerHandlerHolder[this@FLogger.javaClass] = handler
-                    if (isDebug) {
-                        Log.i(FLogger::class.simpleName,
-                            "handler +++++ ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
-                    }
+                    logMsg { "handler +++++ ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}" }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -109,10 +106,7 @@ abstract class FLogger protected constructor() {
 
             if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
                 sLoggerHandlerHolder.remove(this@FLogger.javaClass)
-                if (isDebug) {
-                    Log.i(FLogger::class.simpleName,
-                        "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}")
-                }
+                logMsg { "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}" }
             }
         }
     }
@@ -130,18 +124,11 @@ abstract class FLogger protected constructor() {
      */
     protected fun finalize() {
         try {
-            if (isDebug) {
-                Log.i(FLogger::class.simpleName,
-                    "finalize ${this@FLogger.javaClass.name}")
-            }
+            logMsg { "finalize ${this@FLogger.javaClass.name}" }
             destroy()
         } catch (e: Exception) {
-            // 忽略
             e.printStackTrace()
-            if (isDebug) {
-                Log.e(FLogger::class.simpleName,
-                    "finalize error ${this@FLogger.javaClass.name} $e")
-            }
+            logMsg { "finalize error ${this@FLogger.javaClass.name} $e" }
         }
     }
 
@@ -204,18 +191,12 @@ abstract class FLogger protected constructor() {
                      */
                     handler.close()
                     sLoggerHandlerHolder.remove(clazz)
-                    if (isDebug) {
-                        Log.w(FLogger::class.simpleName,
-                            "handler closed before finalize ${clazz.name} size:${sLoggerHandlerHolder.size}")
-                    }
+                    logMsg { "handler closed before finalize ${clazz.name} size:${sLoggerHandlerHolder.size}" }
                 }
 
                 clazz.newInstance().also { logger ->
                     sLoggerHolder[clazz] = LoggerRef(clazz, logger, sRefQueue)
-                    if (isDebug) {
-                        Log.i(FLogger::class.simpleName,
-                            "+++++ ${clazz.name} size:${sLoggerHolder.size}")
-                    }
+                    logMsg { "+++++ ${clazz.name} size:${sLoggerHolder.size}" }
                 }
             }.also {
                 // onCreate()不需要同步，在synchronized外触发
@@ -231,10 +212,7 @@ abstract class FLogger protected constructor() {
                 val reference = sRefQueue.poll()
                 if (reference is LoggerRef) {
                     sLoggerHolder.remove(reference.clazz)
-                    if (isDebug) {
-                        Log.i(FLogger::class.simpleName,
-                            "----- ${reference.clazz.name} size:${sLoggerHolder.size}")
-                    }
+                    logMsg { "----- ${reference.clazz.name} size:${sLoggerHolder.size}" }
                 } else {
                     break
                 }
