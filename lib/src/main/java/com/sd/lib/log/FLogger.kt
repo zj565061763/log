@@ -18,10 +18,11 @@ abstract class FLogger protected constructor() {
         level = sGlobalLevel
     }
 
+    /** 当前对象是否已经被移除 */
     @Volatile
-    private var _isAlive = true
+    private var _isRemoved = false
         set(value) {
-            require(!value) { "Can not set active to true" }
+            require(value) { "Can not set false to this flag" }
             field = value
         }
 
@@ -43,8 +44,8 @@ abstract class FLogger protected constructor() {
      * 设置日志等级
      */
     fun setLevel(level: Level) {
-        if (!_isAlive) return
         synchronized(Companion) {
+            if (_isRemoved) return
             _logger.level = level
             _fileHandler?.level = level
         }
@@ -71,8 +72,8 @@ abstract class FLogger protected constructor() {
      */
     private fun openLogFileInternal(context: Context, limitMB: Int) {
         require(limitMB > 0) { "limitMB must greater than 0" }
-        if (!_isAlive) return
         synchronized(Companion) {
+            if (_isRemoved) return
             val fileHandler = _fileHandler
             if (fileHandler != null && fileHandler.limitMB == limitMB) {
                 return
@@ -120,7 +121,7 @@ abstract class FLogger protected constructor() {
      * 销毁
      */
     private fun destroy() {
-        _isAlive = false
+        _isRemoved = true
         closeLogFileInternal()
     }
 
@@ -162,9 +163,8 @@ abstract class FLogger protected constructor() {
     @JvmOverloads
     fun log(level: Level, msg: String?, thrown: Throwable? = null) {
         if (msg.isNullOrEmpty()) return
-        if (_isAlive) {
-            _logger.log(level, msg, thrown)
-        }
+        if (_isRemoved) return
+        _logger.log(level, msg, thrown)
     }
 
     //---------- log end ----------
