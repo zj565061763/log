@@ -10,7 +10,7 @@ import com.sd.lib.log.info
 class MainActivity : AppCompatActivity() {
 
     init {
-        FLogger.debug = true
+        FLogger.isDebug = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
