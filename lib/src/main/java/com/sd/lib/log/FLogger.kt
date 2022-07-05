@@ -85,7 +85,7 @@ abstract class FLogger protected constructor() {
                     handler.level = this@FLogger.level
                     _logger.addHandler(handler)
                     sLoggerHandlerHolder[this@FLogger.javaClass] = handler
-                    logMsg { "handler +++++ ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}" }
+                    logMsg { "${this@FLogger.javaClass.name} handler +++++  size:${sLoggerHandlerHolder.size}" }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -106,7 +106,7 @@ abstract class FLogger protected constructor() {
 
             if (handler === sLoggerHandlerHolder[this@FLogger.javaClass]) {
                 sLoggerHandlerHolder.remove(this@FLogger.javaClass)
-                logMsg { "handler ----- ${this@FLogger.javaClass.name} size:${sLoggerHandlerHolder.size}" }
+                logMsg { "${this@FLogger.javaClass.name} handler ----- size:${sLoggerHandlerHolder.size}" }
             }
         }
     }
@@ -124,11 +124,11 @@ abstract class FLogger protected constructor() {
      */
     protected fun finalize() {
         try {
-            logMsg { "finalize ${this@FLogger.javaClass.name}" }
+            logMsg { "${this@FLogger.javaClass.name} finalize" }
             destroy()
         } catch (e: Exception) {
             e.printStackTrace()
-            logMsg { "finalize error ${this@FLogger.javaClass.name} $e" }
+            logMsg { "${this@FLogger.javaClass.name} finalize error $e" }
         }
     }
 
@@ -196,7 +196,7 @@ abstract class FLogger protected constructor() {
 
                 clazz.newInstance().also { logger ->
                     sLoggerHolder[clazz] = LoggerRef(clazz, logger, sRefQueue)
-                    logMsg { "+++++ ${clazz.name} size:${sLoggerHolder.size}" }
+                    logMsg { "${clazz.name} +++++ size:${sLoggerHolder.size}" }
                 }
             }.also {
                 // onCreate()不需要同步，在synchronized外触发
@@ -212,7 +212,7 @@ abstract class FLogger protected constructor() {
                 val reference = sRefQueue.poll()
                 if (reference is LoggerRef) {
                     sLoggerHolder.remove(reference.clazz)
-                    logMsg { "----- ${reference.clazz.name} size:${sLoggerHolder.size}" }
+                    logMsg { "${reference.clazz.name} ----- size:${sLoggerHolder.size}" }
                 } else {
                     break
                 }
