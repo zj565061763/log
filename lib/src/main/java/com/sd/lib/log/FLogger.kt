@@ -84,8 +84,8 @@ abstract class FLogger protected constructor() {
                 _fileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
                     handler.level = this@FLogger.level
                     _logger.addHandler(handler)
-                    sLoggerHandlerHolder[this@FLogger.javaClass] = handler
-                    logMsg { "${this@FLogger.javaClass.name} handler +++++  size:${sLoggerHandlerHolder.size}" }
+                    sLoggerHandlerHolder[_loggerClass] = handler
+                    logMsg { "${_loggerClass.name} handler +++++  size:${sLoggerHandlerHolder.size}" }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -124,12 +124,12 @@ abstract class FLogger protected constructor() {
      */
     protected fun finalize() {
         try {
-            logMsg { "${this@FLogger.javaClass.name} finalize" }
+            logMsg { "${_loggerClass.name} finalize" }
             destroy()
             releaseReference()
         } catch (e: Exception) {
             e.printStackTrace()
-            logMsg { "${this@FLogger.javaClass.name} finalize error $e" }
+            logMsg { "${_loggerClass.name} finalize error $e" }
         }
     }
 
