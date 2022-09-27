@@ -13,7 +13,9 @@ import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 abstract class FLogger protected constructor() {
-    private val _loggerName = javaClass.name
+    private val _loggerClass = this@FLogger.javaClass
+    private val _loggerName = _loggerClass.name
+
     private val _logger = Logger.getLogger(_loggerName).apply {
         level = sGlobalLevel
     }
