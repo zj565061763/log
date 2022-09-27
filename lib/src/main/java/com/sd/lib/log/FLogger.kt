@@ -17,7 +17,7 @@ abstract class FLogger protected constructor() {
     private val _loggerName = _loggerClass.name
 
     private val _logger = Logger.getLogger(_loggerName).apply {
-        level = sGlobalLevel
+        this.level = sGlobalLevel
     }
 
     /** 当前对象是否已经被移除 */
