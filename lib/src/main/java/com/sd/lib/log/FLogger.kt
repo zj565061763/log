@@ -188,9 +188,10 @@ abstract class FLogger protected constructor() {
                 val cache = sLoggerHolder[clazz]?.get()
                 if (cache != null) return cache
 
-                sLoggerHandlerHolder[clazz]?.let { handler ->
+                val handler = sLoggerHandlerHolder[clazz]
+                if (handler != null) {
                     /**
-                     * [FLogger.finalize]还未触发，手动关闭[SimpleFileHandler]
+                     * [FLogger.finalize]还未触发，手动关闭handler
                      */
                     handler.close()
                     sLoggerHandlerHolder.remove(clazz)
