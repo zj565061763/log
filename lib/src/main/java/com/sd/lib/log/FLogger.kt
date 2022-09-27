@@ -167,6 +167,8 @@ abstract class FLogger protected constructor() {
 
         private val sRefQueue = ReferenceQueue<FLogger>()
         private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = HashMap()
+
+        /** 默认等级 */
         private var sGlobalLevel = Level.ALL
 
         private val savedContext
