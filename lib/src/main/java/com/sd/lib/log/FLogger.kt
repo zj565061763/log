@@ -247,14 +247,6 @@ abstract class FLogger protected constructor() {
         }
 
         /**
-         * 删除所有日志文件
-         */
-        @JvmStatic
-        fun deleteLogFile() {
-            deleteLogFile(0)
-        }
-
-        /**
          * 日志文件目录
          */
         fun getLogFileDir(): File {
