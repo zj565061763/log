@@ -104,10 +104,9 @@ abstract class FLogger protected constructor() {
             handler.close()
             _logger.removeHandler(handler)
 
-            val clazz = this@FLogger.javaClass
-            if (handler === sLoggerHandlerHolder[clazz]) {
-                sLoggerHandlerHolder.remove(clazz)
-                logMsg { "${clazz.name} handler ----- size:${sLoggerHandlerHolder.size}" }
+            if (handler === sLoggerHandlerHolder[_loggerClass]) {
+                sLoggerHandlerHolder.remove(_loggerClass)
+                logMsg { "${_loggerClass.name} handler ----- size:${sLoggerHandlerHolder.size}" }
             }
         }
     }
