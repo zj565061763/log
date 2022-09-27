@@ -77,10 +77,7 @@ abstract class FLogger protected constructor() {
         require(limitMB > 0) { "Require limitMB > 0" }
         synchronized(Companion) {
             if (_isRemoved) return
-            val fileHandler = _fileHandler
-            if (fileHandler != null && fileHandler.limitMB == limitMB) {
-                return
-            }
+            if (_fileHandler?.limitMB == limitMB) return
 
             closeLogFileInternal()
             try {
