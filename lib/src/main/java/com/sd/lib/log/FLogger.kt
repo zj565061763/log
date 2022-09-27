@@ -73,7 +73,7 @@ abstract class FLogger protected constructor() {
      * @param limitMB 文件大小限制(MB)
      */
     private fun openLogFileInternal(context: Context, limitMB: Int) {
-        require(limitMB > 0) { "limitMB must greater than 0" }
+        require(limitMB > 0) { "Require limitMB > 0" }
         synchronized(Companion) {
             if (_isRemoved) return
             val fileHandler = _fileHandler
