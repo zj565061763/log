@@ -58,7 +58,7 @@ class FLogBuilder : ILogBuilder {
     }
 
     override fun nextLine() = apply {
-        add("\r\n")
+        add("\n")
     }
 
     override fun clazz(clazz: Class<*>) = apply {
