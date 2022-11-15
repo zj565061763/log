@@ -10,10 +10,10 @@ def libVersionName = "1.3.5"
 
 android {
     namespace 'com.sd.lib.log'
-    compileSdk 32
+    compileSdk 33
     defaultConfig {
-        minSdk 19
-        targetSdk 32
+        minSdk 21
+        targetSdk 33
     }
 
     buildTypes {
