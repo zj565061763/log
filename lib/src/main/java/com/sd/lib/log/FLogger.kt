@@ -126,7 +126,6 @@ abstract class FLogger protected constructor() {
         try {
             logMsg { "${_loggerClass.name} finalize" }
             destroy()
-            releaseReference()
         } catch (e: Exception) {
             e.printStackTrace()
             logMsg { "${_loggerClass.name} finalize error $e" }
