@@ -103,14 +103,11 @@ private class SimpleLogFormatter : Formatter() {
             // 异常信息
             append(error)
             // 换行
-            append(nextLine)
+            append("\n")
         }
     }
 
     companion object {
-        private val nextLine: String
-            get() = System.getProperty("line.separator") ?: "\r\n"
-
         private fun getLevelString(level: Level): String {
             return when (level) {
                 Level.INFO -> " "
