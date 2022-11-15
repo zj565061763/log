@@ -115,21 +115,21 @@ abstract class FLogger protected constructor() {
      * 销毁
      */
     private fun destroy() {
-        _isRemoved = true
-        closeLogFileInternal()
+        try {
+            _isRemoved = true
+            closeLogFileInternal()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
      * 对象即将被销毁，子类不能调用此方法
      */
     protected fun finalize() {
-        try {
-            logMsg { "${_loggerClass.name} finalize" }
-            destroy()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            logMsg { "${_loggerClass.name} finalize error $e" }
-        }
+        logMsg { "${_loggerClass.name} finalize start" }
+        destroy()
+        logMsg { "${_loggerClass.name} finalize end" }
     }
 
     //---------- log start ----------
