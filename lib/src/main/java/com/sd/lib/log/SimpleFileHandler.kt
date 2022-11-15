@@ -84,7 +84,9 @@ private class SimpleLogFormatter : Formatter() {
         val message = formatMessage(record)
 
         val thrown = record.thrown
-        val error = if (thrown == null) "" else {
+        val error = if (thrown == null) {
+            ""
+        } else {
             val stringWriter = StringWriter()
             PrintWriter(stringWriter).use {
                 it.println()
