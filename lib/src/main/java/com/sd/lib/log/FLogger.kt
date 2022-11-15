@@ -101,8 +101,12 @@ abstract class FLogger protected constructor() {
             val handler = _fileHandler ?: return
             _fileHandler = null
 
-            handler.close()
-            _logger.removeHandler(handler)
+            try {
+                handler.close()
+                _logger.removeHandler(handler)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             if (handler === sLoggerHandlerHolder[_loggerClass]) {
                 sLoggerHandlerHolder.remove(_loggerClass)
@@ -115,12 +119,8 @@ abstract class FLogger protected constructor() {
      * 销毁
      */
     private fun destroy() {
-        try {
-            _isRemoved = true
-            closeLogFileInternal()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        _isRemoved = true
+        closeLogFileInternal()
     }
 
     /**
