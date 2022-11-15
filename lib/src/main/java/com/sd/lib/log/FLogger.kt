@@ -213,12 +213,10 @@ abstract class FLogger protected constructor() {
          */
         private fun releaseReference() {
             while (true) {
-                val reference = sRefQueue.poll()
+                val reference = sRefQueue.poll() ?: break
                 if (reference is LoggerRef) {
                     sLoggerHolder.remove(reference.clazz)
                     logMsg { "${reference.clazz.name} ----- size:${sLoggerHolder.size}" }
-                } else {
-                    break
                 }
             }
         }
