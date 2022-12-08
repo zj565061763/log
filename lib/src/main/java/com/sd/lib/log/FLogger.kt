@@ -2,7 +2,7 @@ package com.sd.lib.log
 
 import android.content.Context
 import android.util.Log
-import com.sd.lib.context.FContext
+import com.sd.lib.ctx.fContext
 import java.io.File
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
@@ -170,8 +170,7 @@ abstract class FLogger protected constructor() {
         /** 默认等级 */
         private var sGlobalLevel = Level.ALL
 
-        private val savedContext
-            get() = checkNotNull(FContext.get()) { "Context is null" }
+        private val savedContext get() = fContext
 
         @JvmStatic
         var isDebug = false
