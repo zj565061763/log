@@ -331,12 +331,6 @@ private class LoggerRef<T>(
     q: ReferenceQueue<in T>,
 ) : SoftReference<T>(referent, q)
 
-internal inline fun logMsg(block: () -> String) {
-    if (FLogger.isDebug) {
-        Log.i("FLogger", block())
-    }
-}
-
 inline fun KClass<out FLogger>.info(block: () -> Any) {
     log(
         level = Level.INFO,
@@ -368,5 +362,11 @@ inline fun KClass<out FLogger>.log(
     if (logger.isLoggable(level)) {
         val msg = block().toString()
         logger.log(level = level, msg = msg, thrown = thrown)
+    }
+}
+
+internal inline fun logMsg(block: () -> String) {
+    if (FLogger.isDebug) {
+        Log.i("FLogger", block())
     }
 }
