@@ -333,17 +333,6 @@ private class LoggerRef<T>(
 ) : SoftReference<T>(referent, q)
 
 
-inline fun <reified T : FLogger> fLog(
-    thrown: Throwable? = null,
-    block: () -> Any,
-) {
-    fLog<T>(
-        level = Level.INFO,
-        thrown = thrown,
-        block = block,
-    )
-}
-
 inline fun <reified T : FLogger> fLogWarning(
     thrown: Throwable? = null,
     block: () -> Any,
@@ -367,7 +356,7 @@ inline fun <reified T : FLogger> fLogSevere(
 }
 
 inline fun <reified T : FLogger> fLog(
-    level: Level,
+    level: Level = Level.INFO,
     thrown: Throwable? = null,
     block: () -> Any,
 ) {
