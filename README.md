@@ -13,6 +13,10 @@ class AppLogger : FLogger() {
 }
 ```
 
-```kotlin
-AppLogger::class.info { "hello world!" }
+```
+// kotlin
+fLog<AppLogger> { "hello world!" }
+
+// java
+FLogger.get(AppLogger.class).info("onCreate");
 ```

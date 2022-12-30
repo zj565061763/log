@@ -10,7 +10,6 @@ import java.text.ParseException
 import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.reflect.KClass
 
 abstract class FLogger protected constructor() {
     private val _loggerClass = this@FLogger.javaClass
@@ -134,12 +133,14 @@ abstract class FLogger protected constructor() {
 
     //---------- log start ----------
 
-    fun info(msg: String?) {
-        log(Level.INFO, msg)
+    @JvmOverloads
+    fun info(msg: String?, thrown: Throwable? = null) {
+        log(Level.INFO, msg, thrown)
     }
 
-    fun warning(msg: String?) {
-        log(Level.WARNING, msg)
+    @JvmOverloads
+    fun warning(msg: String?, thrown: Throwable? = null) {
+        log(Level.WARNING, msg, thrown)
     }
 
     @JvmOverloads
@@ -331,34 +332,46 @@ private class LoggerRef<T>(
     q: ReferenceQueue<in T>,
 ) : SoftReference<T>(referent, q)
 
-inline fun KClass<out FLogger>.info(block: () -> Any) {
-    log(
+
+inline fun <reified T : FLogger> fLog(
+    thrown: Throwable? = null,
+    block: () -> Any,
+) {
+    fLog<T>(
         level = Level.INFO,
+        thrown = thrown,
         block = block,
     )
 }
 
-inline fun KClass<out FLogger>.warning(block: () -> Any) {
-    log(
+inline fun <reified T : FLogger> fLogWarning(
+    thrown: Throwable? = null,
+    block: () -> Any,
+) {
+    fLog<T>(
         level = Level.WARNING,
+        thrown = thrown,
         block = block,
     )
 }
 
-inline fun KClass<out FLogger>.severe(thrown: Throwable? = null, block: () -> Any) {
-    log(
+inline fun <reified T : FLogger> fLogSevere(
+    thrown: Throwable? = null,
+    block: () -> Any,
+) {
+    fLog<T>(
         level = Level.SEVERE,
         thrown = thrown,
         block = block,
     )
 }
 
-inline fun KClass<out FLogger>.log(
+inline fun <reified T : FLogger> fLog(
     level: Level,
     thrown: Throwable? = null,
     block: () -> Any,
 ) {
-    val logger = FLogger.get(this.java)
+    val logger = FLogger.get(T::class.java)
     if (logger.isLoggable(level)) {
         val msg = block().toString()
         logger.log(level = level, msg = msg, thrown = thrown)
