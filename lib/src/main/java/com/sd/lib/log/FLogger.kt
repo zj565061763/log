@@ -362,8 +362,11 @@ inline fun <reified T : FLogger> fLog(
 ) {
     val logger = FLogger.get(T::class.java)
     if (logger.isLoggable(level)) {
-        val msg = block().toString()
-        logger.log(level = level, msg = msg, thrown = thrown)
+        logger.log(
+            level = level,
+            msg = block().toString(),
+            thrown = thrown,
+        )
     }
 }
 
