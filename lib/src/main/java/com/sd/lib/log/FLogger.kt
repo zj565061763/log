@@ -135,17 +135,29 @@ abstract class FLogger protected constructor() {
 
     @JvmOverloads
     fun info(msg: String?, thrown: Throwable? = null) {
-        log(Level.INFO, msg, thrown)
+        log(
+            level = Level.INFO,
+            msg = msg,
+            thrown = thrown,
+        )
     }
 
     @JvmOverloads
     fun warning(msg: String?, thrown: Throwable? = null) {
-        log(Level.WARNING, msg, thrown)
+        log(
+            level = Level.WARNING,
+            msg = msg,
+            thrown = thrown,
+        )
     }
 
     @JvmOverloads
     fun severe(msg: String?, thrown: Throwable? = null) {
-        log(Level.SEVERE, msg, thrown)
+        log(
+            level = Level.SEVERE,
+            msg = msg,
+            thrown = thrown,
+        )
     }
 
     @JvmOverloads
