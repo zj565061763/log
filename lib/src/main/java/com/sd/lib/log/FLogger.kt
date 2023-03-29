@@ -266,9 +266,11 @@ abstract class FLogger protected constructor() {
         /**
          * 日志文件目录
          */
-        fun getLogFileDir(): File {
+        @JvmStatic
+        fun logFileDir(block: (dir: File) -> Unit) {
             synchronized(this@Companion) {
-                return LogFileHandler.getLogFileDir(savedContext)
+                val dir = LogFileHandler.getLogFileDir(savedContext)
+                block(dir)
             }
         }
 
@@ -279,20 +281,19 @@ abstract class FLogger protected constructor() {
          */
         @JvmStatic
         fun deleteLogFile(saveDays: Int) {
-            synchronized(this@Companion) {
-                val dir = getLogFileDir()
-                if (!dir.exists()) return
+            logFileDir { dir ->
+                if (!dir.exists()) return@logFileDir
 
                 if (saveDays <= 0) {
                     // 删除全部日志
                     clearLogger()
                     deleteFileOrDir(dir)
-                    return
+                    return@logFileDir
                 }
 
                 val files = dir.listFiles()
                 if (files.isNullOrEmpty()) {
-                    return
+                    return@logFileDir
                 }
 
                 val calendar = Calendar.getInstance().apply {
@@ -325,7 +326,7 @@ abstract class FLogger protected constructor() {
                 }
 
                 if (listDelete.isEmpty()) {
-                    return
+                    return@logFileDir
                 }
 
                 // 删除之前要先清空日志对象
