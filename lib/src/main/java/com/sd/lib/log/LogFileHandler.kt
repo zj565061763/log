@@ -15,27 +15,26 @@ import java.util.logging.LogRecord
 internal class LogFileHandler(
     context: Context,
     filename: String,
-    limitMB: Int,
+    val limitMB: Int,
 ) : FileHandler(
     getLogFilePath(context, filename),
-    limitMB * MB,
+    limitMB * (1024 * 1024),
     1,
     true,
 ) {
-    val limitMB = limitMB
 
     init {
         formatter = SimpleLogFormatter()
     }
 
     companion object {
-        private const val MB = 1024 * 1024
-        private const val DIR_NAME = "flog"
-        private const val FILE_SUFFIX = ".log"
+
+        private const val DirName = "flog"
+        private const val FilePostfix = ".log"
 
         private fun getLogFilePath(context: Context, fileName: String): String {
             val dir = getLogFileDirToday(context)
-            return dir.absolutePath + File.separator + fileName + FILE_SUFFIX
+            return dir.absolutePath + File.separator + fileName + FilePostfix
         }
 
         private fun getLogFileDirToday(context: Context): File {
@@ -46,9 +45,9 @@ internal class LogFileHandler(
         }
 
         fun getLogFileDir(context: Context): File {
-            val dir = context.getExternalFilesDir(DIR_NAME)
+            val dir = context.getExternalFilesDir(DirName)
             if (dir != null && checkDir(dir)) return dir
-            return File(context.filesDir, DIR_NAME).also {
+            return File(context.filesDir, DirName).also {
                 checkDir(it)
             }
         }
