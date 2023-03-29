@@ -25,7 +25,7 @@ internal class LogFileHandler(
 ) {
 
     init {
-        formatter = SimpleLogFormatter()
+        formatter = LogFormatter()
     }
 
     companion object {
@@ -70,7 +70,7 @@ internal class LogFileHandler(
     }
 }
 
-private class SimpleLogFormatter : Formatter() {
+private class LogFormatter : Formatter() {
     @SuppressLint("SimpleDateFormat")
     private val _dateFormat = SimpleDateFormat("MMdd HH:mm:ss.SSS")
 
