@@ -163,7 +163,7 @@ abstract class FLogger protected constructor() {
     @JvmOverloads
     fun log(level: Level, msg: String?, thrown: Throwable? = null) {
         if (_isRemoved) return
-        if (msg.isNullOrEmpty()) return
+        if (msg.isNullOrEmpty() && thrown == null) return
         _logger.log(level, msg, thrown)
     }
 
