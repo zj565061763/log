@@ -6,8 +6,6 @@ import com.sd.lib.ctx.fContext
 import java.io.File
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
-import java.text.ParseException
-import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -223,6 +221,40 @@ abstract class FLogger protected constructor() {
         }
 
         /**
+         * 设置全局日志输出等级
+         */
+        @JvmStatic
+        fun setGlobalLevel(level: Level) {
+            synchronized(this@Companion) {
+                if (sGlobalLevel != level) {
+                    sGlobalLevel = level
+                    clearLogger()
+                }
+            }
+        }
+
+        /**
+         * 日志文件目录
+         */
+        @JvmStatic
+        fun logFileDir(block: (dir: File) -> Unit) {
+            synchronized(this@Companion) {
+                clearLogger()
+                block(LogFileHandler.getLogFileDir(savedContext))
+            }
+        }
+
+        /**
+         * 删除日志文件
+         */
+        @JvmStatic
+        fun deleteLogFile() {
+            logFileDir {
+                if (it.exists()) it.deleteRecursively()
+            }
+        }
+
+        /**
          * 移除引用
          */
         private fun releaseReference() {
@@ -238,108 +270,16 @@ abstract class FLogger protected constructor() {
         }
 
         /**
-         * 设置全局日志输出等级
-         */
-        @JvmStatic
-        fun setGlobalLevel(level: Level) {
-            synchronized(this@Companion) {
-                if (sGlobalLevel != level) {
-                    sGlobalLevel = level
-                    clearLogger()
-                }
-            }
-        }
-
-        /**
          * 清空所有日志对象
          */
         @JvmStatic
-        fun clearLogger() {
+        private fun clearLogger() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
                     item.get()?.destroy()
                 }
                 sLoggerHolder.clear()
             }
-        }
-
-        /**
-         * 日志文件目录
-         */
-        @JvmStatic
-        fun logFileDir(block: (dir: File) -> Unit) {
-            synchronized(this@Companion) {
-                val dir = LogFileHandler.getLogFileDir(savedContext)
-                block(dir)
-            }
-        }
-
-        /**
-         * 删除日志文件
-         *
-         * @param saveDays 要保留的日志天数，如果 saveDays <= 0 ，则删除所有日志
-         */
-        @JvmStatic
-        fun deleteLogFile(saveDays: Int) {
-            logFileDir { dir ->
-                if (!dir.exists()) return@logFileDir
-
-                if (saveDays <= 0) {
-                    // 删除全部日志
-                    clearLogger()
-                    deleteFileOrDir(dir)
-                    return@logFileDir
-                }
-
-                val files = dir.listFiles()
-                if (files.isNullOrEmpty()) {
-                    return@logFileDir
-                }
-
-                val calendar = Calendar.getInstance().apply {
-                    add(Calendar.DAY_OF_YEAR, -(saveDays - 1))
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-
-                val limitTime = calendar.time.time
-                val format = LogFileHandler.dirDateFormat()
-
-                val listDelete = mutableListOf<File>()
-                for (item in files) {
-                    if (item.isFile) {
-                        listDelete.add(item)
-                        continue
-                    }
-
-                    val fileTime: Long = try {
-                        format.parse(item.name)?.time ?: 0
-                    } catch (e: ParseException) {
-                        0
-                    }
-
-                    if (fileTime < limitTime) {
-                        listDelete.add(item)
-                    }
-                }
-
-                if (listDelete.isEmpty()) {
-                    return@logFileDir
-                }
-
-                // 删除之前要先清空日志对象
-                clearLogger()
-                for (item in listDelete) {
-                    deleteFileOrDir(item)
-                }
-            }
-        }
-
-        private fun deleteFileOrDir(file: File?): Boolean {
-            if (file == null || !file.exists()) return true
-            return file.deleteRecursively()
         }
     }
 }

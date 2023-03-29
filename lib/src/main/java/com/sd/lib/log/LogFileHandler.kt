@@ -5,7 +5,6 @@ import android.content.Context
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.FileHandler
@@ -23,7 +22,6 @@ internal class LogFileHandler(
     1,
     true,
 ) {
-
     init {
         formatter = LogFormatter()
     }
@@ -33,20 +31,13 @@ internal class LogFileHandler(
         private const val FilePostfix = ".log"
 
         private fun getLogFilePath(context: Context, fileName: String): String {
-            val parent = getLogFileDir(context)
-            val child = dirDateFormat().format(Date())
-            val dir = File(parent, child).also { checkDir(it) }
+            val dir = getLogFileDir(context)
             return dir.absolutePath + File.separator + fileName + FilePostfix
         }
 
         fun getLogFileDir(context: Context): File {
             val parent = context.getExternalFilesDir(null) ?: context.filesDir
             return File(parent, DirName).also { checkDir(it) }
-        }
-
-        @SuppressLint("SimpleDateFormat")
-        fun dirDateFormat(): DateFormat {
-            return SimpleDateFormat("yyyyMMdd")
         }
 
         private fun checkDir(file: File): Boolean {
