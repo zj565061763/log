@@ -1,0 +1,19 @@
+[versions]
+
+androidCompileSdk = "33"
+androidMinSdk = "21"
+androidTargetSdk = "33"
+
+androidGradlePlugin = "7.4.2"
+kotlin = "1.8.10"
+
+[libraries]
+
+androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
+sd-ctx = "com.github.zj565061763:ctx:1.0.0"
+
+[plugins]
+
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
