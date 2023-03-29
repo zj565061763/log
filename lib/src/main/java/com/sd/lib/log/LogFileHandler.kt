@@ -92,7 +92,7 @@ private class SimpleLogFormatter : Formatter() {
             // 日期
             append(date)
             // 日志等级
-            append(getLevelString(record.level))
+            append(record.level.logString())
             // 日志信息
             append(message)
             // 异常信息
@@ -101,15 +101,13 @@ private class SimpleLogFormatter : Formatter() {
             append("\n")
         }
     }
+}
 
-    companion object {
-        private fun getLevelString(level: Level): String {
-            return when (level) {
-                Level.INFO -> " "
-                Level.WARNING -> "(w)"
-                Level.SEVERE -> "(s)"
-                else -> "($level)"
-            }
-        }
+private fun Level.logString(): String {
+    return when (this) {
+        Level.INFO -> " "
+        Level.WARNING -> "(w)"
+        Level.SEVERE -> "(s)"
+        else -> "($this)"
     }
 }
