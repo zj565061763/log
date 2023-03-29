@@ -39,7 +39,7 @@ abstract class FLogger protected constructor() {
      * 日志等级
      */
     val level: Level
-        get() = _logger.level ?: Level.ALL
+        get() = _logger.level ?: sGlobalLevel
 
     /**
      * 设置日志等级
