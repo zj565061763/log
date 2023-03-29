@@ -66,7 +66,6 @@ internal class LogFileHandler(
         try {
             super.close()
         } catch (e: Exception) {
-            // 忽略
             e.printStackTrace()
         }
     }
