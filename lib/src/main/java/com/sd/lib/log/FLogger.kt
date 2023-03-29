@@ -198,6 +198,7 @@ abstract class FLogger protected constructor() {
             require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
             return synchronized(this@Companion) {
                 releaseReference()
+
                 val cache = sLoggerHolder[clazz]?.get()
                 if (cache != null) return cache
 
