@@ -177,8 +177,9 @@ abstract class FLogger protected constructor() {
          */
         private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, LogFileHandler> = hashMapOf()
 
-        private val sRefQueue = ReferenceQueue<FLogger>()
+        /** 保存Logger对象 */
         private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
+        private val sRefQueue = ReferenceQueue<FLogger>()
 
         /** 默认等级 */
         private var sGlobalLevel = Level.ALL
