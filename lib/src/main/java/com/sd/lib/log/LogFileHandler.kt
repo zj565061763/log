@@ -32,8 +32,9 @@ internal class LogFileHandler(
         private const val FilePostfix = ".log"
 
         private fun getLogFilePath(context: Context, fileName: String): String {
-            val today = dirDateFormat().format(Date())
-            val dir = File(getLogFileDir(context), today).also { checkDir(it) }
+            val parent = getLogFileDir(context)
+            val child = dirDateFormat().format(Date())
+            val dir = File(parent, child).also { checkDir(it) }
             return dir.absolutePath + File.separator + fileName + FilePostfix
         }
 
