@@ -48,7 +48,11 @@ internal class LogFileHandler(
         }
 
         private fun checkDir(dir: File): Boolean {
-            return (dir.exists() && dir.isDirectory) || dir.mkdirs()
+            if (!dir.exists()) return dir.mkdirs()
+            return if (dir.isFile) {
+                dir.delete()
+                dir.mkdirs()
+            } else true
         }
     }
 
