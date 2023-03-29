@@ -230,6 +230,8 @@ abstract class FLogger protected constructor() {
                 if (reference is LoggerRef) {
                     sLoggerHolder.remove(reference.clazz)
                     logMsg { "${reference.clazz.name} ----- size:${sLoggerHolder.size}" }
+                } else {
+                    error("Unknown reference $reference")
                 }
             }
         }
