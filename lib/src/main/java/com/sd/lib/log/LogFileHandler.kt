@@ -33,18 +33,13 @@ internal class LogFileHandler(
 
         private fun getLogFilePath(context: Context, fileName: String): String {
             val today = dirDateFormat().format(Date())
-            val dir = File(getLogFileDir(context), today).also {
-                checkDir(it)
-            }
+            val dir = File(getLogFileDir(context), today).also { checkDir(it) }
             return dir.absolutePath + File.separator + fileName + FilePostfix
         }
 
         fun getLogFileDir(context: Context): File {
-            val dir = context.getExternalFilesDir(DirName)
-            if (dir != null && checkDir(dir)) return dir
-            return File(context.filesDir, DirName).also {
-                checkDir(it)
-            }
+            val parent = context.getExternalFilesDir(null) ?: context.filesDir
+            return File(parent, DirName).also { checkDir(it) }
         }
 
         fun dirDateFormat(): DateFormat {
