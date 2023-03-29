@@ -175,10 +175,10 @@ abstract class FLogger protected constructor() {
          * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[LogFileHandler]指向同一个日志文件。
          * 所以需要[sLoggerHandlerHolder]来保存[LogFileHandler]避免这种情况。
          */
-        private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, LogFileHandler> = HashMap()
+        private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, LogFileHandler> = hashMapOf()
 
         private val sRefQueue = ReferenceQueue<FLogger>()
-        private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = HashMap()
+        private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
 
         /** 默认等级 */
         private var sGlobalLevel = Level.ALL
