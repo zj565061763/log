@@ -185,6 +185,7 @@ abstract class FLogger protected constructor() {
 
         private val savedContext get() = fContext
 
+        /** 调试模式，tag：FLogger */
         @JvmStatic
         var isDebug = false
 

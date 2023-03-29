@@ -8,6 +8,7 @@ import com.sd.lib.log.fLog
 class MainActivity : AppCompatActivity() {
 
     init {
+        // 调试模式，tag：FLogger
         FLogger.isDebug = true
     }
 
@@ -20,9 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         // Kotlin写法
         fLog<AppLogger> { "onCreate" }
-
-        // 日志文件目录
-        fLog<AppLogger> { "logFileDir ${FLogger.getLogFileDir()}" }
     }
 
     override fun onDestroy() {
