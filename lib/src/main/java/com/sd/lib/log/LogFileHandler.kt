@@ -28,7 +28,6 @@ internal class LogFileHandler(
     }
 
     companion object {
-
         private const val DirName = "flog"
         private const val FilePostfix = ".log"
 
