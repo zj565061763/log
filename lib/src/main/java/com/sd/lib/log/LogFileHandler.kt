@@ -12,7 +12,7 @@ import java.util.logging.Formatter
 import java.util.logging.Level
 import java.util.logging.LogRecord
 
-internal class SimpleFileHandler(
+internal class LogFileHandler(
     context: Context,
     filename: String,
     limitMB: Int,

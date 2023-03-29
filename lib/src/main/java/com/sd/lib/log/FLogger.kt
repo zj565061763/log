@@ -28,7 +28,7 @@ abstract class FLogger protected constructor() {
         }
 
     /** 日志文件处理 */
-    private var _fileHandler: SimpleFileHandler? = null
+    private var _fileHandler: LogFileHandler? = null
 
     /**
      * 日志对象被创建回调
@@ -80,7 +80,7 @@ abstract class FLogger protected constructor() {
 
             closeLogFileInternal()
             try {
-                _fileHandler = SimpleFileHandler(context, _loggerName, limitMB).also { handler ->
+                _fileHandler = LogFileHandler(context, _loggerName, limitMB).also { handler ->
                     handler.level = this@FLogger.level
                     _logger.addHandler(handler)
                     sLoggerHandlerHolder[_loggerClass] = handler
@@ -172,10 +172,10 @@ abstract class FLogger protected constructor() {
     companion object {
         /**
          * 如果[FLogger]被添加到[sRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._fileHandler]可能还未关闭。
-         * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[SimpleFileHandler]指向同一个日志文件。
-         * 所以需要[sLoggerHandlerHolder]来保存[SimpleFileHandler]避免这种情况。
+         * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[LogFileHandler]指向同一个日志文件。
+         * 所以需要[sLoggerHandlerHolder]来保存[LogFileHandler]避免这种情况。
          */
-        private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, SimpleFileHandler> = HashMap()
+        private val sLoggerHandlerHolder: MutableMap<Class<out FLogger>, LogFileHandler> = HashMap()
 
         private val sRefQueue = ReferenceQueue<FLogger>()
         private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = HashMap()
@@ -263,7 +263,7 @@ abstract class FLogger protected constructor() {
          */
         fun getLogFileDir(): File {
             synchronized(this@Companion) {
-                return SimpleFileHandler.getLogFileDir(savedContext)
+                return LogFileHandler.getLogFileDir(savedContext)
             }
         }
 
@@ -299,7 +299,7 @@ abstract class FLogger protected constructor() {
                 }
 
                 val limitTime = calendar.time.time
-                val format = SimpleFileHandler.newDateFormat()
+                val format = LogFileHandler.newDateFormat()
 
                 val listDelete = mutableListOf<File>()
                 for (item in files) {
