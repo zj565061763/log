@@ -23,6 +23,16 @@ class MainActivity : AppCompatActivity() {
         fLog<AppLogger> { "onCreate" }
     }
 
+    override fun onStart() {
+        super.onStart()
+        fLog<AppLogger> { "onStart" }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        fLog<AppLogger> { "onStop" }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
