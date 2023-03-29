@@ -314,13 +314,13 @@ abstract class FLogger protected constructor() {
                         continue
                     }
 
-                    try {
-                        val fileTime = format.parse(item.name)?.time ?: 0
-                        if (fileTime < limitTime) {
-                            listDelete.add(item)
-                        }
+                    val fileTime: Long = try {
+                        format.parse(item.name)?.time ?: 0
                     } catch (e: ParseException) {
-                        e.printStackTrace()
+                        0
+                    }
+
+                    if (fileTime < limitTime) {
                         listDelete.add(item)
                     }
                 }
