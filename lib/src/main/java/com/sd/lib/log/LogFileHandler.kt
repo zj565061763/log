@@ -1,5 +1,6 @@
 package com.sd.lib.log
 
+import android.annotation.SuppressLint
 import android.content.Context
 import java.io.File
 import java.io.PrintWriter
@@ -43,6 +44,7 @@ internal class LogFileHandler(
             return File(parent, DirName).also { checkDir(it) }
         }
 
+        @SuppressLint("SimpleDateFormat")
         fun dirDateFormat(): DateFormat {
             return SimpleDateFormat("yyyyMMdd")
         }
@@ -69,6 +71,7 @@ internal class LogFileHandler(
 }
 
 private class SimpleLogFormatter : Formatter() {
+    @SuppressLint("SimpleDateFormat")
     private val _dateFormat = SimpleDateFormat("MMdd HH:mm:ss.SSS")
 
     override fun format(record: LogRecord): String {
