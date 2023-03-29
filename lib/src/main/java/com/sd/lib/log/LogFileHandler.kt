@@ -47,12 +47,11 @@ internal class LogFileHandler(
             return SimpleDateFormat("yyyyMMdd")
         }
 
-        private fun checkDir(dir: File): Boolean {
-            if (!dir.exists()) return dir.mkdirs()
-            return if (dir.isFile) {
-                dir.delete()
-                dir.mkdirs()
-            } else true
+        private fun checkDir(file: File): Boolean {
+            if (!file.exists()) return file.mkdirs()
+            if (file.isDirectory) return true
+            file.delete()
+            return file.mkdirs()
         }
     }
 
