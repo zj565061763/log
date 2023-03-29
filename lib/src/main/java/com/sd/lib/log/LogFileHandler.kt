@@ -37,7 +37,7 @@ internal class LogFileHandler(
         }
 
         private fun getLogFileDirToday(context: Context): File {
-            val today = newDateFormat().format(Date())
+            val today = dirDateFormat().format(Date())
             return File(getLogFileDir(context), today).also {
                 checkDir(it)
             }
@@ -51,7 +51,7 @@ internal class LogFileHandler(
             }
         }
 
-        fun newDateFormat(): DateFormat {
+        fun dirDateFormat(): DateFormat {
             return SimpleDateFormat("yyyyMMdd")
         }
 

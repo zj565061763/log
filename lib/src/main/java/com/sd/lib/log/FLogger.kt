@@ -300,7 +300,7 @@ abstract class FLogger protected constructor() {
                 }
 
                 val limitTime = calendar.time.time
-                val format = LogFileHandler.newDateFormat()
+                val format = LogFileHandler.dirDateFormat()
 
                 val listDelete = mutableListOf<File>()
                 for (item in files) {
