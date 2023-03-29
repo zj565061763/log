@@ -15,23 +15,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
-        FLogger.deleteLogFile(1)
+        // 传统写法
+        FLogger.get(AppLogger::class.java).info("onCreate")
+
+        // Kotlin写法
+        fLog<AppLogger> { "onCreate" }
 
         // 日志文件目录
         fLog<AppLogger> { "logFileDir ${FLogger.getLogFileDir()}" }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // 传统写法
-        FLogger.get(AppLogger::class.java).info("onStart")
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // Kotlin写法
-        fLog<AppLogger> { "onStop" }
+    override fun onDestroy() {
+        super.onDestroy()
+        // 删除日志文件，saveDays等于1，表示保留1天的日志，即保留今天的日志，删除今天之前的所有日志
+        FLogger.deleteLogFile(1)
     }
 }
