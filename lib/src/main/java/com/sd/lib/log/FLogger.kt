@@ -5,7 +5,7 @@ import android.util.Log
 import com.sd.lib.ctx.fContext
 import java.io.File
 import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
+import java.lang.ref.WeakReference
 import java.text.ParseException
 import java.util.*
 import java.util.logging.Level
@@ -345,8 +345,8 @@ abstract class FLogger protected constructor() {
 private class LoggerRef<T>(
     val clazz: Class<*>,
     referent: T,
-    q: ReferenceQueue<in T>,
-) : SoftReference<T>(referent, q)
+    queue: ReferenceQueue<in T>,
+) : WeakReference<T>(referent, queue)
 
 
 inline fun <reified T : FLogger> fLogWarning(
