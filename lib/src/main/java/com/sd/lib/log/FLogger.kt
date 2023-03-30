@@ -237,8 +237,8 @@ abstract class FLogger protected constructor() {
          * 日志文件目录
          */
         @JvmStatic
-        fun logFileDir(block: (dir: File) -> Unit) {
-            synchronized(this@Companion) {
+        fun <T> logFileDir(block: (dir: File) -> T): T {
+            return synchronized(this@Companion) {
                 clearLogger()
                 block(LogFileHandler.getLogFileDir(savedContext))
             }
