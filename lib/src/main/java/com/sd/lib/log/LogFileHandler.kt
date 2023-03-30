@@ -39,13 +39,6 @@ internal class LogFileHandler(
             val parent = context.getExternalFilesDir(null) ?: context.filesDir
             return File(parent, DirName).also { checkDir(it) }
         }
-
-        private fun checkDir(file: File): Boolean {
-            if (!file.exists()) return file.mkdirs()
-            if (file.isDirectory) return true
-            file.delete()
-            return file.mkdirs()
-        }
     }
 
     override fun close() {
@@ -59,6 +52,13 @@ internal class LogFileHandler(
     protected fun finalize() {
         close()
     }
+}
+
+private fun checkDir(file: File): Boolean {
+    if (!file.exists()) return file.mkdirs()
+    if (file.isDirectory) return true
+    file.delete()
+    return file.mkdirs()
 }
 
 private class LogFormatter : Formatter() {
