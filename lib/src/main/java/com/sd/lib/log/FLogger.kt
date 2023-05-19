@@ -273,7 +273,6 @@ abstract class FLogger protected constructor() {
         /**
          * 清空所有日志对象
          */
-        @JvmStatic
         private fun clearLogger() {
             synchronized(this@Companion) {
                 for (item in sLoggerHolder.values) {
