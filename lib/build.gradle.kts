@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "log"
-val libVersionName = "1.4.0-beta03"
+val libVersionName = "1.4.0-rc01"
 
 android {
     namespace = "com.sd.lib.log"
