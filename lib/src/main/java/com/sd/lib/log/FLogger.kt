@@ -240,7 +240,8 @@ abstract class FLogger protected constructor() {
         fun <T> logFileDir(block: (dir: File) -> T): T {
             return synchronized(this@Companion) {
                 clearLogger()
-                block(LogFileHandler.getLogFileDir(savedContext))
+                val dir = LogFileHandler.getLogFileDir(savedContext)
+                block(dir)
             }
         }
 
