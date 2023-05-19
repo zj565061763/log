@@ -27,7 +27,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Content()
+                Content(
+                    onClick = {
+                        finish()
+                    },
+                )
             }
         }
 
@@ -46,21 +50,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        fLog<AppLogger> { "onDestroy" }
         FLogger.deleteLogFile()
     }
 }
 
 @Composable
-private fun Content() {
+private fun Content(
+    onClick: () -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Button(
-            onClick = {
-
-            }
+            onClick = onClick
         ) {
             Text(text = "button")
         }
