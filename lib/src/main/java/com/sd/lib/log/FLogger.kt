@@ -165,12 +165,14 @@ abstract class FLogger protected constructor() {
         @JvmStatic
         fun open(
             directory: File,
+            level: FLogLevel = FLogLevel.All,
             enableConsoleLog: Boolean = false,
         ) {
             synchronized(this@Companion) {
                 val dir = sLogDirectory
                 if (dir != null) return
                 sLogDirectory = directory
+                sGlobalLevel = level
                 sConsolePublisher = if (enableConsoleLog) defaultConsolePublisher() else null
             }
         }
