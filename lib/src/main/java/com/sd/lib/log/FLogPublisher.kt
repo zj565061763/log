@@ -54,7 +54,7 @@ private class DefaultLogPublisher(
         if (output != null) return output
 
         val logFile = _logFile
-        if (!logFile.ensureFileExist()) return null
+        if (!logFile.fEnsureFileExist()) return null
 
         return FileOutputStream(logFile, true)
             .let { BufferedOutputStream(it) }
@@ -130,11 +130,23 @@ private class DefaultLogPublisher(
     }
 }
 
-private fun File.ensureFileExist(): Boolean {
+private fun File?.fEnsureFileExist(): Boolean {
     try {
-        if (isFile) return true
-        if (isDirectory) deleteRecursively()
-        return parentFile?.mkdirs() == true && createNewFile()
+        if (this == null) return false
+        if (this.isFile) return true
+        if (this.isDirectory) this.deleteRecursively()
+        return this.parentFile.fMakeDirs() && this.createNewFile()
+    } catch (e: Exception) {
+        return false
+    }
+}
+
+private fun File?.fMakeDirs(): Boolean {
+    try {
+        if (this == null) return false
+        if (this.isDirectory) return true
+        if (this.isFile) this.delete()
+        return this.mkdirs()
     } catch (e: Exception) {
         return false
     }
