@@ -50,11 +50,14 @@ private class DefaultLogPublisher(
     }
 
     private fun getOutput(): CounterOutputStream? {
+        val logFile = _logFile
+        if (!logFile.fEnsureFileExist()) {
+            flushAndClose()
+            return null
+        }
+
         val output = _output
         if (output != null) return output
-
-        val logFile = _logFile
-        if (!logFile.fEnsureFileExist()) return null
 
         return FileOutputStream(logFile, true)
             .let { BufferedOutputStream(it) }
