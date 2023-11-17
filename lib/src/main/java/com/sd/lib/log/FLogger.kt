@@ -131,6 +131,7 @@ abstract class FLogger protected constructor() {
         )
 
         _publisher?.publish(record)
+        sConsolePublisher?.publish(record)
     }
 
     companion object {
@@ -148,8 +149,9 @@ abstract class FLogger protected constructor() {
 
         /** 日志文件目录 */
         private var sLogDirectory: File? = null
-        /** 是否开启控制台日志 */
-        private var sEnableConsoleLog: Boolean = false
+        /** 控制台日志打印 */
+        @Volatile
+        private var sConsolePublisher: FLogPublisher? = null
 
         private val logDirectory: File
             get() = checkNotNull(sLogDirectory) { "You should invoke FLogger.open() before this." }
@@ -168,7 +170,7 @@ abstract class FLogger protected constructor() {
                 val dir = sLogDirectory
                 if (dir != null) return
                 sLogDirectory = directory
-                sEnableConsoleLog = enableConsoleLog
+                sConsolePublisher = if (enableConsoleLog) defaultConsolePublisher() else null
             }
         }
 

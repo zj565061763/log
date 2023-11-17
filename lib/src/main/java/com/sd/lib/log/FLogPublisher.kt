@@ -16,7 +16,7 @@ internal fun defaultLogPublisher(
     limitMB = limitMB,
 )
 
-interface FLogPublisher {
+internal interface FLogPublisher {
     fun publish(record: FLogRecord)
     fun close()
 }

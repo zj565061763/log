@@ -11,7 +11,7 @@ inline fun <reified T : FLogger> flogD(block: () -> Any) {
 inline fun <reified T : FLogger> flogI(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Info)) {
-            debug(block().toString())
+            info(block().toString())
         }
     }
 }
@@ -19,7 +19,7 @@ inline fun <reified T : FLogger> flogI(block: () -> Any) {
 inline fun <reified T : FLogger> flogW(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Waring)) {
-            debug(block().toString())
+            warning(block().toString())
         }
     }
 }
@@ -27,7 +27,7 @@ inline fun <reified T : FLogger> flogW(block: () -> Any) {
 inline fun <reified T : FLogger> flogE(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Error)) {
-            debug(block().toString())
+            error(block().toString())
         }
     }
 }
