@@ -15,21 +15,24 @@ class AppLogger : FLogger() {
 
 ```kotlin
 class MainActivity : AppCompatActivity() {
-
-    init {
-        // 调试模式，tag：FLogger
-        FLogger.isDebug = true
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // 传统写法
-        FLogger.get(AppLogger::class.java).info("onCreate")
+        FLogger.get(AppLogger::class.java).info("info")
 
         // Kotlin写法
-        fLog<AppLogger> { "onCreate" }
+        flogD<AppLogger> { "debug" }
+        flogI<AppLogger> { "info" }
+        flogW<AppLogger> { "warning" }
+        flogE<AppLogger> { "error" }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // 删除日志文件
+        FLogger.deleteLogFile()
     }
 }
 ```
