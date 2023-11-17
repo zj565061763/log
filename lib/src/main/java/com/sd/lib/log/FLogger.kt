@@ -183,7 +183,8 @@ abstract class FLogger protected constructor() {
         fun get(clazz: Class<out FLogger>): FLoggerApi {
             require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
             val newLogger = synchronized(this@Companion) {
-                checkInit()
+                // check init
+                logDirectory
                 releaseReference()
 
                 val cache = sLoggerHolder[clazz]?.get()
@@ -266,10 +267,6 @@ abstract class FLogger protected constructor() {
                     error("Unknown reference $reference")
                 }
             }
-        }
-
-        private fun checkInit() {
-            checkNotNull(sLogDirectory) { "You should invoke FLogger.open() before this." }
         }
     }
 }
