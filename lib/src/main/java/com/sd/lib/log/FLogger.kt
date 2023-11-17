@@ -118,7 +118,7 @@ abstract class FLogger protected constructor() {
         }
 
         override fun warning(msg: String?) {
-            this@FLogger.log(FLogLevel.Waring, msg)
+            this@FLogger.log(FLogLevel.Warning, msg)
         }
 
         override fun error(msg: String?) {

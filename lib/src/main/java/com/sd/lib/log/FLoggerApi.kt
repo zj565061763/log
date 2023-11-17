@@ -18,7 +18,7 @@ inline fun <reified T : FLogger> flogI(block: () -> Any) {
 
 inline fun <reified T : FLogger> flogW(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
-        if (isLoggable(FLogLevel.Waring)) {
+        if (isLoggable(FLogLevel.Warning)) {
             warning(block().toString())
         }
     }

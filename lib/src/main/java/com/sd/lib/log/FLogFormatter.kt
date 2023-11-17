@@ -58,7 +58,7 @@ private fun FLogLevel.displayName(): String {
         FLogLevel.All -> "A"
         FLogLevel.Debug -> "D"
         FLogLevel.Info -> ""
-        FLogLevel.Waring -> "W"
+        FLogLevel.Warning -> "W"
         FLogLevel.Error -> "E"
         FLogLevel.Off -> "O"
     }

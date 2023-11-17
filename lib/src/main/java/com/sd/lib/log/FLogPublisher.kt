@@ -26,7 +26,7 @@ private class DefaultConsolePublisher : FLogPublisher {
         when (record.level) {
             FLogLevel.Debug -> Log.d(record.tag, record.msg)
             FLogLevel.Info -> Log.i(record.tag, record.msg)
-            FLogLevel.Waring -> Log.w(record.tag, record.msg)
+            FLogLevel.Warning -> Log.w(record.tag, record.msg)
             FLogLevel.Error -> Log.e(record.tag, record.msg)
             else -> {}
         }

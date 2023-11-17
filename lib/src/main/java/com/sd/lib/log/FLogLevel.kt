@@ -7,7 +7,7 @@ sealed class FLogLevel(
     object All : FLogLevel(Int.MIN_VALUE)
     object Debug : FLogLevel(100)
     object Info : FLogLevel(200)
-    object Waring : FLogLevel(300)
+    object Warning : FLogLevel(300)
     object Error : FLogLevel(400)
     object Off : FLogLevel(Int.MAX_VALUE)
 
