@@ -157,7 +157,7 @@ abstract class FLogger protected constructor() {
         private val sLogRecordGenerator = LogRecordGenerator()
 
         /** 调试模式，tag：FLogger */
-        internal var sDebug = false
+        var debug = false
 
         @JvmStatic
         fun open(
@@ -277,7 +277,7 @@ private class LoggerRef<T>(
 ) : SoftReference<T>(referent, queue)
 
 internal inline fun logMsg(block: () -> String) {
-    if (FLogger.sDebug) {
+    if (FLogger.debug) {
         Log.i("FLogger", block())
     }
 }
