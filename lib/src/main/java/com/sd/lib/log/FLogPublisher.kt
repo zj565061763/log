@@ -9,10 +9,10 @@ import java.io.OutputStream
 internal fun defaultConsolePublisher(): FLogPublisher = DefaultConsolePublisher()
 
 internal fun defaultLogPublisher(
-    directory: File,
+    file: File,
     limitMB: Int,
 ): FLogPublisher = DefaultLogPublisher(
-    directory = directory,
+    file = file,
     limitMB = limitMB,
 )
 
@@ -36,16 +36,18 @@ private class DefaultConsolePublisher : FLogPublisher {
 }
 
 private class DefaultLogPublisher(
-    directory: File,
+    file: File,
     limitMB: Int,
 ) : FLogPublisher {
-    private val _dir = directory
+    private val _logFile = file
     private val _limit = limitMB * 1024 * 1024
 
     private var _output: CounterOutputStream? = null
-
-    private val _logFile = _dir.resolve("default.log")
     private val _formatter = defaultLogFormatter()
+
+    init {
+        if (file.isDirectory) error("file should not be a directory.")
+    }
 
     private fun getOutput(): CounterOutputStream? {
         val output = _output

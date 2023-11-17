@@ -47,13 +47,17 @@ abstract class FLogger protected constructor() {
      * 打开日志文件
      * @param limitMB 文件大小限制(MB)，小于等于0表示无限制
      */
-    protected fun openLogFile(limitMB: Int) {
+    @JvmOverloads
+    protected fun openLogFile(
+        limitMB: Int,
+        filename: String = "${loggerTag}.log",
+    ) {
         if (_isRemoved) return
         synchronized(Companion) {
             val publisher = _publisher
             if (publisher != null) return
             defaultLogPublisher(
-                directory = logDirectory,
+                file = logDirectory.resolve(filename.also { check(it.isNotEmpty()) }),
                 limitMB = limitMB,
             ).also {
                 _publisher = it
