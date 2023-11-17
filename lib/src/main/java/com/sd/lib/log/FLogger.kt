@@ -11,6 +11,7 @@ abstract class FLogger protected constructor() {
     internal val loggerTag: String = _loggerClass.name
 
     /** 日志发布对象 */
+    @Volatile
     private var _publisher: FLogPublisher? = null
 
     /** 当前对象是否已经被移除 */
@@ -22,6 +23,7 @@ abstract class FLogger protected constructor() {
         }
 
     /** 日志等级 */
+    @Volatile
     var level: FLogLevel = sGlobalLevel
         set(value) {
             if (_isRemoved) return
