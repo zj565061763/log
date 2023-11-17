@@ -34,7 +34,7 @@ private class DefaultLogFormatter : FLogFormatter {
             }
 
             if (record.level != FLogLevel.Info) {
-                append(record.level.tag)
+                append(record.level.displayName())
             }
 
             if (!record.isMainThread) {
@@ -50,6 +50,17 @@ private class DefaultLogFormatter : FLogFormatter {
             append(record.msg)
             append("\n")
         }
+    }
+}
+
+private fun FLogLevel.displayName(): String {
+    return when (this) {
+        FLogLevel.All -> "A"
+        FLogLevel.Debug -> "D"
+        FLogLevel.Info -> ""
+        FLogLevel.Waring -> "W"
+        FLogLevel.Error -> "E"
+        FLogLevel.Off -> "O"
     }
 }
 
