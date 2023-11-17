@@ -28,11 +28,12 @@ private class DefaultLogFormatter : FLogFormatter {
         return buildString {
             append(date)
 
-            append("[")
-            append(record.tag)
+            val brackets = record.level != FLogLevel.Info || !record.isMainThread
+            if (brackets) {
+                append("[")
+            }
 
             if (record.level != FLogLevel.Info) {
-                append(",")
                 append(record.level.tag)
             }
 
@@ -41,7 +42,11 @@ private class DefaultLogFormatter : FLogFormatter {
                 append(record.threadId.toString())
             }
 
-            append("] ")
+            if (brackets) {
+                append("]")
+            }
+
+            append(" ")
             append(record.msg)
             append("\n")
         }
