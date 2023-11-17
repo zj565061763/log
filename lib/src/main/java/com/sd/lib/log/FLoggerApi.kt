@@ -1,5 +1,8 @@
 package com.sd.lib.log
 
+/**
+ * [FLogLevel.Debug]
+ */
 inline fun <reified T : FLogger> flogD(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Debug)) {
@@ -8,6 +11,9 @@ inline fun <reified T : FLogger> flogD(block: () -> Any) {
     }
 }
 
+/**
+ * [FLogLevel.Info]
+ */
 inline fun <reified T : FLogger> flogI(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Info)) {
@@ -16,6 +22,9 @@ inline fun <reified T : FLogger> flogI(block: () -> Any) {
     }
 }
 
+/**
+ * [FLogLevel.Warning]
+ */
 inline fun <reified T : FLogger> flogW(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Warning)) {
@@ -24,6 +33,9 @@ inline fun <reified T : FLogger> flogW(block: () -> Any) {
     }
 }
 
+/**
+ * [FLogLevel.Error]
+ */
 inline fun <reified T : FLogger> flogE(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
         if (isLoggable(FLogLevel.Error)) {
