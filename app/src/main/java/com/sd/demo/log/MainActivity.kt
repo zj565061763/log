@@ -1,10 +1,12 @@
 package com.sd.demo.log
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.log.databinding.ActivityMainBinding
 import com.sd.lib.log.FLogger
 import com.sd.lib.log.flogI
+import kotlin.time.measureTime
 
 class MainActivity : AppCompatActivity() {
     private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -26,5 +28,16 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         flogI<AppLogger> { "onStop" }
+    }
+}
+
+private fun testLogPerformance(times: Int) {
+    val log = "1".repeat(512)
+    measureTime {
+        repeat(times) {
+            flogI<AppLogger> { log }
+        }
+    }.let {
+        Log.i(MainActivity::class.java.simpleName, "time:${it.inWholeMilliseconds}")
     }
 }
