@@ -152,7 +152,6 @@ abstract class FLogger protected constructor() {
         /** 日志文件目录 */
         private var sLogDirectory: File? = null
         /** 控制台日志打印 */
-        @Volatile
         private var sConsolePublisher: FLogPublisher? = null
 
         private val logDirectory: File
