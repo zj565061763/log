@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private fun testLogPerformance(times: Int) {
+private fun testLogPerformance(times: Int = 1_0000) {
     val log = "1".repeat(512)
     measureTime {
         repeat(times) {
