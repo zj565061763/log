@@ -36,7 +36,7 @@ abstract class FLogger protected constructor() {
     /**
      * 指定的[level]是否可以输出
      */
-    internal fun isLoggable(level: FLogLevel): Boolean {
+    private fun isLoggable(level: FLogLevel): Boolean {
         if (_isRemoved) return false
         return level >= this.level
     }
