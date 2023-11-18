@@ -53,8 +53,9 @@ abstract class FLogger protected constructor() {
         synchronized(FLoggerManager) {
             val publisher = _publisher
             if (publisher != null) return
+            require(filename.isNotEmpty()) { "filename is empty." }
             defaultLogPublisher(
-                file = FLoggerManager.logDirectory().resolve(filename.also { check(it.isNotEmpty()) }),
+                file = FLoggerManager.logDirectory().resolve(filename),
                 limitMB = limitMB,
             ).also {
                 _publisher = it
