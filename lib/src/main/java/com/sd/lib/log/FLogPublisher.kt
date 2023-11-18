@@ -52,9 +52,14 @@ private class DefaultLogPublisher(
     override fun publish(record: FLogRecord) {
         val output = getOutput() ?: return
 
-        val msg = _formatter.format(record)
-        val data = msg.toByteArray()
+        val msg = try {
+            _formatter.format(record)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "\n format error:${e} \r"
+        }
 
+        val data = msg.toByteArray()
         try {
             output.write(data)
             output.flush()
