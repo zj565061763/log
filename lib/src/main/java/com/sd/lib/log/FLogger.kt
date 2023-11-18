@@ -3,10 +3,9 @@ package com.sd.lib.log
 import android.util.Log
 import java.io.File
 
-
 abstract class FLogger protected constructor() {
-    private val _loggerClass = this@FLogger.javaClass
-    internal val loggerTag: String = _loggerClass.name
+    internal val loggerClass = this@FLogger.javaClass
+    internal val loggerTag: String = loggerClass.name
 
     /** 日志发布对象 */
     @Volatile
