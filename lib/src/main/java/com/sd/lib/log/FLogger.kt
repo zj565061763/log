@@ -2,8 +2,6 @@ package com.sd.lib.log
 
 import android.util.Log
 import java.io.File
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
 
 
 abstract class FLogger protected constructor() {
@@ -24,7 +22,7 @@ abstract class FLogger protected constructor() {
 
     /** 日志等级 */
     @Volatile
-    var level: FLogLevel = sGlobalLevel
+    var level: FLogLevel = FLoggerManager.getGlobalLevel()
         set(value) {
             if (_isRemoved) return
             field = value
@@ -33,7 +31,7 @@ abstract class FLogger protected constructor() {
     /**
      * 日志对象被创建回调
      */
-    protected abstract fun onCreate()
+    abstract fun onCreate()
 
     /**
      * 指定的[level]是否可以输出
@@ -53,16 +51,15 @@ abstract class FLogger protected constructor() {
         filename: String = "${loggerTag}.log",
     ) {
         if (_isRemoved) return
-        synchronized(Companion) {
+        synchronized(FLoggerManager) {
             val publisher = _publisher
             if (publisher != null) return
             defaultLogPublisher(
-                file = logDirectory.resolve(filename.also { check(it.isNotEmpty()) }),
+                file = FLoggerManager.logDirectory().resolve(filename.also { check(it.isNotEmpty()) }),
                 limitMB = limitMB,
             ).also {
                 _publisher = it
-                sLogPublisherHolder[_loggerClass] = it
-                logMsg { "$loggerTag publisher +++++ size:${sLogPublisherHolder.size}" }
+                FLoggerManager.addPublisher(this@FLogger, it)
             }
         }
     }
@@ -71,15 +68,14 @@ abstract class FLogger protected constructor() {
      * 关闭日志文件
      */
     private fun closeLogFile() {
-        synchronized(Companion) {
+        synchronized(FLoggerManager) {
             val publisher = _publisher ?: return
             try {
                 publisher.close()
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                check(sLogPublisherHolder.remove(_loggerClass) === publisher)
-                logMsg { "$loggerTag publisher ----- size:${sLogPublisherHolder.size}" }
+                FLoggerManager.removePublisher(this@FLogger, publisher)
                 _publisher = null
             }
         }
@@ -88,7 +84,7 @@ abstract class FLogger protected constructor() {
     /**
      * 销毁
      */
-    private fun destroy() {
+    internal fun destroy() {
         _isRemoved = true
         closeLogFile()
     }
@@ -130,55 +126,36 @@ abstract class FLogger protected constructor() {
         if (!isLoggable(level)) return
         if (msg.isNullOrEmpty()) return
 
-        val record = sLogRecordGenerator.generate(
+        val record = FLoggerManager.newLogRecord(
             logger = this@FLogger,
             level = level,
             msg = msg,
         )
 
         _publisher?.publish(record)
-        sConsolePublisher?.publish(record)
+        FLoggerManager.publishToConsole(record)
     }
 
     companion object {
         /**
-         * 如果[FLogger]被添加到[sLoggerRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._publisher]可能还未关闭。
-         * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[FLogPublisher]指向同一个日志文件。
+         * 打开日志
          */
-        private val sLogPublisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = hashMapOf()
-
-        private val sLoggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
-        private val sLoggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
-
-        /** 全局日志等级 */
-        private var sGlobalLevel: FLogLevel = FLogLevel.All
-
-        /** 日志文件目录 */
-        private var sLogDirectory: File? = null
-        /** 控制台日志打印 */
-        private var sConsolePublisher: FLogPublisher? = null
-
-        private val logDirectory: File
-            get() = checkNotNull(sLogDirectory) { "You should invoke FLogger.open() before this." }
-
-        private val sLogRecordGenerator = LogRecordGenerator()
-
-        /** 调试模式，tag：FLogger */
-        var debug = false
-
         @JvmStatic
         fun open(
+            /** 日志文件目录 */
             directory: File,
+
+            /** 日志等级 */
             level: FLogLevel = FLogLevel.All,
+
+            /** 是否打印控制台日志 */
             enableConsoleLog: Boolean = false,
         ) {
-            synchronized(this@Companion) {
-                val dir = sLogDirectory
-                if (dir != null) return
-                sLogDirectory = directory
-                sGlobalLevel = level
-                sConsolePublisher = if (enableConsoleLog) defaultConsolePublisher() else null
-            }
+            FLoggerManager.open(
+                directory = directory,
+                level = level,
+                enableConsoleLog = enableConsoleLog,
+            )
         }
 
         /**
@@ -186,40 +163,15 @@ abstract class FLogger protected constructor() {
          */
         @JvmStatic
         fun get(clazz: Class<out FLogger>): FLoggerApi {
-            require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
-            val newLogger = synchronized(this@Companion) {
-                // check init
-                logDirectory
-                releaseReference()
-
-                val cache = sLoggerHolder[clazz]?.get()
-                if (cache != null) return cache.loggerApi
-
-                sLogPublisherHolder.remove(clazz)?.also {
-                    it.close()
-                    logMsg { "publisher closed before finalize ${clazz.name} size:${sLogPublisherHolder.size}" }
-                }
-
-                clazz.newInstance().also { logger ->
-                    sLoggerHolder[clazz] = LoggerRef(clazz, logger, sLoggerRefQueue)
-                    logMsg { "${clazz.name} +++++ size:${sLoggerHolder.size}" }
-                }
-            }
-            newLogger.onCreate()
-            return newLogger.loggerApi
+            return FLoggerManager.get(clazz)
         }
 
         /**
-         * 设置全局日志输出等级
+         * 设置全局日志等级
          */
         @JvmStatic
         fun setGlobalLevel(level: FLogLevel) {
-            synchronized(this@Companion) {
-                if (sGlobalLevel != level) {
-                    sGlobalLevel = level
-                    clearLogger()
-                }
-            }
+            FLoggerManager.setGlobalLevel(level)
         }
 
         /**
@@ -227,63 +179,11 @@ abstract class FLogger protected constructor() {
          */
         @JvmStatic
         fun deleteLogFile() {
-            logDir {
-                if (it.exists()) {
-                    it.deleteRecursively()
-                }
-            }
-        }
-
-        /**
-         * 日志文件目录
-         */
-        @JvmStatic
-        fun <T> logDir(block: (dir: File) -> T): T {
-            return synchronized(this@Companion) {
-                clearLogger()
-                block(logDirectory)
-            }
-        }
-
-        /**
-         * 清空所有日志对象
-         */
-        private fun clearLogger() {
-            synchronized(this@Companion) {
-                while (sLoggerHolder.isNotEmpty()) {
-                    sLoggerHolder.toMap().forEach {
-                        it.value.get()?.destroy()
-                        sLoggerHolder.remove(it.key)
-                    }
-                }
-            }
-        }
-
-        /**
-         * 移除引用
-         */
-        private fun releaseReference() {
-            while (true) {
-                val reference = sLoggerRefQueue.poll() ?: break
-                if (reference is LoggerRef) {
-                    sLoggerHolder.remove(reference.clazz)
-                    logMsg { "${reference.clazz.name} ----- size:${sLoggerHolder.size}" }
-                } else {
-                    error("Unknown reference $reference")
-                }
-            }
+            FLoggerManager.deleteLogFile()
         }
     }
 }
 
-private class LoggerRef<T>(
-    val clazz: Class<*>,
-    referent: T,
-    queue: ReferenceQueue<in T>,
-) : SoftReference<T>(referent, queue)
-
 internal inline fun logMsg(block: () -> String) {
-    if (FLogger.debug) {
-        Log.i("FLogger", block())
-    }
+    Log.i("FLogger", block())
 }
