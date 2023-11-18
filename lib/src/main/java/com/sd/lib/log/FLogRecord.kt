@@ -3,7 +3,20 @@ package com.sd.lib.log
 import android.os.Looper
 import java.util.Calendar
 
-interface FLogRecord {
+internal class LogRecordGenerator {
+    fun generate(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
+        return DefaultLogRecord(
+            tag = logger.loggerTag,
+            msg = msg,
+            level = level,
+            millis = System.currentTimeMillis(),
+            isMainThread = Looper.getMainLooper() === Looper.myLooper(),
+            threadId = Thread.currentThread().id,
+        )
+    }
+}
+
+internal interface FLogRecord {
     val tag: String
     val msg: String
     val level: FLogLevel
@@ -55,17 +68,4 @@ private data class DefaultLogRecord(
 
     override val timeMillisecond: Int
         get() = _calendar.get(Calendar.MILLISECOND)
-}
-
-internal class LogRecordGenerator {
-    fun generate(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
-        return DefaultLogRecord(
-            tag = logger.loggerTag,
-            msg = msg,
-            level = level,
-            millis = System.currentTimeMillis(),
-            isMainThread = Looper.getMainLooper() === Looper.myLooper(),
-            threadId = Thread.currentThread().id,
-        )
-    }
 }

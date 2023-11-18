@@ -2,7 +2,7 @@ package com.sd.lib.log
 
 internal fun defaultLogFormatter(): FLogFormatter = DefaultLogFormatter()
 
-interface FLogFormatter {
+internal interface FLogFormatter {
     fun format(record: FLogRecord): String
 }
 
