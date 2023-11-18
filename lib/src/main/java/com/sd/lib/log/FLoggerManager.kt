@@ -155,14 +155,14 @@ internal object FLoggerManager {
 
     fun addPublisher(logger: FLogger, publisher: FLogPublisher) {
         synchronized(this@FLoggerManager) {
-            _publisherHolder[logger.loggerClass] = publisher
+            _publisherHolder[logger.javaClass] = publisher
             logMsg { "${logger.loggerTag} publisher +++++ size:${_publisherHolder.size}" }
         }
     }
 
     fun removePublisher(logger: FLogger, publisher: FLogPublisher) {
         synchronized(this@FLoggerManager) {
-            check(_publisherHolder.remove(logger.loggerClass) === publisher)
+            check(_publisherHolder.remove(logger.javaClass) === publisher)
             logMsg { "${logger.loggerTag} publisher ----- size:${_publisherHolder.size}" }
         }
     }
