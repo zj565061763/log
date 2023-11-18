@@ -1,7 +1,6 @@
 package com.sd.lib.log
 
 import android.util.Log
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -49,21 +48,7 @@ private class DefaultLogPublisher(
         if (file.isDirectory) error("file should not be a directory.")
     }
 
-    private fun getOutput(): CounterOutputStream? {
-        val logFile = _logFile
-        if (!logFile.fEnsureFileExist()) {
-            flushAndClose()
-            return null
-        }
-
-        val output = _output
-        if (output != null) return output
-
-        return FileOutputStream(logFile, true)
-            .let { BufferedOutputStream(it) }
-            .let { CounterOutputStream(it, logFile.length().toInt()) }.also { _output = it }
-    }
-
+    @Synchronized
     override fun publish(record: FLogRecord) {
         val output = getOutput() ?: return
 
@@ -74,21 +59,42 @@ private class DefaultLogPublisher(
             output.write(data)
             output.flush()
         } catch (e: Exception) {
-            flushAndClose()
+            close()
             return
         }
 
         if (_limit > 0 && output.written > _limit) {
-            flushAndClose()
+            close()
             _logFile.deleteRecursively()
         }
     }
 
-    override fun close() {
-        flushAndClose()
+    private fun getOutput(): CounterOutputStream? {
+        val logFile = _logFile
+        val output = _output
+        return if (output == null) {
+            createOutput(logFile)
+        } else {
+            if (logFile.exists()) output else createOutput(logFile)
+        }
     }
 
-    private fun flushAndClose() {
+    /**
+     * 创建输出流
+     */
+    private fun createOutput(logFile: File): CounterOutputStream? {
+        // 关闭旧的输出流，创建新的输出流
+        close()
+        return if (logFile.fCreateFile()) {
+            FileOutputStream(logFile, true)
+                .buffered()
+                .let { CounterOutputStream(it, logFile.length().toInt()) }
+                .also { _output = it }
+        } else null
+    }
+
+    @Synchronized
+    override fun close() {
         try {
             _output?.flush()
             _output?.close()
@@ -133,7 +139,7 @@ private class DefaultLogPublisher(
     }
 }
 
-private fun File?.fEnsureFileExist(): Boolean {
+private fun File?.fCreateFile(): Boolean {
     try {
         if (this == null) return false
         if (this.isFile) return true
