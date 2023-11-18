@@ -56,7 +56,7 @@ private class DefaultLogPublisher(
             _formatter.format(record)
         } catch (e: Exception) {
             e.printStackTrace()
-            "\n format error:${e} \r"
+            "\n format error:${e} | ${record.msg} \n"
         }
 
         val data = msg.toByteArray()
