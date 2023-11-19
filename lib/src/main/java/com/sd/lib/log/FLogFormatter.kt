@@ -27,6 +27,9 @@ private class DefaultLogFormatter : FLogFormatter {
         }
         return buildString {
             append(date)
+            if (record.millisConcurrent > 0) {
+                append(".${record.millisConcurrent}")
+            }
 
             val brackets = record.level != FLogLevel.Info || !record.isMainThread
             if (brackets) {

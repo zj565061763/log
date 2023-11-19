@@ -4,15 +4,34 @@ import android.os.Looper
 import java.util.Calendar
 
 internal class LogRecordGenerator {
+    private var _lastMillis: Long = 0
+    private var _lastTag: String = ""
+    private var _millisConcurrent: Int = 0
+
+    @Synchronized
     fun generate(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
+        val tag = logger.loggerTag
+        val millis = System.currentTimeMillis()
+
+        val millisConcurrent = if (millis == _lastMillis) {
+            if (tag != _lastTag) ++_millisConcurrent else 0
+        } else {
+            _millisConcurrent = 0
+            0
+        }
+
         return DefaultLogRecord(
-            tag = logger.loggerTag,
+            tag = tag,
             msg = msg,
             level = level,
-            millis = System.currentTimeMillis(),
+            millis = millis,
+            millisConcurrent = millisConcurrent,
             isMainThread = Looper.getMainLooper() === Looper.myLooper(),
             threadId = Thread.currentThread().id,
-        )
+        ).also {
+            _lastMillis = it.millis
+            _lastTag = it.tag
+        }
     }
 }
 
@@ -21,6 +40,7 @@ internal interface FLogRecord {
     val msg: String
     val level: FLogLevel
     val millis: Long
+    val millisConcurrent: Int
     val isMainThread: Boolean
     val threadId: Long
 
@@ -38,6 +58,7 @@ private data class DefaultLogRecord(
     override val msg: String,
     override val level: FLogLevel,
     override val millis: Long,
+    override val millisConcurrent: Int,
     override val isMainThread: Boolean,
     override val threadId: Long,
 ) : FLogRecord {
