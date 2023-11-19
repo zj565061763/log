@@ -63,6 +63,6 @@ interface FLoggerApi {
     fun error(msg: String?)
 }
 
-private class DebugLogger : FLogger() {
+internal class DebugLogger : FLogger() {
     override fun onCreate() {}
 }
