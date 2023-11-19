@@ -69,13 +69,14 @@ abstract class FLogger protected constructor() {
     private fun closeLogFile() {
         synchronized(FLoggerManager) {
             val publisher = _publisher ?: return
+            FLoggerManager.removePublisher(this@FLogger, publisher)
+            _publisher = null
+            publisher
+        }.let {
             try {
-                publisher.close()
+                it.close()
             } catch (e: Exception) {
                 e.printStackTrace()
-            } finally {
-                FLoggerManager.removePublisher(this@FLogger, publisher)
-                _publisher = null
             }
         }
     }
