@@ -160,8 +160,9 @@ internal object FLoggerManager {
 
     fun removePublisher(logger: FLogger, publisher: FLogPublisher) {
         synchronized(this@FLoggerManager) {
-            check(_publisherHolder.remove(logger.javaClass) === publisher)
-            logMsg { "${logger.loggerTag} publisher ----- size:${_publisherHolder.size}" }
+            if (_publisherHolder.remove(logger.javaClass) === publisher) {
+                logMsg { "${logger.loggerTag} publisher ----- size:${_publisherHolder.size}" }
+            }
         }
     }
 }
