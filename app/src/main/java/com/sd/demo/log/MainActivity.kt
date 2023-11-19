@@ -1,10 +1,10 @@
 package com.sd.demo.log
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.log.databinding.ActivityMainBinding
 import com.sd.lib.log.FLogger
-import com.sd.lib.log.flog
 import com.sd.lib.log.flogI
 import kotlin.time.measureTime
 
@@ -38,6 +38,6 @@ private fun testLogPerformance(times: Int = 1_0000) {
             flogI<AppLogger> { log }
         }
     }.let {
-        flog { "time:${it.inWholeMilliseconds}" }
+        Log.i(MainActivity::class.java.simpleName, "time:${it.inWholeMilliseconds}")
     }
 }
