@@ -114,7 +114,7 @@ internal object FLoggerManager {
     private fun clearLoggerLocked() {
         while (_loggerHolder.isNotEmpty()) {
             _loggerHolder.toMap().forEach {
-                it.value.get()?.destroy()
+                it.value.get()?.isRemoved = true
                 _loggerHolder.remove(it.key)
             }
         }

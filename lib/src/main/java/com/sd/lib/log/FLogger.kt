@@ -12,17 +12,18 @@ abstract class FLogger protected constructor() {
 
     /** 当前对象是否已经被移除 */
     @Volatile
-    private var _isRemoved: Boolean = false
+    internal var isRemoved: Boolean = false
         set(value) {
             require(value) { "Can not set false to this flag" }
             field = value
+            closeLogFile()
         }
 
     /** 日志等级 */
     @Volatile
     var level: FLogLevel = FLoggerManager.getGlobalLevel()
         set(value) {
-            if (_isRemoved) return
+            if (isRemoved) return
             field = value
         }
 
@@ -35,7 +36,7 @@ abstract class FLogger protected constructor() {
      * 指定的[level]是否可以输出
      */
     private fun isLoggable(level: FLogLevel): Boolean {
-        if (_isRemoved) return false
+        if (isRemoved) return false
         return level >= this.level
     }
 
@@ -48,7 +49,7 @@ abstract class FLogger protected constructor() {
         limitMB: Int,
         filename: String = "${loggerTag}.log",
     ) {
-        if (_isRemoved) return
+        if (isRemoved) return
         synchronized(FLoggerManager) {
             val publisher = _publisher
             if (publisher != null) return
@@ -82,19 +83,11 @@ abstract class FLogger protected constructor() {
     }
 
     /**
-     * 销毁
-     */
-    internal fun destroy() {
-        _isRemoved = true
-        closeLogFile()
-    }
-
-    /**
      * 对象即将被销毁，子类不能调用此方法
      */
     protected fun finalize() {
         logMsg { "$loggerTag finalize start" }
-        destroy()
+        isRemoved = true
         logMsg { "$loggerTag finalize end" }
     }
 
