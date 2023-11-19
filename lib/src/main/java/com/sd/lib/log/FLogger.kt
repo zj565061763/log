@@ -51,8 +51,7 @@ abstract class FLogger protected constructor() {
     ) {
         if (isRemoved) return
         synchronized(FLoggerManager) {
-            val publisher = _publisher
-            if (publisher != null) return
+            _publisher?.let { return }
             require(filename.isNotEmpty()) { "filename is empty." }
             defaultLogPublisher(
                 file = FLoggerManager.logDirectory().resolve(filename),

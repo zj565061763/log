@@ -39,8 +39,7 @@ internal object FLoggerManager {
         enableConsoleLog: Boolean = false,
     ) {
         synchronized(this@FLoggerManager) {
-            val dir = _logDirectory
-            if (dir != null) return
+            _logDirectory?.let { return }
             _logDirectory = directory
             _level = level
             _consolePublisher = if (enableConsoleLog) defaultConsolePublisher() else null
