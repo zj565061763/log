@@ -1,6 +1,17 @@
 package com.sd.lib.log
 
 /**
+ * [DebugLogger]
+ */
+inline fun flog(block: () -> Any) {
+    with(FLogger.get(DebugLogger::class.java)) {
+        if (isLoggable(FLogLevel.Debug)) {
+            debug(block().toString())
+        }
+    }
+}
+
+/**
  * [FLogLevel.Debug]
  */
 inline fun <reified T : FLogger> flogD(block: () -> Any) {
@@ -50,4 +61,8 @@ interface FLoggerApi {
     fun info(msg: String?)
     fun warning(msg: String?)
     fun error(msg: String?)
+}
+
+private class DebugLogger : FLogger() {
+    override fun onCreate() {}
 }
