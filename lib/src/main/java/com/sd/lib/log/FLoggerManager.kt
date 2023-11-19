@@ -99,7 +99,6 @@ internal object FLoggerManager {
     /**
      * 日志文件目录
      */
-    @JvmStatic
     fun <T> logDir(block: (dir: File) -> T): T {
         return synchronized(this@FLoggerManager) {
             clearLoggerLocked()

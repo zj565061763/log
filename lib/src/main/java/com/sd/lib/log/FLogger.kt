@@ -167,6 +167,14 @@ abstract class FLogger protected constructor() {
         fun deleteLogFile() {
             FLoggerManager.deleteLogFile()
         }
+
+        /**
+         * 日志文件目录
+         */
+        @JvmStatic
+        fun <T> logDir(block: (dir: File) -> T): T {
+            return FLoggerManager.logDir(block)
+        }
     }
 }
 
