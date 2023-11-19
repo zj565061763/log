@@ -57,7 +57,7 @@ internal object FLoggerManager {
             releaseReference()
 
             val cache = _loggerHolder[clazz]?.get()
-            if (cache != null) return cache.loggerApi
+            if (cache?.isRemoved == false) return cache.loggerApi
 
             _publisherHolder.remove(clazz)?.also {
                 it.close()
