@@ -1,6 +1,7 @@
 package com.sd.lib.log
 
 import java.io.File
+import java.lang.ref.Reference
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -11,7 +12,7 @@ internal object FLoggerManager {
      */
     private val _publisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = hashMapOf()
 
-    private val _loggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
+    private val _loggerHolder: MutableMap<Class<out FLogger>, Reference<FLogger>> = hashMapOf()
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
     /** 全局日志等级 */
@@ -70,7 +71,7 @@ internal object FLoggerManager {
             }
 
             clazz.newInstance().also { logger ->
-                _loggerHolder[clazz] = LoggerRef(clazz, logger, _loggerRefQueue)
+                _loggerHolder[clazz] = LoggerSoftRef(clazz, logger, _loggerRefQueue)
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }
@@ -129,7 +130,7 @@ internal object FLoggerManager {
     private fun releaseReference() {
         while (true) {
             val reference = _loggerRefQueue.poll() ?: break
-            if (reference is LoggerRef) {
+            if (reference is LoggerSoftRef) {
                 _loggerHolder.remove(reference.clazz)
                 logMsg { "${reference.clazz.name} ----- size:${_loggerHolder.size}" }
             } else {
@@ -172,7 +173,7 @@ internal object FLoggerManager {
     }
 }
 
-private class LoggerRef<T>(
+private class LoggerSoftRef<T>(
     val clazz: Class<*>,
     referent: T,
     queue: ReferenceQueue<in T>,
