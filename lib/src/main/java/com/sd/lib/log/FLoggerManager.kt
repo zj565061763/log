@@ -72,7 +72,11 @@ internal object FLoggerManager {
             }
 
             clazz.newInstance().also { logger ->
-                _loggerHolder[clazz] = LoggerSoftRef(clazz, logger, _loggerRefQueue)
+                _loggerHolder[clazz] = if (clazz == DebugLogger::class.java) {
+                    LoggerWeakRef(clazz, logger, _loggerRefQueue)
+                } else {
+                    LoggerSoftRef(clazz, logger, _loggerRefQueue)
+                }
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }
