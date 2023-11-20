@@ -1,16 +1,14 @@
 package com.sd.lib.log
 
 /**
- * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
+ * 打印[FLogLevel.Debug]控制台日志，不会写入到文件中，tag：com.sd.lib.log.DebugLogger
  */
 inline fun fDebug(block: () -> Any) {
-    if (FLogLevel.Debug >= FLoggerManager.getGlobalLevel()) {
-        FLoggerManager.debug(block().toString())
-    }
+    flogD<DebugLogger>(block)
 }
 
 /**
- * [FLogLevel.Debug]
+ * 打印[FLogLevel.Debug]日志
  */
 inline fun <reified T : FLogger> flogD(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
@@ -21,7 +19,7 @@ inline fun <reified T : FLogger> flogD(block: () -> Any) {
 }
 
 /**
- * [FLogLevel.Info]
+ * 打印[FLogLevel.Info]日志
  */
 inline fun <reified T : FLogger> flogI(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
@@ -32,7 +30,7 @@ inline fun <reified T : FLogger> flogI(block: () -> Any) {
 }
 
 /**
- * [FLogLevel.Warning]
+ * 打印[FLogLevel.Warning]日志
  */
 inline fun <reified T : FLogger> flogW(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
@@ -43,7 +41,7 @@ inline fun <reified T : FLogger> flogW(block: () -> Any) {
 }
 
 /**
- * [FLogLevel.Error]
+ * 打印[FLogLevel.Error]日志
  */
 inline fun <reified T : FLogger> flogE(block: () -> Any) {
     with(FLogger.get(T::class.java)) {
@@ -59,4 +57,8 @@ interface FLoggerApi {
     fun info(msg: String?)
     fun warning(msg: String?)
     fun error(msg: String?)
+}
+
+internal class DebugLogger : FLogger() {
+    override fun onCreate() {}
 }

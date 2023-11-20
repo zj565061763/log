@@ -1,6 +1,5 @@
 package com.sd.lib.log
 
-import android.util.Log
 import java.io.File
 import java.lang.ref.Reference
 import java.lang.ref.ReferenceQueue
@@ -81,18 +80,6 @@ internal object FLoggerManager {
         }
         newLogger.onCreate()
         return newLogger.loggerApi
-    }
-
-    /**
-     * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
-     */
-    fun debug(msg: String?) {
-        if (msg.isNullOrEmpty()) return
-        _consolePublisher?.let {
-            if (FLogLevel.Debug >= _level) {
-                Log.i("DebugLogger", msg)
-            }
-        }
     }
 
     /**
