@@ -15,7 +15,7 @@ internal object FLoggerManager {
      */
     private val _publisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = hashMapOf()
 
-    private val _loggerHolder: MutableMap<Class<out FLogger>, Reference<FLogger>> = hashMapOf()
+    private val _loggerHolder: MutableMap<Class<out FLogger>, LoggerHolder<FLogger>> = hashMapOf()
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
     /** 全局日志等级 */
@@ -75,7 +75,7 @@ internal object FLoggerManager {
             }
 
             clazz.newInstance().also { logger ->
-                _loggerHolder[clazz] = LoggerSoftRef(clazz, logger, _loggerRefQueue)
+                _loggerHolder[clazz] = LoggerHolder(clazz, logger, _loggerRefQueue)
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }
@@ -145,19 +145,19 @@ internal object FLoggerManager {
      */
     private fun releaseReference() {
         while (true) {
-            val reference = _loggerRefQueue.poll() ?: break
-            when (reference) {
-                is LoggerSoftRef -> {
-                    _loggerHolder.remove(reference.clazz)
-                    logMsg { "${reference.clazz.name} soft ----- size:${_loggerHolder.size}" }
+            val ref = _loggerRefQueue.poll() ?: break
+            when (ref) {
+                is LoggerHolder.SoftRef -> {
+                    _loggerHolder.remove(ref.clazz)
+                    logMsg { "${ref.clazz.name} soft ----- size:${_loggerHolder.size}" }
                 }
 
-                is LoggerWeakRef -> {
-                    _loggerHolder.remove(reference.clazz)
-                    logMsg { "${reference.clazz.name} weak ----- size:${_loggerHolder.size}" }
+                is LoggerHolder.WeakRef -> {
+                    _loggerHolder.remove(ref.clazz)
+                    logMsg { "${ref.clazz.name} weak ----- size:${_loggerHolder.size}" }
                 }
 
-                else -> error("Unknown reference $reference")
+                else -> error("Unknown reference $ref")
             }
         }
     }
@@ -196,14 +196,30 @@ internal object FLoggerManager {
     }
 }
 
-private class LoggerSoftRef<T>(
+private class LoggerHolder<T>(
     val clazz: Class<*>,
-    referent: T,
+    instance: T,
     queue: ReferenceQueue<in T>,
-) : SoftReference<T>(referent, queue)
+) {
+    private val _queue = queue
+    private var _ref: Reference<T> = WeakRef(clazz, instance, queue)
 
-private class LoggerWeakRef<T>(
-    val clazz: Class<*>,
-    referent: T,
-    queue: ReferenceQueue<in T>,
-) : WeakReference<T>(referent, queue)
+    fun get(): T? = _ref.get()
+
+    fun refSoft() {
+        val ref = get() ?: return
+        _ref = SoftRef(clazz, ref, _queue)
+    }
+
+    class WeakRef<T>(
+        val clazz: Class<*>,
+        instance: T,
+        queue: ReferenceQueue<in T>,
+    ) : WeakReference<T>(instance, queue)
+
+    class SoftRef<T>(
+        val clazz: Class<*>,
+        instance: T,
+        queue: ReferenceQueue<in T>,
+    ) : SoftReference<T>(instance, queue)
+}
