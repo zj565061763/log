@@ -125,6 +125,7 @@ internal object FLoggerManager {
                 _loggerHolder.remove(it.key)
             }
         }
+        logMsg { "clear logger" }
     }
 
     /**
@@ -134,14 +135,14 @@ internal object FLoggerManager {
         while (true) {
             val ref = _loggerRefQueue.poll() ?: break
             when (ref) {
-                is LoggerHolder.SoftRef -> {
-                    _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} soft ----- size:${_loggerHolder.size}" }
-                }
-
                 is LoggerHolder.WeakRef -> {
                     _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} weak ----- size:${_loggerHolder.size}" }
+                    logMsg { "${ref.clazz.name} ----- release weak size:${_loggerHolder.size}" }
+                }
+
+                is LoggerHolder.SoftRef -> {
+                    _loggerHolder.remove(ref.clazz)
+                    logMsg { "${ref.clazz.name} ----- release soft size:${_loggerHolder.size}" }
                 }
 
                 else -> error("Unknown reference $ref")
