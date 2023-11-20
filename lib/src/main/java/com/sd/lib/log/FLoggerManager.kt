@@ -58,7 +58,6 @@ internal object FLoggerManager {
         val newLogger = synchronized(this@FLoggerManager) {
             // check init
             logDirectory()
-            releaseReference()
 
             val cache = _loggerHolder[clazz]?.get()
             if (cache?.isRemoved == false) return cache.loggerApi
@@ -128,28 +127,6 @@ internal object FLoggerManager {
         logMsg { "clear logger" }
     }
 
-    /**
-     * 移除引用
-     */
-    private fun releaseReference() {
-        while (true) {
-            val ref = _loggerRefQueue.poll() ?: break
-            when (ref) {
-                is LoggerHolder.WeakRef -> {
-                    _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} ----- release weak size:${_loggerHolder.size}" }
-                }
-
-                is LoggerHolder.SoftRef -> {
-                    _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} ----- release soft size:${_loggerHolder.size}" }
-                }
-
-                else -> error("Unknown reference $ref")
-            }
-        }
-    }
-
     //---------- Api for logger ----------
 
     fun getGlobalLevel(): FLogLevel = _level
@@ -179,6 +156,27 @@ internal object FLoggerManager {
         synchronized(this@FLoggerManager) {
             if (_publisherHolder.remove(logger.javaClass) === publisher) {
                 logMsg { "${logger.loggerTag} publisher ----- size:${_publisherHolder.size}" }
+            }
+        }
+    }
+
+    fun releaseLogger() {
+        synchronized(this@FLoggerManager) {
+            while (true) {
+                val ref = _loggerRefQueue.poll() ?: break
+                when (ref) {
+                    is LoggerHolder.WeakRef -> {
+                        _loggerHolder.remove(ref.clazz)
+                        logMsg { "${ref.clazz.name} ----- release weak size:${_loggerHolder.size}" }
+                    }
+
+                    is LoggerHolder.SoftRef -> {
+                        _loggerHolder.remove(ref.clazz)
+                        logMsg { "${ref.clazz.name} ----- release soft size:${_loggerHolder.size}" }
+                    }
+
+                    else -> error("Unknown reference $ref")
+                }
             }
         }
     }

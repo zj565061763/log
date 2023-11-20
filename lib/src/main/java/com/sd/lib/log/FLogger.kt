@@ -81,6 +81,7 @@ abstract class FLogger protected constructor() {
     protected fun finalize() {
         logMsg { "$loggerTag finalize start" }
         isRemoved = true
+        FLoggerManager.releaseLogger()
         logMsg { "$loggerTag finalize end" }
     }
 
