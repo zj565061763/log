@@ -9,8 +9,7 @@ internal class LogRecordGenerator {
     private var _millisConcurrent: Int = 0
 
     @Synchronized
-    fun generate(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
-        val tag = logger.loggerTag
+    fun generate(tag: String, level: FLogLevel, msg: String): FLogRecord {
         val millis = System.currentTimeMillis()
 
         val millisConcurrent = if (millis == _lastMillis) {

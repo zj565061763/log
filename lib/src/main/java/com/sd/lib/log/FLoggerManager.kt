@@ -135,7 +135,7 @@ internal object FLoggerManager {
 
     fun newLogRecord(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
         return _logRecordGenerator.generate(
-            logger = logger,
+            tag = logger.loggerTag,
             level = level,
             msg = msg,
         )
