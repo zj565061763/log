@@ -4,7 +4,6 @@ import java.io.File
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
 
-@PublishedApi
 internal object FLoggerManager {
     /**
      * 如果[FLogger]被添加到[_loggerRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._publisher]可能还未关闭。
