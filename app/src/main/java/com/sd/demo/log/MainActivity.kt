@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.log.databinding.ActivityMainBinding
 import com.sd.lib.log.FLogLevel
 import com.sd.lib.log.FLogger
-import com.sd.lib.log.flog
+import com.sd.lib.log.fDebug
 import com.sd.lib.log.flogI
 import kotlin.time.measureTime
 
@@ -30,9 +30,9 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         /**
-         * 打印[FLogLevel.Debug]等级的日志，不会写入到文件中，tag：[com.sd.lib.log.DebugLogger]
+         * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
          */
-        flog { "App onResume" }
+        fDebug { "App onResume" }
     }
 
     override fun onStop() {

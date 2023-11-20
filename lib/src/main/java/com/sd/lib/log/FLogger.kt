@@ -153,6 +153,14 @@ abstract class FLogger protected constructor() {
         }
 
         /**
+         * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
+         */
+        @JvmStatic
+        fun debug(msg: String?) {
+            FLoggerManager.debug(msg)
+        }
+
+        /**
          * 设置全局日志等级
          */
         @JvmStatic

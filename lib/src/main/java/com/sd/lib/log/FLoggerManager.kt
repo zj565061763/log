@@ -1,11 +1,13 @@
 package com.sd.lib.log
 
+import android.util.Log
 import java.io.File
 import java.lang.ref.Reference
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 import java.lang.ref.WeakReference
 
+@PublishedApi
 internal object FLoggerManager {
     /**
      * 如果[FLogger]被添加到[_loggerRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._publisher]可能还未关闭。
@@ -17,6 +19,7 @@ internal object FLoggerManager {
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
     /** 全局日志等级 */
+    @Volatile
     private var _level: FLogLevel = FLogLevel.All
 
     /** 日志文件目录 */
@@ -72,16 +75,24 @@ internal object FLoggerManager {
             }
 
             clazz.newInstance().also { logger ->
-                _loggerHolder[clazz] = if (clazz == DebugLogger::class.java) {
-                    LoggerWeakRef(clazz, logger, _loggerRefQueue)
-                } else {
-                    LoggerSoftRef(clazz, logger, _loggerRefQueue)
-                }
+                _loggerHolder[clazz] = LoggerSoftRef(clazz, logger, _loggerRefQueue)
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }
         newLogger.onCreate()
         return newLogger.loggerApi
+    }
+
+    /**
+     * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
+     */
+    fun debug(msg: String?) {
+        if (msg.isNullOrEmpty()) return
+        _consolePublisher?.let {
+            if (FLogLevel.Debug >= _level) {
+                Log.i("DebugLogger", msg)
+            }
+        }
     }
 
     /**

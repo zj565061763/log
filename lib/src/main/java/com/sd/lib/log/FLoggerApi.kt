@@ -1,13 +1,11 @@
 package com.sd.lib.log
 
 /**
- * [DebugLogger]
+ * 打印[FLogLevel.Debug]等级的控制台日志，不会写入到文件中，tag：DebugLogger
  */
-inline fun flog(block: () -> Any) {
-    with(FLogger.get(DebugLogger::class.java)) {
-        if (isLoggable(FLogLevel.Debug)) {
-            debug(block().toString())
-        }
+inline fun fDebug(block: () -> Any) {
+    if (FLogLevel.Debug >= FLoggerManager.getGlobalLevel()) {
+        FLoggerManager.debug(block().toString())
     }
 }
 
@@ -61,8 +59,4 @@ interface FLoggerApi {
     fun info(msg: String?)
     fun warning(msg: String?)
     fun error(msg: String?)
-}
-
-internal class DebugLogger : FLogger() {
-    override fun onCreate() {}
 }
