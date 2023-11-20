@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 /**
- * 日志性能测试，请在关闭控制台日志的情况下测试
+ * 日志性能测试，请在关闭控制台日志的情况下测试[FLogger.open]
  */
 private fun testLogPerformance(times: Int = 1_0000) {
     val log = "1".repeat(512)
