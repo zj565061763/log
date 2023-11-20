@@ -12,9 +12,9 @@ private class DefaultLogFormatter : FLogFormatter {
             "${
                 timeYear
             }${
-                timeMonth
+                timeMonth.oneLeadingZero()
             }${
-                timeDayOfMonth
+                timeDayOfMonth.oneLeadingZero()
             } ${
                 timeHourOfDay.oneLeadingZero()
             }:${
