@@ -60,8 +60,13 @@ internal object FLoggerManager {
             if (cache?.isRemoved == false) return cache.loggerApi
 
             _publisherHolder.remove(clazz)?.also {
-                it.close()
-                logMsg { "publisher closed before finalize ${clazz.name} size:${_publisherHolder.size}" }
+                try {
+                    it.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    logMsg { "publisher closed before finalize ${clazz.name} size:${_publisherHolder.size}" }
+                }
             }
 
             clazz.newInstance().also { logger ->
