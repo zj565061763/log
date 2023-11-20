@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.log.databinding.ActivityMainBinding
+import com.sd.lib.log.FLogLevel
 import com.sd.lib.log.FLogger
+import com.sd.lib.log.flog
 import com.sd.lib.log.flogI
 import kotlin.time.measureTime
 
@@ -23,6 +25,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         flogI<AppLogger> { "onStart" }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        /**
+         * 打印[FLogLevel.Debug]等级的日志，不会写入到文件中，tag：[com.sd.lib.log.DebugLogger]
+         */
+        flog { "App onResume" }
     }
 
     override fun onStop() {
