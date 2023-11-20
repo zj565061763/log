@@ -12,17 +12,17 @@ private class DefaultLogFormatter : FLogFormatter {
             "${
                 timeYear
             }${
-                timeMonth.oneLeadingZero()
+                timeMonth.leadingZero(2)
             }${
-                timeDayOfMonth.oneLeadingZero()
+                timeDayOfMonth.leadingZero(2)
             } ${
-                timeHourOfDay.oneLeadingZero()
+                timeHourOfDay.leadingZero(2)
             }:${
-                timeMinute.oneLeadingZero()
+                timeMinute.leadingZero(2)
             }:${
-                timeSecond.oneLeadingZero()
+                timeSecond.leadingZero(2)
             }.${
-                timeMillisecond
+                timeMillisecond.leadingZero(3)
             }"
         }
         return buildString {
@@ -67,8 +67,10 @@ private fun FLogLevel.displayName(): String {
     }
 }
 
-private fun Int.oneLeadingZero(): String {
+private fun Int.leadingZero(size: Int): String {
     return this.toString().let {
-        if (it.length == 1) "0$it" else it
+        val repeat = size - it.length
+        if (repeat > 0) "0".repeat(repeat) + it
+        else it
     }
 }
