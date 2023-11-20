@@ -163,7 +163,7 @@ internal object FLoggerManager {
                 val ref = _loggerRefQueue.poll() ?: break
                 if (ref is LoggerRef) {
                     _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} ----- release size:${_loggerHolder.size}" }
+                    logMsg { "${ref.clazz.name} ----- size:${_loggerHolder.size}" }
                 } else {
                     error("Unknown reference $ref")
                 }
