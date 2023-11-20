@@ -4,6 +4,7 @@ import java.io.File
 import java.lang.ref.Reference
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
+import java.lang.ref.WeakReference
 
 internal object FLoggerManager {
     /**
@@ -130,11 +131,18 @@ internal object FLoggerManager {
     private fun releaseReference() {
         while (true) {
             val reference = _loggerRefQueue.poll() ?: break
-            if (reference is LoggerSoftRef) {
-                _loggerHolder.remove(reference.clazz)
-                logMsg { "${reference.clazz.name} ----- size:${_loggerHolder.size}" }
-            } else {
-                error("Unknown reference $reference")
+            when (reference) {
+                is LoggerSoftRef -> {
+                    _loggerHolder.remove(reference.clazz)
+                    logMsg { "${reference.clazz.name} soft ----- size:${_loggerHolder.size}" }
+                }
+
+                is LoggerWeakRef -> {
+                    _loggerHolder.remove(reference.clazz)
+                    logMsg { "${reference.clazz.name} weak ----- size:${_loggerHolder.size}" }
+                }
+
+                else -> error("Unknown reference $reference")
             }
         }
     }
@@ -178,3 +186,9 @@ private class LoggerSoftRef<T>(
     referent: T,
     queue: ReferenceQueue<in T>,
 ) : SoftReference<T>(referent, queue)
+
+private class LoggerWeakRef<T>(
+    val clazz: Class<*>,
+    referent: T,
+    queue: ReferenceQueue<in T>,
+) : WeakReference<T>(referent, queue)
