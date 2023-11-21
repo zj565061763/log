@@ -5,12 +5,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
-internal fun defaultConsolePublisher(): FLogPublisher = DefaultConsolePublisher()
+internal fun defaultConsolePublisher(): FLogPublisher = ConsolePublisher()
 
 internal fun defaultLogPublisher(
     file: File,
     limitMB: Int,
-): FLogPublisher = DefaultLogPublisher(
+): FLogPublisher = DefaultPublisher(
     file = file,
     limitMB = limitMB,
 )
@@ -20,7 +20,7 @@ internal interface FLogPublisher {
     fun close()
 }
 
-private class DefaultConsolePublisher : FLogPublisher {
+private class ConsolePublisher : FLogPublisher {
     override fun publish(record: FLogRecord) {
         when (record.level) {
             FLogLevel.Debug -> Log.d(record.tag, record.msg)
@@ -34,7 +34,7 @@ private class DefaultConsolePublisher : FLogPublisher {
     override fun close() {}
 }
 
-private class DefaultLogPublisher(
+private class DefaultPublisher(
     file: File,
     limitMB: Int,
 ) : FLogPublisher {
