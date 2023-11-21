@@ -48,7 +48,7 @@ abstract class FLogger protected constructor() {
         if (isRemoved) return
         synchronized(FLoggerManager) {
             _publisher?.let { return }
-            defaultLogPublisher(
+            createPublisher(
                 file = FLoggerManager.logDirectory().resolve("${loggerTag}.log"),
                 limitMB = limitMB,
             ).also {
@@ -56,6 +56,16 @@ abstract class FLogger protected constructor() {
                 FLoggerManager.addPublisher(this@FLogger, it)
             }
         }
+    }
+
+    protected open fun createPublisher(
+        file: File,
+        limitMB: Int,
+    ): FLogPublisher {
+        return defaultLogPublisher(
+            file = FLoggerManager.logDirectory().resolve("${loggerTag}.log"),
+            limitMB = limitMB,
+        )
     }
 
     /**

@@ -15,7 +15,7 @@ internal fun defaultLogPublisher(
     limitMB = limitMB,
 )
 
-internal interface FLogPublisher {
+interface FLogPublisher {
     fun publish(record: FLogRecord)
     fun close()
 }
@@ -42,7 +42,7 @@ private class DefaultPublisher(
     private val _limit = limitMB * 1024 * 1024
 
     private var _output: CounterOutputStream? = null
-    private val _formatter = defaultLogFormatter()
+    private val _formatter = fLogFormatter()
 
     init {
         if (file.isDirectory) error("file should not be a directory.")

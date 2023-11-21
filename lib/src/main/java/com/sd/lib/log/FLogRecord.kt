@@ -34,7 +34,7 @@ internal class LogRecordGenerator {
     }
 }
 
-internal interface FLogRecord {
+interface FLogRecord {
     val tag: String
     val msg: String
     val level: FLogLevel
