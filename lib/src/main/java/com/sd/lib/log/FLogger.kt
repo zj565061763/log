@@ -7,9 +7,11 @@ abstract class FLogger protected constructor() {
     internal val loggerTag: String = this@FLogger.javaClass.name
 
     /** 日志发布对象 */
-    private val _publisher: FLogPublisher by lazy {
+    private var _publisher: FLogPublisher? = null
+    private val _publisherLazy: FLogPublisher by lazy {
         val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
         createPublisher(file).also {
+            _publisher = it
             FLoggerManager.addPublisher(this@FLogger, it)
         }
     }
@@ -53,7 +55,7 @@ abstract class FLogger protected constructor() {
      */
     protected fun openLogFile(limitMB: Int) {
         if (isRemoved) return
-        _publisher.limitMB(limitMB)
+        _publisherLazy.limitMB(limitMB)
         _openLogFile = true
     }
 
@@ -72,7 +74,7 @@ abstract class FLogger protected constructor() {
         isRemoved = true
 
         try {
-            _publisher.close()
+            _publisher?.close()
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -117,7 +119,7 @@ abstract class FLogger protected constructor() {
             msg = msg,
         )
 
-        if (_openLogFile) _publisher.publish(record)
+        if (_openLogFile) _publisherLazy.publish(record)
         FLoggerManager.publishToConsole(record)
     }
 
