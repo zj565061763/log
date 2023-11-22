@@ -5,6 +5,7 @@ import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
 
 internal object FLoggerManager {
+    /** 保存日志对象 */
     private val _loggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
