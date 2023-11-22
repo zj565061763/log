@@ -57,6 +57,9 @@ abstract class FLogger protected constructor() {
         FLoggerManager.addPublisher(this@FLogger, _publisher)
     }
 
+    /**
+     * 创建[FLogPublisher]
+     */
     protected open fun createPublisher(file: File): FLogPublisher {
         return defaultLogPublisher(file)
     }
