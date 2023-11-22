@@ -9,6 +9,7 @@ abstract class FLogger protected constructor() {
     /** 日志发布对象 */
     @Volatile
     private var _publisher: FLogPublisher? = null
+    internal val publisher: FLogPublisher? get() = _publisher
 
     /** 当前对象是否已经被移除 */
     @Volatile
