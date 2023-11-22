@@ -3,15 +3,8 @@ package com.sd.lib.log
 import java.io.File
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.WeakReference
-import java.util.Collections
 
 internal object FLoggerManager {
-    /**
-     * 如果日志对象被自动回收时，[FLogger.finalize]还未触发，则[FLogger._publisher]可能还未关闭，
-     * 如果此时外部调用[get]方法创建新的日志对象并打开了[FLogger.openLogFile]，会导致有两个[FLogPublisher]指向同一个日志文件。
-     */
-    private val _publisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = Collections.synchronizedMap(hashMapOf())
-
     private val _loggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
@@ -133,22 +126,6 @@ internal object FLoggerManager {
 
     fun publishToConsole(record: FLogRecord) {
         _consolePublisher?.publish(record)
-    }
-
-    fun addPublisher(logger: FLogger, publisher: FLogPublisher) {
-        _publisherHolder.put(logger.javaClass, publisher)?.let { old ->
-            try {
-                old.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                logMsg { "close old publisher ${logger.javaClass} size:${_publisherHolder.size}" }
-            }
-        }
-    }
-
-    fun removePublisher(logger: FLogger) {
-        _publisherHolder.remove(logger.javaClass)
     }
 
     fun releaseLogger() {

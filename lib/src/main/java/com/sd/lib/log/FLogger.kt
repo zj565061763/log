@@ -1,7 +1,9 @@
 package com.sd.lib.log
 
 import android.util.Log
+import com.sd.lib.log.FLoggerManager.get
 import java.io.File
+import java.util.Collections
 
 abstract class FLogger protected constructor() {
     internal val loggerTag: String = this@FLogger.javaClass.name
@@ -14,30 +16,17 @@ abstract class FLogger protected constructor() {
             field = value
         }
 
-    /** 是否打开日志文件 */
-    @Volatile
-    private var _openLogFile: Boolean = false
-
     /** 日志发布对象 */
     @Volatile
     private var _publisher: FLogPublisher? = null
         set(value) {
-            requireNotNull(value)
-            if (_isDestroyed) return
             field = value
-        }
-
-    private val _publisherLazy: FLogPublisher by lazy {
-        if (_isDestroyed) {
-            emptyPublisher()
-        } else {
-            val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
-            createPublisher(file).also {
-                _publisher = it
-                FLoggerManager.addPublisher(this@FLogger, it)
+            if (value != null) {
+                addPublisher(this@FLogger, value)
+            } else {
+                removePublisher(this@FLogger)
             }
         }
-    }
 
     /** 日志等级 */
     @Volatile
@@ -65,9 +54,14 @@ abstract class FLogger protected constructor() {
      * @param limitMB 文件大小限制(MB)，小于等于0表示无限制
      */
     protected fun openLogFile(limitMB: Int) {
-        if (_isDestroyed) return
-        _publisherLazy.limitMB(limitMB)
-        _openLogFile = true
+        synchronized(this@FLogger) {
+            if (_isDestroyed) return
+            val publisher = _publisher ?: kotlin.run {
+                val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
+                createPublisher(file).also { _publisher = it }
+            }
+            publisher.limitMB(limitMB)
+        }
     }
 
     /**
@@ -78,7 +72,9 @@ abstract class FLogger protected constructor() {
     }
 
     internal fun destroy() {
-        _isDestroyed = true
+        synchronized(this@FLogger) {
+            _isDestroyed = true
+        }
     }
 
     /**
@@ -86,14 +82,16 @@ abstract class FLogger protected constructor() {
      */
     protected fun finalize() {
         logMsg { "$loggerTag finalize start" }
-        _isDestroyed = true
 
-        try {
-            _publisher?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            FLoggerManager.removePublisher(this@FLogger)
+        synchronized(this@FLogger) {
+            _isDestroyed = true
+            try {
+                _publisher?.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _publisher = null
+            }
         }
 
         FLoggerManager.releaseLogger()
@@ -125,8 +123,8 @@ abstract class FLogger protected constructor() {
     }
 
     private fun log(level: FLogLevel, msg: String?) {
-        if (!isLoggable(level)) return
         if (msg.isNullOrEmpty()) return
+        if (!isLoggable(level)) return
 
         val record = FLoggerManager.newLogRecord(
             logger = this@FLogger,
@@ -134,7 +132,7 @@ abstract class FLogger protected constructor() {
             msg = msg,
         )
 
-        if (_openLogFile) _publisherLazy.publish(record)
+        _publisher?.publish(record)
         FLoggerManager.publishToConsole(record)
     }
 
@@ -198,6 +196,29 @@ abstract class FLogger protected constructor() {
         @JvmStatic
         fun <T> logDir(block: (dir: File) -> T): T {
             return FLoggerManager.logDir(block)
+        }
+
+        /**
+         * 如果日志对象被自动回收时，[FLogger.finalize]还未触发，则[FLogger._publisher]可能还未关闭，
+         * 如果此时外部调用[get]方法创建新的日志对象并打开了[FLogger.openLogFile]，会导致有两个[FLogPublisher]指向同一个日志文件。
+         */
+        private val _publisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = Collections.synchronizedMap(hashMapOf())
+
+        fun addPublisher(logger: FLogger, publisher: FLogPublisher) {
+            _publisherHolder.put(logger.javaClass, publisher)?.let { old ->
+                // TODO get的时候检查
+                try {
+                    old.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    logMsg { "close old publisher ${logger.javaClass} size:${_publisherHolder.size}" }
+                }
+            }
+        }
+
+        fun removePublisher(logger: FLogger) {
+            _publisherHolder.remove(logger.javaClass)
         }
     }
 }
