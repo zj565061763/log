@@ -23,6 +23,7 @@ abstract class FLogger protected constructor() {
     private var _publisher: FLogPublisher? = null
         set(value) {
             requireNotNull(value)
+            if (_isDestroyed) return
             field = value
         }
 
