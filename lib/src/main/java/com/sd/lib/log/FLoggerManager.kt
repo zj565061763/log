@@ -57,7 +57,7 @@ internal object FLoggerManager {
     fun get(clazz: Class<out FLogger>): FLoggerApi {
         return synchronized(this@FLoggerManager) {
             // check init
-            logDirectory()
+            getLogDirectory()
 
             val cache = _loggerHolder[clazz]?.get()
             if (cache?.isRemoved == false) return cache.loggerApi
@@ -100,7 +100,7 @@ internal object FLoggerManager {
     fun <T> logDir(block: (dir: File) -> T): T {
         return synchronized(this@FLoggerManager) {
             clearLoggerLocked()
-            block(logDirectory())
+            block(getLogDirectory())
         }
     }
 
@@ -121,7 +121,7 @@ internal object FLoggerManager {
 
     fun getGlobalLevel(): FLogLevel = _level
 
-    fun logDirectory(): File = checkNotNull(_logDirectory) { "You should invoke FLogger.open() before this." }
+    fun getLogDirectory(): File = checkNotNull(_logDirectory) { "You should invoke FLogger.open() before this." }
 
     fun newLogRecord(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
         return _logRecordGenerator.generate(
