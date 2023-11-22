@@ -19,6 +19,7 @@ abstract class FLogger protected constructor() {
     private var _openLogFile: Boolean = false
 
     /** 日志发布对象 */
+    @Volatile
     private var _publisher: FLogPublisher? = null
         set(value) {
             requireNotNull(value)
