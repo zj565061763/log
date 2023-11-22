@@ -51,7 +51,6 @@ internal object FLoggerManager {
      * 获取日志Api
      */
     fun get(clazz: Class<out FLogger>): FLoggerApi {
-        require(clazz != FLogger::class.java) { "clazz must not be " + FLogger::class.java }
         val newLogger = synchronized(this@FLoggerManager) {
             // check init
             logDirectory()
@@ -69,7 +68,7 @@ internal object FLoggerManager {
                 }
             }
 
-            clazz.newInstance().also { logger ->
+            clazz.getDeclaredConstructor().newInstance().also { logger ->
                 _loggerHolder[clazz] = LoggerRef(clazz, logger, _loggerRefQueue)
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
