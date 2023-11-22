@@ -7,16 +7,11 @@ import java.io.OutputStream
 
 internal fun defaultConsolePublisher(): FLogPublisher = ConsolePublisher()
 
-internal fun defaultLogPublisher(
-    file: File,
-    limitMB: Int,
-): FLogPublisher = DefaultPublisher(
-    file = file,
-    limitMB = limitMB,
-)
+internal fun defaultLogPublisher(file: File): FLogPublisher = DefaultPublisher(file)
 
 interface FLogPublisher {
     fun publish(record: FLogRecord)
+    fun limitMB(size: Int)
     fun close()
 }
 
@@ -31,18 +26,17 @@ private class ConsolePublisher : FLogPublisher {
         }
     }
 
+    override fun limitMB(size: Int) {}
+
     override fun close() {}
 }
 
-private class DefaultPublisher(
-    file: File,
-    limitMB: Int,
-) : FLogPublisher {
-    private val _file = file
-    private val _limit = limitMB * 1024 * 1024
+private class DefaultPublisher(file: File) : FLogPublisher {
+    private val _file: File = file
+    private var _limit: Int = 0
 
     private var _output: CounterOutputStream? = null
-    private val _formatter = fLogFormatter()
+    private val _formatter: FLogFormatter = fLogFormatter()
 
     init {
         if (file.isDirectory) error("file should not be a directory.")
@@ -69,10 +63,13 @@ private class DefaultPublisher(
             return
         }
 
-        if (_limit > 0 && output.written > _limit) {
-            close()
-            _file.deleteRecursively()
-        }
+        checkLimit()
+    }
+
+    @Synchronized
+    override fun limitMB(size: Int) {
+        _limit = size * 1024 * 1024
+        checkLimit()
     }
 
     @Synchronized
@@ -84,6 +81,14 @@ private class DefaultPublisher(
             e.printStackTrace()
         } finally {
             _output = null
+        }
+    }
+
+    private fun checkLimit() {
+        val output = getOutput() ?: return
+        if (_limit > 0 && output.written > _limit) {
+            close()
+            _file.deleteRecursively()
         }
     }
 

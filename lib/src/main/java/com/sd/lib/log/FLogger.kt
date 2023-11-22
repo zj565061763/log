@@ -7,9 +7,15 @@ abstract class FLogger protected constructor() {
     internal val loggerTag: String = this@FLogger.javaClass.name
 
     /** 日志发布对象 */
+    private val _publisher: FLogPublisher by lazy {
+        val file = FLoggerManager.logDirectory().resolve("${loggerTag}.log")
+        createPublisher(file)
+    }
+
+    /** 是否打开日志文件 */
     @Volatile
-    private var _publisher: FLogPublisher? = null
-    internal val publisher: FLogPublisher? get() = _publisher
+    private var _openLogFile: Boolean = false
+    internal val openLogFile: Boolean get() = _openLogFile
 
     /** 当前对象是否已经被移除 */
     @Volatile
@@ -47,42 +53,26 @@ abstract class FLogger protected constructor() {
      */
     protected fun openLogFile(limitMB: Int) {
         if (isRemoved) return
-        synchronized(FLoggerManager) {
-            _publisher?.let { return }
-            createPublisher(
-                file = FLoggerManager.logDirectory().resolve("${loggerTag}.log"),
-                limitMB = limitMB,
-            ).also {
-                _publisher = it
-                FLoggerManager.addPublisher(this@FLogger, it)
-            }
-        }
+        _openLogFile = true
+        _publisher.limitMB(limitMB)
+        FLoggerManager.addPublisher(this@FLogger, _publisher)
     }
 
-    protected open fun createPublisher(
-        file: File,
-        limitMB: Int,
-    ): FLogPublisher {
-        return defaultLogPublisher(
-            file = FLoggerManager.logDirectory().resolve("${loggerTag}.log"),
-            limitMB = limitMB,
-        )
+    protected open fun createPublisher(file: File): FLogPublisher {
+        return defaultLogPublisher(file)
     }
 
     /**
      * 关闭日志文件
      */
     private fun closeLogFile() {
-        synchronized(FLoggerManager) {
-            val publisher = _publisher ?: return
-            try {
-                publisher.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                FLoggerManager.removePublisher(this@FLogger, publisher)
-                _publisher = null
-            }
+        _openLogFile = false
+        try {
+            _publisher.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            FLoggerManager.removePublisher(this@FLogger)
         }
     }
 

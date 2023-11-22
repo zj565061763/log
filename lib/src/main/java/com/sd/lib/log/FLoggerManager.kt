@@ -64,16 +64,7 @@ internal object FLoggerManager {
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }.also { newLogger ->
-            check(newLogger.publisher == null) { "You should open log file in onCreate()." }
-            _publisherHolder.remove(clazz)?.also {
-                try {
-                    it.close()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    logMsg { "publisher closed before finalize ${clazz.name} size:${_publisherHolder.size}" }
-                }
-            }
+            if (newLogger.openLogFile) error("You should open log file in onCreate().")
             newLogger.onCreate()
         }.loggerApi
     }
@@ -145,10 +136,18 @@ internal object FLoggerManager {
     }
 
     fun addPublisher(logger: FLogger, publisher: FLogPublisher) {
-        _publisherHolder[logger.javaClass] = publisher
+        _publisherHolder.put(logger.javaClass, publisher)?.let { old ->
+            try {
+                old.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                logMsg { "close old publisher ${logger.javaClass} size:${_publisherHolder.size}" }
+            }
+        }
     }
 
-    fun removePublisher(logger: FLogger, publisher: FLogPublisher) {
+    fun removePublisher(logger: FLogger) {
         _publisherHolder.remove(logger.javaClass)
     }
 
