@@ -156,8 +156,8 @@ internal object FLoggerManager {
             while (true) {
                 val ref = _loggerRefQueue.poll() ?: break
                 if (ref is LoggerRef) {
-                    _loggerHolder.remove(ref.clazz)
-                    logMsg { "${ref.clazz.name} ----- size:${_loggerHolder.size}" }
+                    _loggerHolder.remove(ref.key)
+                    logMsg { "${ref.key.name} ----- size:${_loggerHolder.size}" }
                 } else {
                     error("Unknown reference $ref")
                 }
@@ -167,7 +167,7 @@ internal object FLoggerManager {
 }
 
 private class LoggerRef<T>(
-    val clazz: Class<*>,
+    val key: Class<*>,
     instance: T,
     queue: ReferenceQueue<in T>,
 ) : WeakReference<T>(instance, queue)
