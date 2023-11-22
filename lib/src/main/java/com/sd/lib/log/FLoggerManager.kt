@@ -15,16 +15,19 @@ internal object FLoggerManager {
     private val _loggerHolder: MutableMap<Class<out FLogger>, LoggerRef<FLogger>> = hashMapOf()
     private val _loggerRefQueue: ReferenceQueue<FLogger> = ReferenceQueue()
 
+    /** 日志记录生成器 */
+    private val _logRecordGenerator = LogRecordGenerator()
+
+    /** 日志文件目录 */
+    @Volatile
+    private var _logDirectory: File? = null
+
     /** 全局日志等级 */
     @Volatile
     private var _level: FLogLevel = FLogLevel.All
 
-    /** 日志文件目录 */
-    private var _logDirectory: File? = null
-
-    /** 日志记录生成器 */
-    private val _logRecordGenerator = LogRecordGenerator()
     /** 控制台日志打印 */
+    @Volatile
     private var _consolePublisher: FLogPublisher? = null
 
     /**
