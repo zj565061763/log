@@ -5,14 +5,22 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
-internal fun defaultConsolePublisher(): FLogPublisher = ConsolePublisher()
+internal fun consolePublisher(): FLogPublisher = ConsolePublisher()
 
-internal fun defaultLogPublisher(file: File): FLogPublisher = DefaultPublisher(file)
+internal fun defaultPublisher(file: File): FLogPublisher = DefaultPublisher(file)
+
+internal fun emptyPublisher(): FLogPublisher = EmptyPublisher()
 
 interface FLogPublisher {
     fun publish(record: FLogRecord)
     fun limitMB(size: Int)
     fun close()
+}
+
+private class EmptyPublisher : FLogPublisher {
+    override fun publish(record: FLogRecord) {}
+    override fun limitMB(size: Int) {}
+    override fun close() {}
 }
 
 private class ConsolePublisher : FLogPublisher {

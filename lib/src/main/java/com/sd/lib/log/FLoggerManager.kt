@@ -47,7 +47,7 @@ internal object FLoggerManager {
             _logDirectory?.let { return }
             _logDirectory = directory
             _level = level
-            _consolePublisher = if (enableConsoleLog) defaultConsolePublisher() else null
+            _consolePublisher = if (enableConsoleLog) consolePublisher() else null
         }
     }
 

@@ -27,10 +27,14 @@ abstract class FLogger protected constructor() {
         }
 
     private val _publisherLazy: FLogPublisher by lazy {
-        val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
-        createPublisher(file).also {
-            _publisher = it
-            FLoggerManager.addPublisher(this@FLogger, it)
+        if (_isDestroyed) {
+            emptyPublisher()
+        } else {
+            val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
+            createPublisher(file).also {
+                _publisher = it
+                FLoggerManager.addPublisher(this@FLogger, it)
+            }
         }
     }
 
@@ -69,7 +73,7 @@ abstract class FLogger protected constructor() {
      * 创建[FLogPublisher]
      */
     protected open fun createPublisher(file: File): FLogPublisher {
-        return defaultLogPublisher(file)
+        return defaultPublisher(file)
     }
 
     internal fun destroy() {
