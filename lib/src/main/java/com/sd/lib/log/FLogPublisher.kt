@@ -85,7 +85,7 @@ private class DefaultPublisher(file: File) : FLogPublisher {
     }
 
     private fun checkLimit() {
-        val output = getOutput() ?: return
+        val output = _output ?: return
         if (_limit > 0 && output.written > _limit) {
             close()
             _file.deleteRecursively()
