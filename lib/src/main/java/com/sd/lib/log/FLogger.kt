@@ -6,6 +6,18 @@ import java.io.File
 abstract class FLogger protected constructor() {
     internal val loggerTag: String = this@FLogger.javaClass.name
 
+    /** 当前对象是否已经被销毁 */
+    @Volatile
+    private var _isDestroyed: Boolean = false
+        set(value) {
+            require(value) { "Can not set false to this flag" }
+            field = value
+        }
+
+    /** 是否打开日志文件 */
+    @Volatile
+    private var _openLogFile: Boolean = false
+
     /** 日志发布对象 */
     private var _publisher: FLogPublisher? = null
         set(value) {
@@ -21,23 +33,11 @@ abstract class FLogger protected constructor() {
         }
     }
 
-    /** 是否打开日志文件 */
-    @Volatile
-    private var _openLogFile: Boolean = false
-
-    /** 当前对象是否已经被移除 */
-    @Volatile
-    internal var isRemoved: Boolean = false
-        set(value) {
-            require(value) { "Can not set false to this flag" }
-            field = value
-        }
-
     /** 日志等级 */
     @Volatile
     var level: FLogLevel = FLoggerManager.getGlobalLevel()
         set(value) {
-            if (isRemoved) return
+            if (_isDestroyed) return
             field = value
         }
 
@@ -50,7 +50,7 @@ abstract class FLogger protected constructor() {
      * 指定的[level]是否可以输出
      */
     private fun isLoggable(level: FLogLevel): Boolean {
-        if (isRemoved) return false
+        if (_isDestroyed) return false
         return level >= this.level
     }
 
@@ -59,7 +59,7 @@ abstract class FLogger protected constructor() {
      * @param limitMB 文件大小限制(MB)，小于等于0表示无限制
      */
     protected fun openLogFile(limitMB: Int) {
-        if (isRemoved) return
+        if (_isDestroyed) return
         _publisherLazy.limitMB(limitMB)
         _openLogFile = true
     }
@@ -71,12 +71,16 @@ abstract class FLogger protected constructor() {
         return defaultLogPublisher(file)
     }
 
+    internal fun destroy() {
+        _isDestroyed = true
+    }
+
     /**
      * 对象即将被销毁，子类不能调用此方法
      */
     protected fun finalize() {
         logMsg { "$loggerTag finalize start" }
-        isRemoved = true
+        _isDestroyed = true
 
         try {
             _publisher?.close()

@@ -60,7 +60,7 @@ internal object FLoggerManager {
             getLogDirectory()
 
             val cache = _loggerHolder[clazz]?.get()
-            if (cache?.isRemoved == false) return cache.loggerApi
+            if (cache != null) return cache.loggerApi
 
             clazz.getDeclaredConstructor().newInstance()!!.also { logger ->
                 _loggerHolder[clazz] = LoggerRef(clazz, logger, _loggerRefQueue)
@@ -110,7 +110,7 @@ internal object FLoggerManager {
     private fun clearLoggerLocked() {
         while (_loggerHolder.isNotEmpty()) {
             _loggerHolder.toMap().forEach {
-                it.value.get()?.isRemoved = true
+                it.value.get()?.destroy()
                 _loggerHolder.remove(it.key)
             }
         }
