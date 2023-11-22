@@ -22,7 +22,6 @@ abstract class FLogger protected constructor() {
         set(value) {
             require(value) { "Can not set false to this flag" }
             field = value
-            closeLogFile()
         }
 
     /** 日志等级 */
@@ -68,9 +67,12 @@ abstract class FLogger protected constructor() {
     }
 
     /**
-     * 关闭日志文件
+     * 对象即将被销毁，子类不能调用此方法
      */
-    private fun closeLogFile() {
+    protected fun finalize() {
+        logMsg { "$loggerTag finalize start" }
+        isRemoved = true
+
         _openLogFile = false
         try {
             _publisher.close()
@@ -79,14 +81,7 @@ abstract class FLogger protected constructor() {
         } finally {
             FLoggerManager.removePublisher(this@FLogger)
         }
-    }
 
-    /**
-     * 对象即将被销毁，子类不能调用此方法
-     */
-    protected fun finalize() {
-        logMsg { "$loggerTag finalize start" }
-        isRemoved = true
         FLoggerManager.releaseLogger()
         logMsg { "$loggerTag finalize end" }
     }
