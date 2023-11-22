@@ -38,7 +38,7 @@ private class DefaultPublisher(
     file: File,
     limitMB: Int,
 ) : FLogPublisher {
-    private val _logFile = file
+    private val _file = file
     private val _limit = limitMB * 1024 * 1024
 
     private var _output: CounterOutputStream? = null
@@ -58,19 +58,20 @@ private class DefaultPublisher(
             e.printStackTrace()
             "\n format error:${e} | ${record.millis} ${record.msg} \n"
         }
-
         val data = msg.toByteArray()
+
         try {
             output.write(data)
             output.flush()
         } catch (e: Exception) {
+            e.printStackTrace()
             close()
             return
         }
 
         if (_limit > 0 && output.written > _limit) {
             close()
-            _logFile.deleteRecursively()
+            _file.deleteRecursively()
         }
     }
 
@@ -87,27 +88,21 @@ private class DefaultPublisher(
     }
 
     private fun getOutput(): CounterOutputStream? {
-        val logFile = _logFile
         val output = _output
         return if (output == null) {
-            createOutput(logFile)
+            createOutput()
         } else {
-            if (logFile.exists()) output else createOutput(logFile)
+            if (_file.exists()) output else createOutput()
         }
     }
 
-    /**
-     * 创建输出流
-     */
-    private fun createOutput(logFile: File): CounterOutputStream? {
-        // 关闭旧的输出流，创建新的输出流
+    private fun createOutput(): CounterOutputStream? {
         close()
-        return if (logFile.fCreateFile()) {
-            FileOutputStream(logFile, true)
-                .buffered()
-                .let { CounterOutputStream(it, logFile.length().toInt()) }
-                .also { _output = it }
-        } else null
+        if (!_file.fCreateFile()) return null
+        return FileOutputStream(_file, true)
+            .buffered()
+            .let { CounterOutputStream(it, _file.length().toInt()) }
+            .also { _output = it }
     }
 
     private class CounterOutputStream(output: OutputStream, length: Int) : OutputStream() {
