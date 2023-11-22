@@ -7,8 +7,8 @@ import java.util.Collections
 
 internal object FLoggerManager {
     /**
-     * 如果[FLogger]被添加到[_loggerRefQueue]的时候，[FLogger.finalize]未触发，则[FLogger._publisher]可能还未关闭。
-     * 同时外部调用了[get]方法创建了新的[FLogger]对象并打开了[FLogger.openLogFile]，会导致有两个[FLogPublisher]指向同一个日志文件。
+     * 如果日志对象被自动回收时，[FLogger.finalize]还未触发，则[FLogger._publisher]可能还未关闭，
+     * 如果此时外部调用[get]方法创建新的日志对象并打开了[FLogger.openLogFile]，会导致有两个[FLogPublisher]指向同一个日志文件。
      */
     private val _publisherHolder: MutableMap<Class<out FLogger>, FLogPublisher> = Collections.synchronizedMap(hashMapOf())
 
