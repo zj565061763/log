@@ -136,10 +136,10 @@ abstract class FLogger protected constructor() {
             directory: File,
 
             /** 日志等级 */
-            level: FLogLevel = FLogLevel.All,
+            level: FLogLevel,
 
             /** 是否打印控制台日志 */
-            enableConsoleLog: Boolean = false,
+            enableConsoleLog: Boolean,
         ) {
             FLoggerManager.open(
                 directory = directory,
