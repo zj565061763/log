@@ -31,10 +31,6 @@ abstract class FLogger protected constructor() {
     /** 日志等级 */
     @Volatile
     var level: FLogLevel = FLoggerManager.getGlobalLevel()
-        set(value) {
-            if (_isDestroyed) return
-            field = value
-        }
 
     /**
      * 日志对象被创建回调
@@ -42,19 +38,11 @@ abstract class FLogger protected constructor() {
     abstract fun onCreate()
 
     /**
-     * 指定的[level]是否可以输出
-     */
-    private fun isLoggable(level: FLogLevel): Boolean {
-        if (_isDestroyed) return false
-        return level >= this.level
-    }
-
-    /**
      * 打开日志文件
      * @param limitMB 文件大小限制(MB)，小于等于0表示无限制
      */
     protected fun openLogFile(limitMB: Int) {
-        synchronized(this@FLogger) {
+        synchronized(FLoggerManager) {
             if (_isDestroyed) return
             val publisher = _publisher ?: kotlin.run {
                 val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
@@ -72,18 +60,7 @@ abstract class FLogger protected constructor() {
     }
 
     internal fun destroy() {
-        synchronized(this@FLogger) {
-            _isDestroyed = true
-        }
-    }
-
-    /**
-     * 对象即将被销毁，子类不能调用此方法
-     */
-    protected fun finalize() {
-        logMsg { "$loggerTag finalize start" }
-
-        synchronized(this@FLogger) {
+        synchronized(FLoggerManager) {
             _isDestroyed = true
             try {
                 _publisher?.close()
@@ -93,7 +70,14 @@ abstract class FLogger protected constructor() {
                 _publisher = null
             }
         }
+    }
 
+    /**
+     * 对象即将被销毁，子类不能调用此方法
+     */
+    protected fun finalize() {
+        logMsg { "$loggerTag finalize start" }
+        destroy()
         FLoggerManager.releaseLogger()
         logMsg { "$loggerTag finalize end" }
     }
@@ -120,6 +104,14 @@ abstract class FLogger protected constructor() {
         override fun error(msg: String?) {
             this@FLogger.log(FLogLevel.Error, msg)
         }
+    }
+
+    /**
+     * 指定的[level]是否可以输出
+     */
+    private fun isLoggable(level: FLogLevel): Boolean {
+        if (_isDestroyed) return false
+        return level >= this.level
     }
 
     private fun log(level: FLogLevel, msg: String?) {

@@ -49,20 +49,19 @@ internal object FLoggerManager {
      * 获取日志Api
      */
     fun get(clazz: Class<out FLogger>): FLoggerApi {
-        return synchronized(this@FLoggerManager) {
+        synchronized(this@FLoggerManager) {
             // check init
             getLogDirectory()
 
             val cache = _loggerHolder[clazz]?.get()
             if (cache != null) return cache.loggerApi
 
-            clazz.getDeclaredConstructor().newInstance()!!.also { logger ->
+            return clazz.getDeclaredConstructor().newInstance()!!.also { logger ->
                 _loggerHolder[clazz] = LoggerRef(clazz, logger, _loggerRefQueue)
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
-            }
-        }.also { newLogger ->
-            newLogger.onCreate()
-        }.loggerApi
+                logger.onCreate()
+            }.loggerApi
+        }
     }
 
     /**
