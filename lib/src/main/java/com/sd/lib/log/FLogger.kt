@@ -52,9 +52,12 @@ abstract class FLogger protected constructor() {
      */
     protected fun openLogFile(limitMB: Int) {
         if (isRemoved) return
-        _openLogFile = true
+
         _publisher.limitMB(limitMB)
         FLoggerManager.addPublisher(this@FLogger, _publisher)
+
+        // addPublisher之后再设置为true，防止并发导致提前写入
+        _openLogFile = true
     }
 
     /**
