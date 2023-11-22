@@ -74,6 +74,18 @@ private class DefaultPublisher(
         }
     }
 
+    @Synchronized
+    override fun close() {
+        try {
+            _output?.flush()
+            _output?.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            _output = null
+        }
+    }
+
     private fun getOutput(): CounterOutputStream? {
         val logFile = _logFile
         val output = _output
@@ -98,22 +110,7 @@ private class DefaultPublisher(
         } else null
     }
 
-    @Synchronized
-    override fun close() {
-        try {
-            _output?.flush()
-            _output?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            _output = null
-        }
-    }
-
-    private class CounterOutputStream(
-        output: OutputStream,
-        length: Int,
-    ) : OutputStream() {
+    private class CounterOutputStream(output: OutputStream, length: Int) : OutputStream() {
         private val _output = output
         private var _written = length
 
