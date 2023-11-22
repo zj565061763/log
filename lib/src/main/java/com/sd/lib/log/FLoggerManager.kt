@@ -127,7 +127,9 @@ internal object FLoggerManager {
 
     fun getGlobalLevel(): FLogLevel = _level
 
-    fun logDirectory(): File = checkNotNull(_logDirectory) { "You should invoke FLogger.open() before this." }
+    fun logDirectory(): File = synchronized(this@FLoggerManager) {
+        checkNotNull(_logDirectory) { "You should invoke FLogger.open() before this." }
+    }
 
     fun newLogRecord(logger: FLogger, level: FLogLevel, msg: String): FLogRecord {
         return _logRecordGenerator.generate(
