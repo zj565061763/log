@@ -9,7 +9,9 @@ abstract class FLogger protected constructor() {
     /** 日志发布对象 */
     private val _publisher: FLogPublisher by lazy {
         val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
-        createPublisher(file)
+        createPublisher(file).also {
+            FLoggerManager.addPublisher(this@FLogger, it)
+        }
     }
 
     /** 是否打开日志文件 */
@@ -51,11 +53,7 @@ abstract class FLogger protected constructor() {
      */
     protected fun openLogFile(limitMB: Int) {
         if (isRemoved) return
-
         _publisher.limitMB(limitMB)
-        FLoggerManager.addPublisher(this@FLogger, _publisher)
-
-        // addPublisher之后再设置为true，防止并发导致提前写入
         _openLogFile = true
     }
 
@@ -73,7 +71,6 @@ abstract class FLogger protected constructor() {
         logMsg { "$loggerTag finalize start" }
         isRemoved = true
 
-        _openLogFile = false
         try {
             _publisher.close()
         } catch (e: Exception) {
