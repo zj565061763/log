@@ -8,6 +8,11 @@ abstract class FLogger protected constructor() {
 
     /** 日志发布对象 */
     private var _publisher: FLogPublisher? = null
+        set(value) {
+            requireNotNull(value)
+            field = value
+        }
+
     private val _publisherLazy: FLogPublisher by lazy {
         val file = FLoggerManager.getLogDirectory().resolve("${loggerTag}.log")
         createPublisher(file).also {
