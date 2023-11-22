@@ -10,7 +10,7 @@ abstract class FLogger protected constructor() {
     @Volatile
     private var _isDestroyed: Boolean = false
         set(value) {
-            require(value) { "Can not set false to this flag" }
+            require(value)
             field = value
         }
 
