@@ -64,7 +64,6 @@ internal object FLoggerManager {
                 logMsg { "${clazz.name} +++++ size:${_loggerHolder.size}" }
             }
         }.also { newLogger ->
-            if (newLogger.openLogFile) error("You should open log file in onCreate().")
             newLogger.onCreate()
         }.loggerApi
     }

@@ -15,7 +15,6 @@ abstract class FLogger protected constructor() {
     /** 是否打开日志文件 */
     @Volatile
     private var _openLogFile: Boolean = false
-    internal val openLogFile: Boolean get() = _openLogFile
 
     /** 当前对象是否已经被移除 */
     @Volatile
@@ -120,7 +119,7 @@ abstract class FLogger protected constructor() {
             msg = msg,
         )
 
-        _publisher?.publish(record)
+        if (_openLogFile) _publisher.publish(record)
         FLoggerManager.publishToConsole(record)
     }
 
