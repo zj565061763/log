@@ -1,3 +1,7 @@
+# Deprecated
+
+这个库已经废弃不再维护，建议迁移到[xlog](https://github.com/zj565061763/xlog)
+
 # Gradle
 
 [![](https://jitpack.io/v/zj565061763/log.svg)](https://jitpack.io/#zj565061763/log)
